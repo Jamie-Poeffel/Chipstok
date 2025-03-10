@@ -1,7 +1,6 @@
-﻿import express from 'express';
-import app from './app.js';
+﻿import app from './app.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('App listens on http://localhost:' + port + '/api'));
+app.listen(port, () => console.log('App listens on http://localhost:' + port));
