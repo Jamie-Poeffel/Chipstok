@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "setup": "concurrently \"npm --prefix ./Api install\" \"npm --prefix ./Chipstok install\"",
+    "dev": "concurrently \"npm --prefix ./Api run dev\" \"npm --prefix ./Chipstok run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
