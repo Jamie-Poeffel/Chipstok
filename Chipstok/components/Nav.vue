@@ -10,10 +10,11 @@
                 <input id="file-upload" type="file" accept="image/*" class="file-input" @change="handleFileUpload" />
             </label>
         </div>
-
+        
         <router-link to="/profile" class="nav-item">
             <UserIcon />
         </router-link>
+
     </div>
 </template>
 
@@ -44,12 +45,6 @@ const handleFileUpload = (event) => {
 </script>
 
 <style scoped>
-.no-appearance {
-    appearance: none;
-    border: none;
-    background: none;
-}
-
 .bottom-nav {
     display: flex;
     justify-content: space-between;
@@ -69,22 +64,33 @@ const handleFileUpload = (event) => {
     color: #333;
     text-align: center;
     flex-grow: 1;
+    position: relative;
     transition: transform 0.1s ease, color 0.1s ease;
 }
 
-.nav-item.plus {
-    font-size: 30px;
-    color: #ff2d55;
-    /* TikTok-style red */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+.nav-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    z-index: 0;
+}
+
+.nav-item:hover::before {
+    transform: translate(-50%, -50%) scale(0.825);
 }
 
 .nav-item svg {
     display: block;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .nav-item:hover {
@@ -97,7 +103,6 @@ const handleFileUpload = (event) => {
 
 .nav-item:active {
     transform: scale(0.9);
-    /* Shrink effect on click */
 }
 
 label[for="file-upload"]:hover {
