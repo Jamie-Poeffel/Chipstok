@@ -1,15 +1,15 @@
 <template>
     <div class="bottom-nav">
-        <router-link to="/" class="nav-item">
+        <router-link to="/" class="nav-item exact-active-class='active'">
             <HomeIcon />
         </router-link>
 
-        <!-- Use label to make the image input appear as a button/icon -->
-        <label for="file-upload" class="nav-item plus">
-            <PlusCircleIcon />
-            <!-- Hidden file input -->
-            <input id="file-upload" type="file" class="file-input" />
-        </label>
+        <div class="nav-item plus">
+            <label for="file-upload">
+                <PlusCircleIcon />
+                <input id="file-upload" type="file" accept="image/*" class="file-input" @change="handleFileUpload" />
+            </label>
+        </div>
 
         <router-link to="/profile" class="nav-item">
             <UserIcon />
@@ -18,7 +18,29 @@
 </template>
 
 <script setup>
-import { HomeIcon, PlusCircleIcon, UserIcon } from 'lucide-vue-next'
+import { useRouter } from 'vue-router';
+import { HomeIcon, PlusCircleIcon, UserIcon } from 'lucide-vue-next';
+
+const router = useRouter();
+
+const handleFileUpload = (event) => {
+    try {
+        sessionStorage.removeItem('tempUpload');
+    } catch (error) {
+        console.log(error);
+    }
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        sessionStorage.setItem('tempUpload', e.target.result);
+        router.push('/add');
+    };
+    reader.readAsDataURL(file);
+
+    event.target.value = '';
+};
 </script>
 
 <style scoped>
@@ -82,17 +104,13 @@ label[for="file-upload"]:hover {
     cursor: pointer;
 }
 
-/* Hide the file input but still keep it clickable */
 .file-input {
     display: none;
     width: 50px;
-    /* Adjust the size as needed */
     height: 50px;
-    /* Adjust the size as needed */
 }
 
 .file-input:active {
     transform: scale(0.9);
-    /* Shrink effect for file input */
 }
 </style>
