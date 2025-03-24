@@ -4,16 +4,15 @@
             <HomeIcon />
         </router-link>
 
-        <!-- Use label to make the image input appear as a button/icon -->
         <label for="file-upload" class="nav-item plus">
             <PlusCircleIcon />
-            <!-- Hidden file input -->
             <input id="file-upload" type="file" class="file-input" />
         </label>
 
         <router-link to="/profile" class="nav-item">
             <UserIcon />
         </router-link>
+
     </div>
 </template>
 
@@ -22,12 +21,6 @@ import { HomeIcon, PlusCircleIcon, UserIcon } from 'lucide-vue-next'
 </script>
 
 <style scoped>
-.no-appearance {
-    appearance: none;
-    border: none;
-    background: none;
-}
-
 .bottom-nav {
     display: flex;
     justify-content: space-between;
@@ -47,22 +40,33 @@ import { HomeIcon, PlusCircleIcon, UserIcon } from 'lucide-vue-next'
     color: #333;
     text-align: center;
     flex-grow: 1;
+    position: relative;
     transition: transform 0.1s ease, color 0.1s ease;
 }
 
-.nav-item.plus {
-    font-size: 30px;
-    color: #ff2d55;
-    /* TikTok-style red */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+.nav-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    z-index: 0;
+}
+
+.nav-item:hover::before {
+    transform: translate(-50%, -50%) scale(0.825);
 }
 
 .nav-item svg {
     display: block;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .nav-item:hover {
@@ -75,24 +79,19 @@ import { HomeIcon, PlusCircleIcon, UserIcon } from 'lucide-vue-next'
 
 .nav-item:active {
     transform: scale(0.9);
-    /* Shrink effect on click */
 }
 
 label[for="file-upload"]:hover {
     cursor: pointer;
 }
 
-/* Hide the file input but still keep it clickable */
 .file-input {
     display: none;
     width: 50px;
-    /* Adjust the size as needed */
     height: 50px;
-    /* Adjust the size as needed */
 }
 
 .file-input:active {
     transform: scale(0.9);
-    /* Shrink effect for file input */
 }
 </style>
