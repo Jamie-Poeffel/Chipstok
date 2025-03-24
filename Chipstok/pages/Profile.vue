@@ -7,7 +7,7 @@
           <p class="handle">@johndoe</p>
         </div>
         <div class="user-meta">
-          <h2 class="username">John Doe</h2>
+          <h2 class="username">Alessio Huber</h2>
           <div class="stats">
             <div><strong>120 Following</strong></div>
             <div><strong>15K Followers</strong></div>
