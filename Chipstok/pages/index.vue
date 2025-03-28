@@ -27,6 +27,7 @@ const imgs = ref([
 
 // Reactive flag to show the loader
 const isLoading = ref(false);
+const username = ref('');
 
 // Ref for the last element (set via a callback)
 const lastItemRef = ref(null);
@@ -62,24 +63,34 @@ const setLastItemRef = (el) => {
     }
 };
 
-onMounted(() => {
-    observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting && !isLoading.value) {
-                    isLoading.value = true;
-                    // TODO: API CALL for Post
-                    setTimeout(() => {
-                        loadMore();
-                        isLoading.value = false;
-                    }, 4000);
-                }
-            });
-        },
-        { threshold: 0.4 }
-    );
-    if (lastItemRef.value) {
-        observer.observe(lastItemRef.value);
+const loginCorrect = ref(false)
+
+onMounted(async () => {
+    const res = await fetch("http://localhost:8080/auth/auto", { credentials: 'include' });
+
+    const usern = await res.json();
+    username.value = usern.username;
+    if (res.status == 200) {
+        loginCorrect.value = true;
+        observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && !isLoading.value) {
+                        isLoading.value = true;
+                        setTimeout(() => {
+                            loadMore();
+                            isLoading.value = false;
+                        }, 500);
+                    }
+                });
+            },
+            { threshold: 0.4 }
+        );
+        if (lastItemRef.value) {
+            observer.observe(lastItemRef.value);
+        }
+    } else {
+        await navigateTo('/login');
     }
 });
 
@@ -92,20 +103,33 @@ onUnmounted(() => {
 
 <template>
     <div class="h-screen overflow-y-scroll snap-y snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none]">
-        <!-- Video Pages -->
-        <div v-for="(img, index) in imgs" :key="img._id" class="snap-start h-screen max-w-[450px] mx-auto relative"
+        <transition name="fade-slide">
+            <div v-if="loginCorrect"
+                class="fixed top-12 w-28 h-12 bg-gray-800 rounded-full left-1/2 -translate-x-1/2 z-40 flex flex-row">
+                <div class="relative left-[21%] -translate-x-1/2 rounded-full w-10 h-10 top-1/2 -translate-y-1/2 bg-gradient-to-b from-blue-500
+                to-slate-400 flex  justify-center items-center">
+                    <p class="text-white">K</p>
+                </div>
+                <div class="p-2 flex flex-col justify-center items-center">
+                    <p class=" text-stone-400 text-xs font-semibold">Welcome</p>
+                    <p class="text-stone-500 text-xs font-semibold">{{ username }}</p>
+                </div>
+            </div>
+        </transition>
+
+        <div v-for="(img, index) in imgs" :key="img._id" class="snap-start h-dvh max-w-[450px] mx-auto relative"
             :ref="index === imgs.length - 1 ? setLastItemRef : null">
-            <!-- Video Content -->
+
             <div class="relative h-full w-full">
                 <img :src="img.url" alt="Video" class="w-full h-full object-cover" />
 
-                <!-- Text Overlay -->
+
                 <div class="absolute bottom-24 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
                     <p class="font-semibold text-base mb-1">@{{ img.username }}</p>
                     <p class="text-sm leading-tight">{{ img.caption }}</p>
                 </div>
 
-                <!-- Right Actions -->
+
                 <div class="absolute right-3 bottom-24 flex flex-col items-center justify-center gap-5">
                     <div class="mb-2 flex flex-col gap-5 justify-center items-center">
                         <div class="flex flex-col justify-center items-center">

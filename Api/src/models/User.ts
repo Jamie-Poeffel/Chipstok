@@ -1,11 +1,15 @@
-﻿import { Table, Column, Model, DataType, Default } from "sequelize-typescript";
+﻿import { Table, Column, Model, DataType, PrimaryKey } from "sequelize-typescript";
 
 @Table({ tableName: "users", timestamps: true })
 export class User extends Model {
-    @Column({ type: DataType.STRING, allowNull: false, unique: "username_unique" })
+    @PrimaryKey
+    @Column({ type: DataType.UUID, allowNull: false, unique: true, defaultValue: DataType.UUIDV4 })
+    _id!: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, unique: true })
     username!: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, unique: "email_unique" })
+    @Column({ type: DataType.STRING, allowNull: false, unique: true })
     email!: string;
 
     @Column({ type: DataType.STRING, allowNull: false })

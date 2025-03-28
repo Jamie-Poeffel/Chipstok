@@ -10,6 +10,7 @@ export const getAllUsers: RequestHandler = async (req: Request, res: Response): 
         .catch((error) => {
             res.status(500).json({ error: error });
         });
+
 }
 
 export const getUserById: RequestHandler = async (req: Request, res: Response): Promise<void> => {

@@ -2,6 +2,9 @@
 import mysql from "mysql2/promise";
 import { User } from "../models/User";
 import dotenv from "dotenv";
+import { Post } from "../models/Posts";
+import { Comments } from "../models/Comments";
+import { Comment } from "../models/Comment";
 
 dotenv.config();
 
@@ -34,7 +37,7 @@ export const sequelize = new Sequelize({
     password: DB_PASS,
     host: DB_HOST,
     dialect: "mariadb",
-    models: [User],
+    models: [User, Post, Comments, Comment],
     logging: false,
 });
 
