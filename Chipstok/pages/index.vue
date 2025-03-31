@@ -1,6 +1,24 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Plus, Heart, MessageCircle, Send, RefreshCcw } from 'lucide-vue-next';
+import { Cache } from './../cache/cache'
+
+const showFull = ref(false);
+
+const showBanner = () => {
+    loginCorrect.value = true;
+
+    // Expand after 1s
+    setTimeout(() => {
+        showFull.value = true;
+    }, 1500);
+
+    setTimeout(() => {
+        loginCorrect.value = false;
+        showFull.value = false;
+    }, 4000);
+};
+
 
 const imgs = ref([
     {
@@ -70,8 +88,9 @@ onMounted(async () => {
 
     const usern = await res.json();
     username.value = usern.username;
+
     if (res.status == 200) {
-        loginCorrect.value = true;
+        showBanner();
         observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -80,7 +99,7 @@ onMounted(async () => {
                         setTimeout(() => {
                             loadMore();
                             isLoading.value = false;
-                        }, 500);
+                        }, 10);
                     }
                 });
             },
@@ -89,8 +108,6 @@ onMounted(async () => {
         if (lastItemRef.value) {
             observer.observe(lastItemRef.value);
         }
-    } else {
-        await navigateTo('/login');
     }
 });
 
@@ -99,20 +116,29 @@ onUnmounted(() => {
         observer.unobserve(lastItemRef.value);
     }
 });
+
+definePageMeta({
+    middleware: 'auth'
+});
+
 </script>
 
 <template>
     <div class="h-screen overflow-y-scroll snap-y snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none]">
-        <transition name="fade-slide">
-            <div v-if="loginCorrect"
-                class="fixed top-12 w-28 h-12 bg-gray-800 rounded-full left-1/2 -translate-x-1/2 z-40 flex flex-row">
-                <div class="relative left-[21%] -translate-x-1/2 rounded-full w-10 h-10 top-1/2 -translate-y-1/2 bg-gradient-to-b from-blue-500
-                to-slate-400 flex  justify-center items-center">
-                    <p class="text-white">K</p>
+        <transition enter-active-class="transition duration-500 ease-out" enter-from-class="opacity-0 scale-0"
+            enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-500 ease-in"
+            leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-0">
+            <div v-if="loginCorrect" class="fixed top-12 left-1/2 -translate-x-1/2 z-40 flex items-center bg-gray-800 rounded-full 
+             w-12 h-12 transition-all duration-500 overflow-hidden" :class="{ 'w-28': showFull }">
+                <div
+                    class="absolut !w-[40px] !h-[40px] bg-gradient-to-b ml-1 from-blue-500 to-slate-400 rounded-full flex justify-center items-center">
+                    <p class="text-white">{{ username[0].toUpperCase() }}</p>
                 </div>
-                <div class="p-2 flex flex-col justify-center items-center">
-                    <p class=" text-stone-400 text-xs font-semibold">Welcome</p>
-                    <p class="text-stone-500 text-xs font-semibold">{{ username }}</p>
+
+                <!-- Text Content (Hidden at Start) -->
+                <div v-if="showFull" class="justify-center items-center ml-2 transition-opacity w-0 duration-500">
+                    <p class="text-stone-400 text-xs font-semibold translate-y-3">Welcome</p><br />
+                    <p class="text-stone-500 text-xs font-semibold -translate-y-3">{{ username }}</p>
                 </div>
             </div>
         </transition>

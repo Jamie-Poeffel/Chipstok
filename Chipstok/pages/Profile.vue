@@ -1,15 +1,13 @@
-//0080d1
-
 <template>
   <div class="profile-container">
     <div class="profile-header">
       <div class="header-top">
         <div class="avatar-wrapper">
           <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
-          <p class="handle">@johndoe</p>
+          <p class="handle">@{{ Cache.get("username") || "error" }}</p>
         </div>
         <div class="user-meta">
-          <h2 class="username">Alessio Huber</h2>
+          <h2 class="username">Kush Srigiri</h2>
           <div class="stats">
             <div><strong>120 Following</strong></div>
             <div><strong>15K Followers</strong></div>
@@ -47,11 +45,19 @@
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { Settings } from 'lucide-vue-next'
+import { Cache } from '~/cache/cache'
+
+
+definePageMeta({
+  middleware: 'auth'
+});
 
 const activeTab = ref('posts')
 const openSettings = ref(false)
