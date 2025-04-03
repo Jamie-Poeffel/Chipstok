@@ -52,14 +52,14 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
         res.cookie('auth_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge: 15 * 60 * 1000,
         });
 
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge: 365 * 24 * 60 * 60 * 1000,
         });
 
@@ -72,5 +72,5 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
 
 export const success: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const user = (req as any).user
-    res.json({ message: "success", username: user.username });
+    res.json({ message: "success", username: user.username, user: user });
 }

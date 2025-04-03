@@ -23,11 +23,32 @@ export class User extends Model {
     taste!: { likedHashtags: string[] };
 
     @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    emailVeryfied!: Boolean;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        defaultValue: ""
+    })
+    firstname!: String;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        defaultValue: ""
+    })
+    lastname!: String;
+
+    @Column({
         type: DataType.JSON,
         allowNull: true,
-        defaultValue: { profilePicture: "", bio: "", followers: 0, following: 0, posts: 0, likeCount: 0 }
+        defaultValue: { profilePicture: "", bio: "Hello i am new to Chipsytok", followers: 0, following: 0, posts: 0, likeCount: 0, fullname: "" }
     })
-    profile!: { profilePicture: string, bio: string, followers: number, following: number, posts: number, likeCount: number };
+    profile!: { profilePicture: string, bio: string, followers: number, following: number, posts: number, likeCount: number, fullname: string };
 
     @Column({
         type: DataType.JSON,

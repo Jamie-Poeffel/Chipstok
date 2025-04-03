@@ -42,7 +42,7 @@ export const createUser: RequestHandler = async (req: Request, res: Response): P
         taste: { likedHashtags: [] },
         profile: {
             profilePicture: "",
-            bio: "",
+            bio: "Hello i am new to Chipsytok",
             followers: 0,
             following: 0,
             posts: 0,

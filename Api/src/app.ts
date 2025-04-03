@@ -8,9 +8,7 @@ import cors from 'cors'
 
 const app = express();
 const corsOptions = {
-    origin: ['http://localhost', 'http://localhost:5000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: ['http://localhost', 'https://www.chipsytok.bbzwinf.ch'],
     credentials: true,
 };
 
