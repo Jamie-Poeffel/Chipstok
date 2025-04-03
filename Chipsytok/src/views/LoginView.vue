@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex justify-center items-center min-h-screen bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
     <div class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10">
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">Chipstok</h1>
       <form @submit.prevent="login" class="space-y-4">
@@ -82,9 +82,5 @@ const login = async () => {
       loading.value = false;
     }
   }
-};
-
-const goToSignup = () => {
-  router.push('/signup');
 };
 </script>

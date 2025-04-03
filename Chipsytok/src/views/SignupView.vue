@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
     <div class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10">
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">Chipstok</h1>
       <form @submit.prevent="signup" class="space-y-4">
@@ -12,12 +13,20 @@
             class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </div>
         <div class="flex gap-2">
-          <select v-model="selectedCountryCode"
-            class="w-1/4 px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400">
-            <option v-for="country in countries" :key="country.code" :value="country.code">
-              ({{ country.code }})
-            </option>
-          </select>
+          <div class="relative w-1/4">
+            <select v-model="selectedCountryCode"
+              class="w-full h-[49.33px] px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 text-transparent">
+              <option v-for="country in countries" :key="country.code" :value="country.code"
+                style="color: #1a202c; background: white;">
+                {{ country.name }} ({{ country.code }})
+              </option>
+            </select>
+
+            <span class="absolute left-[1.25rem] top-3.5 pointer-events-none text-gray-700 text-sm">
+              {{ selectedCountryCode }}
+            </span>
+          </div>
+
 
           <input v-model="phone" type="tel" placeholder="Phone Number"
             class="w-3/4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
@@ -61,7 +70,7 @@
       </form>
       <div class="mt-6 border-t pt-4 text-sm text-gray-700">
         Already have an account?
-        <a href="/login" class="text-blue-500 font-bold">Sign up</a>
+        <a href="/login" class="text-blue-500 font-bold">login</a>
       </div>
     </div>
 
@@ -89,6 +98,7 @@
 </template>
 
 <script setup>
+import { useFetch } from '@/helpers/fetch';
 import { Loader2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -325,19 +335,17 @@ const signup = async () => {
   ) {
     loading.value = true;
     try {
-      const res = await fetch('http://localhost:8080/auth/register', {
+      const { res } = await useFetch('/users/new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: username.value,
           email: email.value,
           password: password.value,
-          firstname: firstname.value,
-          lastname: lastname.value,
-          phone: `${selectedCountryCode.value}${phone.value}`,
         }),
         credentials: 'include',
       });
+
       if (res.ok) {
         generatedCode = Math.floor(10000 + Math.random() * 90000).toString();
         // send generatedCode via SMS to user here via backend
