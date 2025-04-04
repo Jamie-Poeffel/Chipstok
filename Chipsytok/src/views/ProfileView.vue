@@ -26,13 +26,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-row">
-                        <button class="edit-btn">Profil bearbeiten</button>
-                        <button class="edit-btn">Teilen</button>
-                        <div class="flex justify-center items-center" @click="openSettings = true">
-                            <Settings />
-                        </div>
+                    <div class="flex items-center gap-1 w-full h-[24px] mt-3">
+                        <button
+                            class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
+                            Profil bearbeiten
+                        </button>
+                        <button @click="share()"
+                            class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
+                            Profil Teilen
+                        </button>
+                        <button
+                            class="h-[30px] w-[30px] flex justify-center items-center rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
+                            <Settings class="w-4 h-4" @click="openSettings = true" />
+                        </button>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -44,7 +53,6 @@
             <span class="tab" :class="{ active: activeTab === 'following' }"
                 @click="activeTab = 'following'">Tagged</span>
         </div>
-
 
         <div class="posts-grid">
             <div v-for="n in 9" :key="n" class="post-thumb"></div>
@@ -61,28 +69,53 @@
                 </ul>
             </div>
         </div>
+
+        <div v-if="Share" class="modal-overlay" @click.self="Share = false">
+            <div class="modal">
+                <h3>Share Profile</h3>
+                <div class="mt-4 w-full flex justify-center items-center">
+                    <div ref="qrCodeContainer"></div>
+                </div>
+            </div>
+        </div>
     </div>
-
-
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { Settings } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import QRCodeStyling from 'qr-code-styling';
+
 
 const activeTab = ref('posts')
 const openSettings = ref(false)
 const username = ref(useAuthStore().username);
-console.log(useAuthStore().user.profile.bio);
-console.log(useAuthStore().user.profile);
-console.log(useAuthStore().user);
-
+const Share = ref(false);
+const qrCodeContainer = ref(null);
+const qrCode = ref(null);
 
 function logout() {
     alert('Logged out!')
     openSettings.value = false
 }
+
+
+async function share() {
+    Share.value = true
+}
+
+const initQRCode = () => {
+    qrCode.value = new QRCodeStyling({
+        "type": "canvas", "shape": "square", "width": 300, "height": 300, "data": "Hello World", "margin": 16, "qrOptions": { "typeNumber": "0", "mode": "Byte", "errorCorrectionLevel": "H" }, "imageOptions": { "saveAsBlob": true, "hideBackgroundDots": true, "imageSize": 0.4, "margin": 0 }, "dotsOptions": { "type": "dots", "color": "#6a1a4c", "roundSize": true, "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405de6" }, { "offset": 1, "color": "#190110" }] } }, "backgroundOptions": { "round": 0, "color": "#ffffff", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#ffffff" }, { "offset": 1, "color": "#ffffff" }] } }, "image": null, "dotsOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#6a1a4c", "color2": "#6a1a4c", "rotation": "0" } }, "cornersSquareOptions": { "type": "extra-rounded", "color": "#000000", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405def" }, { "offset": 1, "color": "#000000" }] } }, "cornersSquareOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "cornersDotOptions": { "type": "dot", "color": "#000000", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405de6" }, { "offset": 1, "color": "#000000" }] } }, "cornersDotOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "backgroundOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#ffffff", "color2": "#ffffff", "rotation": "0" } }
+    });
+};
+watchEffect(() => {
+    if (Share.value && qrCodeContainer.value) {
+        initQRCode();
+        qrCode.value.append(qrCodeContainer.value);
+    }
+});
 </script>
 
 <style scoped>
@@ -159,42 +192,6 @@ function logout() {
     font-size: 16px;
     color: #111;
 }
-
-.edit-btn {
-    margin-top: 10px;
-    background: rgba(25, 25, 25, 0.3);
-    /* Dark translucent background */
-    color: #e0e0e0;
-    /* Light text for contrast */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    /* Subtle white border */
-    border-radius: 12px;
-    /* Soft rounded edges */
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    /* Frosted glass effect */
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    /* Soft shadow for depth */
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.edit-btn:hover {
-    background: rgba(25, 25, 25, 0.5);
-    /* Slightly darker on hover */
-    transform: scale(1.05);
-    /* Subtle zoom effect */
-}
-
-
-
-.edit-btn:hover {
-    background-color: #ff2d55;
-    color: #fff;
-}
-
 
 .tabs {
     display: flex;
@@ -295,5 +292,30 @@ function logout() {
     margin-top: 10px;
     font-weight: 600;
     border: none;
+}
+
+.ig-qr-container {
+    background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+    padding: 8px;
+    border-radius: 24px;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ig-qr-code {
+    background: white;
+    padding: 12px;
+    border-radius: 16px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qr-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
