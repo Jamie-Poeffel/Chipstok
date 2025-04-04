@@ -41,9 +41,33 @@ __decorate([
 ], User.prototype, "taste", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    }),
+    __metadata("design:type", Boolean)
+], User.prototype, "emailVeryfied", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.STRING,
+        allowNull: false,
+        defaultValue: ""
+    }),
+    __metadata("design:type", String)
+], User.prototype, "firstname", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.STRING,
+        allowNull: false,
+        defaultValue: ""
+    }),
+    __metadata("design:type", String)
+], User.prototype, "lastname", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.JSON,
         allowNull: true,
-        defaultValue: { profilePicture: "", bio: "", followers: 0, following: 0, posts: 0, likeCount: 0 }
+        defaultValue: { profilePicture: "", bio: "Hello i am new to Chipsytok", followers: 0, following: 0, posts: 0, likeCount: 0, fullname: "" }
     }),
     __metadata("design:type", Object)
 ], User.prototype, "profile", void 0);

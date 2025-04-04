@@ -52,7 +52,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         taste: { likedHashtags: [] },
         profile: {
             profilePicture: "",
-            bio: "",
+            bio: "Hello i am new to Chipsytok",
             followers: 0,
             following: 0,
             posts: 0,

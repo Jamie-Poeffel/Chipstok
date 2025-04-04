@@ -27,6 +27,7 @@ export const newPost: RequestHandler = async (req: Request, res: Response): Prom
             likeCount: 0,
             commentCount: 0,
             commentListID: commentListID,
+            Hashtags: [],
             URL: "idk",
         });
 

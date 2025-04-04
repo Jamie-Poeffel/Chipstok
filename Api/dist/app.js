@@ -19,17 +19,21 @@ const db_1 = require("./config/db");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const cors_1 = __importDefault(require("cors"));
+const oauthRoutes_1 = __importDefault(require("./routes/oauthRoutes"));
+const isDev = process.env.NODE_ENV !== 'production';
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost', 'https://www.chipsytok.bbzwinf.ch'],
+    origin: isDev ? true : 'https://Chipsytok.bbzwinf.ch',
     credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use('/users', userRoutes_1.default);
 app.use('/posts', postRoutes_1.default);
 app.use('/auth', authRoutes_1.default);
+app.use('/oauth', oauthRoutes_1.default);
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.connectDB)();
