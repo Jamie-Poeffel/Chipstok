@@ -9,25 +9,25 @@ const router = createRouter({
       path: '/',
       name: 'index',
       component: IndexView,
-      meta: { requiresAuth: true }, 
+      meta: { requiresAuth: true },
     },
     {
       path: '/about',
       name: 'about',
       component: () => import('@/views/AboutView.vue'),
-      meta: { requiresAuth: true }, 
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
-      meta: {requiresAuth: false}
+      meta: { requiresAuth: false }
     },
     {
       path: '/signup',
       name: 'Signup',
       component: () => import('@/views/SignupView.vue'),
-      meta: {requiresAuth: false}
+      meta: { requiresAuth: false }
     },
     {
       path: '/add',
@@ -39,7 +39,13 @@ const router = createRouter({
       path: '/profile',
       name: 'Profile',
       component: () => import('@/views/ProfileView.vue'),
-      meta: {requiresAuth: true}
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/oauth/authorize',
+      name: 'OauthAuthorize',
+      component: () => import('@/views/oauth/OauthAuthorizeView.vue'),
+      meta: { requiresAuth: false }
     }
   ],
 })
@@ -47,12 +53,12 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   await authStore.Authenticate()
-  
+
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   } else {
-    next() 
+    next()
   }
 })
 

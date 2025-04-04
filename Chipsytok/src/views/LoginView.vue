@@ -39,10 +39,13 @@
 <script setup>
 import { Loader2 } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { useFetch } from '@/helpers/fetch';
-import { useRouter } from 'vue-router';
+import { useFetch } from '@/composables/useFetch';
+import { useRouter, useRoute } from 'vue-router';
 
 const username = ref('');
+const route = useRoute();
+
+
 const password = ref('');
 const loading = ref(false);
 const errors = ref({ username: '', password: '' });
@@ -72,7 +75,20 @@ const login = async () => {
       });
 
       if (res.ok) {
-        router.push('/');
+        if (route.query.state === 'authorize') {
+          const redirect_uri = route.query.redirect_uri;
+          const state = route.query.state;
+
+          const { res, data } = await useFetch('/auth/auto', { credentials: 'include' });
+          if (res.ok) {
+            window.location.href = `${redirect_uri}?code=${data.token}&state=${state}`;
+          } else {
+            window.location.href = `${import.meta.env.VITE_BASE_URL}/login?client_id=${route.query.client_id}&redirect_uri=${redirect_uri}&state=authorize`;
+          }
+        } else {
+          router.push('/');
+        }
+
       } else {
         errors.value.username = data.message || 'Invalid login credentials';
       }

@@ -1,5 +1,7 @@
 import { RequestHandler, Request, Response } from "express";
 import { OAuthConfig } from "../config/oauth";
+import { config } from "dotenv";
+config();
 
 interface AuthQuery {
     client_id: string;
@@ -37,11 +39,5 @@ export const Authorize: RequestHandler = async (req: Request, res: Response): Pr
 
     // Optionally, you can perform additional checks here, such as verifying the user's permissions or scope
 
-    // Generate an authorization code and store it in the database with the associated client_id and redirect_uri
-
-    const authorizationCode = "generated_authorization_code"; // Replace with actual code generation logic
-
-    // Redirect the user to the redirect_uri with the authorization code
-    const redirectUrl = `${redirect_uri}?code=${authorizationCode}&state=${state}`;
-    res.redirect(redirectUrl);
+    res.redirect(`${process.env.FRONTEND_URL}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=${state}`);
 }

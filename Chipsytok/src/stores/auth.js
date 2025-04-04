@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { useFetch } from '@/helpers/fetch';
+import { useFetch } from '@/composables/useFetch';
 
 export const useAuthStore = defineStore('auth', () => {
     const username = ref('');

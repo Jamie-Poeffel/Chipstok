@@ -98,7 +98,7 @@
 </template>
 
 <script setup>
-import { useFetch } from '@/helpers/fetch';
+import { useFetch } from '@/composables/useFetch';
 import { Loader2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

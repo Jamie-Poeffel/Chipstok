@@ -70,7 +70,11 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
     }
 };
 
+
 export const success: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const user = (req as any).user
-    res.json({ message: "success", username: user.username, user: user });
+
+    const { passwordHash, taste, likedPosts, postedVideos, _id, ...userWithoutPassword } = user.toJSON() as User;
+    const token = jwt.sign({ ...userWithoutPassword }, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '15m' });
+    res.json({ message: "success", username: user.username, user: user, token: token });
 }
