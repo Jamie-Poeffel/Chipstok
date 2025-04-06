@@ -1,13 +1,13 @@
 <h1 align="center">Chipstok</h1>
 
-
+[www.Chipslytok.bbzwinf.ch](https://www.chipslytok.bbzwinf.ch)
 
 <br>
 <br>
 
 
 <p align="center">
-  <img src="./Chipstok/assets/Untitled.png" alt="Chipstok Logo" width="300">
+  <img src="./Chipstok/assets/icon_light.png" alt="Chipstok Logo" width="300">
 </p>
 
 <br>
