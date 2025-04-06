@@ -7,7 +7,7 @@
 
 
 <p align="center">
-  <img src="./Chipstok/assets/icon_light.png" alt="Chipstok Logo" width="300">
+  <img src="./Chipstok/public/icon_light.png" alt="Chipstok Logo" width="300">
 </p>
 
 <br>
