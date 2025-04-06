@@ -1,6 +1,6 @@
 <h1 align="center">Chipstok</h1>
 
-[www.chipslytok.bbzwinf.ch](https://www.chipslytok.bbzwinf.ch)
+[www.chipsytok.bbzwinf.ch](https://www.chipsytok.bbzwinf.ch)
 
 <br>
 <br>
