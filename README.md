@@ -1,16 +1,16 @@
 <h1 align="center">Chipstok</h1>
 
-[www.chipsytok.bbzwinf.ch](https://www.chipsytok.bbzwinf.ch)
-
 <br>
 <br>
-
 
 <p align="center">
-  <img src="./Chipsytok/public/icon_light.png" alt="Chipstok Logo" width="300">
+  <a href="https://www.chipsytok.bbzwinf.ch" target="_blank" style="text-decoration: none;">
+    <img src="./Chipsytok/public/icon_light.png" alt="Chipstok Logo" width="300">
+    <br>
+    <strong style="font-size: 1.2em;">CLICK LOGO</strong>
+  </a>
 </p>
 
-<br>
 
 ## 🚀 Description
 
