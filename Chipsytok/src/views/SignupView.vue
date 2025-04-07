@@ -1,23 +1,40 @@
 <template>
   <div
-    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
-    <div class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10">
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
+  >
+    <div
+      class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
+    >
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">Chipstok</h1>
       <form @submit.prevent="signup" class="space-y-4">
         <div>
-          <input v-model="firstname" type="text" placeholder="First Name"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="firstname"
+            type="text"
+            placeholder="First Name"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
         </div>
         <div>
-          <input v-model="lastname" type="text" placeholder="Last Name"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="lastname"
+            type="text"
+            placeholder="Last Name"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
         </div>
         <div class="flex gap-2">
           <div class="relative w-1/4">
-            <select v-model="selectedCountryCode"
-              class="w-full h-[49.33px] px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 text-transparent">
-              <option v-for="country in countries" :key="country.code" :value="country.code"
-                style="color: #1a202c; background: white;">
+            <select
+              v-model="selectedCountryCode"
+              class="w-full h-[49.33px] px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 text-transparent"
+            >
+              <option
+                v-for="country in countries"
+                :key="country.code"
+                :value="country.code"
+                style="color: #1a202c; background: white"
+              >
                 {{ country.name }} ({{ country.code }})
               </option>
             </select>
@@ -27,41 +44,69 @@
             </span>
           </div>
 
-
-          <input v-model="phone" type="tel" placeholder="Phone Number"
-            class="w-3/4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="phone"
+            type="tel"
+            placeholder="Phone Number"
+            class="w-3/4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
         </div>
         <div>
-          <input v-model="username" type="text" name="Username" autocomplete="username" placeholder="Username"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="username"
+            type="text"
+            name="Username"
+            autocomplete="username"
+            placeholder="Username"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
           <p v-if="errors.username" class="text-red-500 text-sm">
             {{ errors.username }}
           </p>
         </div>
         <div>
-          <input v-model="email" type="email" name="Email" autocomplete="email" placeholder="Email"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="email"
+            type="email"
+            name="Email"
+            autocomplete="email"
+            placeholder="Email"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
           <p v-if="errors.email" class="text-red-500 text-sm">
             {{ errors.email }}
           </p>
         </div>
         <div>
-          <input v-model="password" type="password" name="Password" autocomplete="new-password" placeholder="Password"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input
+            v-model="password"
+            type="password"
+            name="Password"
+            autocomplete="new-password"
+            placeholder="Password"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
           <p v-if="errors.password" class="text-red-500 text-sm">
             {{ errors.password }}
           </p>
         </div>
         <div>
-          <input v-model="testpassword" type="password" name="ConfirmPassword" autocomplete="new-password"
+          <input
+            v-model="testpassword"
+            type="password"
+            name="ConfirmPassword"
+            autocomplete="new-password"
             placeholder="Confirm Password"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
           <p v-if="errors.password && password !== testpassword" class="text-red-500 text-sm">
             {{ errors.password }}
           </p>
         </div>
-        <button type="submit"
-          class="w-full bg-blue-500 text-white py-3 rounded-lg font-bold text-lg transition-transform transform hover:scale-105 hover:bg-blue-600">
+        <button
+          type="submit"
+          class="w-full bg-blue-500 text-white py-3 rounded-lg font-bold text-lg transition-transform transform hover:scale-105 hover:bg-blue-600"
+        >
           <div v-if="!loading">Sign Up</div>
           <div v-else class="flex justify-center items-center">
             <Loader2 class="animate-spin w-4 h-4" />
@@ -70,26 +115,34 @@
       </form>
       <div class="mt-6 border-t pt-4 text-sm text-gray-700">
         Already have an account?
-        <a href="/login" class="text-blue-500 font-bold">login</a>
+        <a href="/login" class="text-blue-500 font-bold">Login</a>
       </div>
     </div>
 
     <!-- Verification Modal -->
-    <div v-if="showVerification" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div
+      v-if="showVerification"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
-        <h2 class="text-lg font-semibold mb-4">
-          Enter 5-digit verification code
-        </h2>
-        <input v-model="verificationCode" maxlength="5"
+        <h2 class="text-lg font-semibold mb-4">Enter 5-digit verification code</h2>
+        <input
+          v-model="verificationCode"
+          maxlength="5"
           class="w-full text-center text-lg tracking-widest px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="_ _ _ _ _" />
-        <p v-if="verificationFailed" class="text-red-500 text-sm mt-2">
-          Verification failed
-        </p>
-        <button class="mt-4 w-full py-2 rounded-lg font-bold text-white transition-all" :class="verificationCode.length === 5
-          ? 'bg-blue-500 hover:bg-blue-600'
-          : 'bg-gray-400 cursor-not-allowed'
-          " :disabled="verificationCode.length !== 5" @click="verifyCode">
+          placeholder="_ _ _ _ _"
+        />
+        <p v-if="verificationFailed" class="text-red-500 text-sm mt-2">Verification failed</p>
+        <button
+          class="mt-4 w-full py-2 rounded-lg font-bold text-white transition-all"
+          :class="
+            verificationCode.length === 5
+              ? 'bg-blue-500 hover:bg-blue-600'
+              : 'bg-gray-400 cursor-not-allowed'
+          "
+          :disabled="verificationCode.length !== 5"
+          @click="verifyCode"
+        >
           Verify
         </button>
       </div>
@@ -327,12 +380,7 @@ const signup = async () => {
     errors.value.password = 'Passwords do not match';
   }
 
-  if (
-    username.value &&
-    email.value &&
-    password.value &&
-    password.value === testpassword.value
-  ) {
+  if (username.value && email.value && password.value && password.value === testpassword.value) {
     loading.value = true;
     try {
       const { res } = await useFetch('/users/new', {
