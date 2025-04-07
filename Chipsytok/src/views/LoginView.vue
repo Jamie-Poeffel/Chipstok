@@ -33,7 +33,7 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-blue-500 text-white py-3 rounded-lg font-bold text-lg transition-transform transform hover:scale-105 hover:bg-blue-600"
+          class="w-full bg-blue-500 text-white py-3 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:bg-blue-600"
         >
           <div v-if="!loading">Log in</div>
           <div v-else class="flex justify-center items-center">
@@ -59,9 +59,14 @@
         <a
           href="https://www.youtube.com/watch?v=g0M04BXQCFI"
           target="_blank"
-          class="block w-full text-center bg-gradient-to-r from-[#00aff0] to-[#ff66cc] text-white py-3 rounded-lg font-bold text-lg transition-all duration-300 hover:brightness-90"
+          class="flex items-center justify-center w-full bg-[#00aff0] text-white py-3 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#0093cc] space-x-3"
         >
-          Check out our Colab!
+          <img
+            src="/ChipslyFans.jpg"
+            alt="ChipslyFans"
+            class="w-8 h-8 rounded-full transition-all duration-300"
+          />
+          <span class="text-white"> ChipslyFans </span>
         </a>
       </div>
     </div>
