@@ -11,14 +11,6 @@
   </a>
 </p>
 
-<!-- ✅ ChipslyFans Image + Link -->
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=g0M04BXQCFI" target="_blank" style="text-decoration: none;">
-    <img src="./Chipsytok/public/ChipslyFans.jpg" alt="ChipslyFans Logo" width="200" style="border-radius: 12px;">
-    <br>
-    <strong style="font-size: 1.1em;">Visit ChipslyFans</strong>
-  </a>
-</p>
 
 
 ## 🚀 Description
