@@ -5,7 +5,7 @@
     <div
       class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
     >
-      <h1 class="text-3xl font-extrabold mb-6 text-gray-800">Chipstok</h1>
+      <h1 class="text-3xl font-extrabold mb-6 text-gray-800">ChipsTok</h1>
       <form @submit.prevent="login" class="space-y-4">
         <div>
           <input
@@ -53,10 +53,20 @@
       <div class="mt-6 border-t pt-4 text-sm text-gray-700">
         Don't have an account? <a href="/signup" class="text-blue-500 font-bold">Sign up</a>
       </div>
+
+      <!-- New Colab Button -->
+      <div class="mt-6">
+        <a
+          href="https://www.youtube.com/watch?v=g0M04BXQCFI"
+          target="_blank"
+          class="block w-full text-center bg-gradient-to-r from-[#00aff0] to-[#ff66cc] text-white py-3 rounded-lg font-bold text-lg transition-all duration-300 hover:brightness-90"
+        >
+          Check out our Colab!
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
   <!-- Forgot Password Modal -->
   <div
     v-if="showForgotPasswordModal"
@@ -66,7 +76,6 @@
       <h2 class="text-lg font-bold mb-4">Reset your password</h2>
       <p class="text-gray-600 mb-4">Choose how you want to reset your password:</p>
 
-      <!-- Method selection buttons -->
       <div class="flex justify-center space-x-4 mb-4">
         <button
           @click="selectedMethod = 'email'"
@@ -82,7 +91,6 @@
         </button>
       </div>
 
-      <!-- Email input -->
       <div v-if="selectedMethod === 'email'" class="space-y-2">
         <input
           v-model="emailInput"
@@ -92,7 +100,6 @@
         />
       </div>
 
-      <!-- Username input -->
       <div v-if="selectedMethod === 'username'" class="space-y-2">
         <input
           v-model="usernameInput"
@@ -102,7 +109,6 @@
         />
       </div>
 
-      <!-- Action buttons -->
       <div class="mt-4 flex justify-between">
         <button
           @click="sendResetLink"
@@ -118,9 +124,7 @@
         </button>
       </div>
 
-      <p v-if="forgotPasswordError" class="text-red-500 text-sm mt-2">
-        {{ forgotPasswordError }}
-      </p>
+      <p v-if="forgotPasswordError" class="text-red-500 text-sm mt-2">{{ forgotPasswordError }}</p>
     </div>
   </div>
 </template>
@@ -141,31 +145,22 @@ const route = useRoute();
 const login = async () => {
   errors.value = { username: '', password: '' };
 
-  if (!username.value) {
-    errors.value.username = 'Username is required';
-  }
-  if (!password.value) {
-    errors.value.password = 'Password is required';
-  }
+  if (!username.value) errors.value.username = 'Username is required';
+  if (!password.value) errors.value.password = 'Password is required';
+
   if (username.value && password.value) {
     loading.value = true;
-
     try {
       const { res, data } = await useFetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          identifier: username.value,
-          password: password.value,
-        }),
+        body: JSON.stringify({ identifier: username.value, password: password.value }),
         credentials: 'include',
       });
-
       if (res.ok) {
         if (route.query.state === 'authorize') {
           const redirect_uri = route.query.redirect_uri;
           const state = route.query.state;
-
           const { res, data } = await useFetch('/auth/auto', { credentials: 'include' });
           if (res.ok) {
             window.location.href = `${redirect_uri}?code=${data.token}&state=${state}`;
@@ -186,7 +181,6 @@ const login = async () => {
   }
 };
 
-// Forgot Password Modal Logic
 const showForgotPasswordModal = ref(false);
 const selectedMethod = ref('');
 const emailInput = ref('');
@@ -203,29 +197,24 @@ const closeForgotPasswordModal = () => {
 
 const sendResetLink = async () => {
   forgotPasswordError.value = '';
-
   if (selectedMethod.value === 'email' && !emailInput.value) {
     forgotPasswordError.value = 'Please enter your email.';
     return;
   }
-
   if (selectedMethod.value === 'username' && !usernameInput.value) {
     forgotPasswordError.value = 'Please enter your username.';
     return;
   }
-
   try {
     const body =
       selectedMethod.value === 'email'
         ? { email: emailInput.value }
         : { username: usernameInput.value };
-
     const { res, data } = await useFetch('/auth/request-password-reset', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-
     if (res.ok) {
       alert('A password reset link has been sent to your email!');
       closeForgotPasswordModal();
@@ -237,3 +226,19 @@ const sendResetLink = async () => {
   }
 };
 </script>
+
+<style scoped>
+@keyframes pulse-scale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 3s infinite ease-in-out;
+}
+</style>
