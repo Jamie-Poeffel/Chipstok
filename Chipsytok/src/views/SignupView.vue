@@ -53,19 +53,6 @@
         </div>
         <div>
           <input
-            v-model="username"
-            type="text"
-            name="Username"
-            autocomplete="username"
-            placeholder="Username"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <p v-if="errors.username" class="text-red-500 text-sm">
-            {{ errors.username }}
-          </p>
-        </div>
-        <div>
-          <input
             v-model="email"
             type="email"
             name="Email"
@@ -75,6 +62,19 @@
           />
           <p v-if="errors.email" class="text-red-500 text-sm">
             {{ errors.email }}
+          </p>
+        </div>
+        <div>
+          <input
+            v-model="username"
+            type="text"
+            name="Username"
+            autocomplete="username"
+            placeholder="Username"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <p v-if="errors.username" class="text-red-500 text-sm">
+            {{ errors.username }}
           </p>
         </div>
         <div>

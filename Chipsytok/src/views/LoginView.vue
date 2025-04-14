@@ -59,14 +59,9 @@
         <a
           href="https://www.youtube.com/watch?v=g0M04BXQCFI"
           target="_blank"
-          class="flex items-center justify-center w-full border border-[#00aff0] text-white py-1 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:border-[#0093cc] space-x-3"
+          class="flex justify-center items-center w-full border border-[#00aff0] text-[#00aff0] py-2 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:border-[#0093cc]"
         >
-          <img
-            src="/ChipslyFans.jpg"
-            alt="ChipslyFans"
-            class="w-8 h-8 -translate-x-2 rounded-full transition-all duration-300"
-          />
-          <span class="text-[#00aff0] -translate-x-3"> ChipslyFans </span>
+          ChipslyFans
         </a>
       </div>
     </div>

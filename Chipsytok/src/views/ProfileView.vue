@@ -37,13 +37,13 @@
           </div>
           <div class="flex items-center gap-1 w-full h-[24px] mt-3">
             <button
-              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-105"
+              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-100"
             >
               Profil bearbeiten
             </button>
             <button
               @click="share"
-              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-105"
+              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-100"
             >
               Profil Teilen
             </button>
