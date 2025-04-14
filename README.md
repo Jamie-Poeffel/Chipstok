@@ -74,6 +74,7 @@ For detailed documentation, please visit our [Docs](docs).
 ✅ Enhanced **mockup designs** to support visualization and time management
 
 <br>
+
 ---
 
 💡 *We appreciate all contributions! Feel free to submit a PR or open an issue.* 🎉
