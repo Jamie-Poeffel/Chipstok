@@ -66,12 +66,14 @@ For detailed documentation, please visit our [Docs](docs).
 ✅ Created a consistent **color palette** and modern layout  
 ✅ Refactored styles for maintainability and scalability
 
+<br>
+
 ### 📝 Alessio Huber (Mockup Maker)
 
 ✅ Created detailed **ER-Diagram** for better structure and planning  
 ✅ Enhanced **mockup designs** to support visualization and time management
 
-
+<br>
 ---
 
 💡 *We appreciate all contributions! Feel free to submit a PR or open an issue.* 🎉
