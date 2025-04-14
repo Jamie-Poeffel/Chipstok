@@ -1,172 +1,29 @@
-<template>
-  <div
-    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
-  >
-    <div
-      class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
-    >
-      <h1 class="text-3xl font-extrabold mb-6 text-gray-800">Chipstok</h1>
-      <form @submit.prevent="signup" class="space-y-4">
-        <div>
-          <input
-            v-model="firstname"
-            type="text"
-            placeholder="First Name"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div>
-          <input
-            v-model="lastname"
-            type="text"
-            placeholder="Last Name"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div class="flex gap-2">
-          <div class="relative w-1/4">
-            <select
-              v-model="selectedCountryCode"
-              class="w-full h-[49.33px] px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 text-transparent"
-            >
-              <option
-                v-for="country in countries"
-                :key="country.code"
-                :value="country.code"
-                style="color: #1a202c; background: white"
-              >
-                {{ country.name }} ({{ country.code }})
-              </option>
-            </select>
-
-            <span class="absolute left-[1.25rem] top-3.5 pointer-events-none text-gray-700 text-sm">
-              {{ selectedCountryCode }}
-            </span>
-          </div>
-
-          <input
-            v-model="phone"
-            type="tel"
-            placeholder="Phone Number"
-            class="w-3/4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div>
-          <input
-            v-model="email"
-            type="email"
-            name="Email"
-            autocomplete="email"
-            placeholder="Email"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <p v-if="errors.email" class="text-red-500 text-sm">
-            {{ errors.email }}
-          </p>
-        </div>
-        <div>
-          <input
-            v-model="username"
-            type="text"
-            name="Username"
-            autocomplete="username"
-            placeholder="Username"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <p v-if="errors.username" class="text-red-500 text-sm">
-            {{ errors.username }}
-          </p>
-        </div>
-        <div>
-          <input
-            v-model="password"
-            type="password"
-            name="Password"
-            autocomplete="new-password"
-            placeholder="Password"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <p v-if="errors.password" class="text-red-500 text-sm">
-            {{ errors.password }}
-          </p>
-        </div>
-        <div>
-          <input
-            v-model="testpassword"
-            type="password"
-            name="ConfirmPassword"
-            autocomplete="new-password"
-            placeholder="Confirm Password"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <p v-if="errors.password && password !== testpassword" class="text-red-500 text-sm">
-            {{ errors.password }}
-          </p>
-        </div>
-        <button
-          type="submit"
-          class="w-full bg-blue-500 text-white py-3 rounded-lg font-bold text-lg transition-transform transform hover:scale-105 hover:bg-blue-600"
-        >
-          <div v-if="!loading">Sign Up</div>
-          <div v-else class="flex justify-center items-center">
-            <Loader2 class="animate-spin w-4 h-4" />
-          </div>
-        </button>
-      </form>
-      <div class="mt-6 border-t pt-4 text-sm text-gray-700">
-        Already have an account?
-        <a href="/login" class="text-blue-500 font-bold">Login</a>
-      </div>
-    </div>
-
-    <!-- Verification Modal -->
-    <div
-      v-if="showVerification"
-      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
-        <h2 class="text-lg font-semibold mb-4">Enter 5-digit verification code</h2>
-        <input
-          v-model="verificationCode"
-          maxlength="5"
-          class="w-full text-center text-lg tracking-widest px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="_ _ _ _ _"
-        />
-        <p v-if="verificationFailed" class="text-red-500 text-sm mt-2">Verification failed</p>
-        <button
-          class="mt-4 w-full py-2 rounded-lg font-bold text-white transition-all"
-          :class="
-            verificationCode.length === 5
-              ? 'bg-blue-500 hover:bg-blue-600'
-              : 'bg-gray-400 cursor-not-allowed'
-          "
-          :disabled="verificationCode.length !== 5"
-          @click="verifyCode"
-        >
-          Verify
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
 import { Loader2 } from 'lucide-vue-next';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useLanguage } from '@/composables/useLanguage';
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const testpassword = ref('');
+const { selectedLanguage, setLanguage, languages, t } = useLanguage();
+const router = useRouter();
+
 const firstname = ref('');
 const lastname = ref('');
-const phone = ref('');
 const selectedCountryCode = ref('+1');
+const phone = ref('');
+const email = ref('');
+const username = ref('');
+const password = ref('');
+const testpassword = ref('');
+const verificationCode = ref('');
+const generatedCode = ref('');
+const verificationFailed = ref(false);
+const showVerification = ref(false);
+const showLanguageModal = ref(!selectedLanguage.value);
 const loading = ref(false);
+
 const errors = ref({ username: '', email: '', password: '' });
-const router = useRouter();
 
 const countries = [
   { name: 'Afghanistan', code: '+93' },
@@ -365,19 +222,14 @@ const countries = [
   { name: 'Zimbabwe', code: '+263' },
 ];
 
-const showVerification = ref(false);
-const verificationCode = ref('');
-const verificationFailed = ref(false);
-let generatedCode = '';
-
 const signup = async () => {
   errors.value = { username: '', email: '', password: '' };
 
-  if (!username.value) errors.value.username = 'Username is required';
-  if (!email.value) errors.value.email = 'Email is required';
-  if (!password.value) errors.value.password = 'Password is required';
+  if (!username.value) errors.value.username = t('errors.usernameRequired');
+  if (!email.value) errors.value.email = t('errors.emailRequired');
+  if (!password.value) errors.value.password = t('errors.passwordRequired');
   if (password.value && password.value !== testpassword.value) {
-    errors.value.password = 'Passwords do not match';
+    errors.value.password = t('errors.passwordsMismatch');
   }
 
   if (username.value && email.value && password.value && password.value === testpassword.value) {
@@ -387,17 +239,20 @@ const signup = async () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: username.value,
+          firstname: firstname.value,
+          lastname: lastname.value,
+          countryCode: selectedCountryCode.value,
+          phone: phone.value,
           email: email.value,
+          username: username.value,
           password: password.value,
         }),
         credentials: 'include',
       });
 
       if (res.ok) {
-        generatedCode = Math.floor(10000 + Math.random() * 90000).toString();
-        // send generatedCode via SMS to user here via backend
-        console.log('Generated code sent via SMS:', generatedCode);
+        generatedCode.value = Math.floor(10000 + Math.random() * 90000).toString();
+        console.log('Generated code sent via SMS:', generatedCode.value);
         showVerification.value = true;
       } else {
         const data = await res.json();
@@ -412,7 +267,7 @@ const signup = async () => {
 };
 
 const verifyCode = () => {
-  if (verificationCode.value === generatedCode) {
+  if (verificationCode.value === generatedCode.value) {
     router.push('/login');
   } else {
     verificationFailed.value = true;
@@ -422,4 +277,151 @@ const verifyCode = () => {
     }, 3000);
   }
 };
+
+onMounted(() => {
+  if (!selectedLanguage.value) {
+    showLanguageModal.value = true;
+  }
+});
 </script>
+
+<template>
+  <div
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
+  >
+    <div
+      class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
+    >
+      <h1 class="text-3xl font-extrabold mb-6 text-gray-800">{{ t('title') }}</h1>
+      <form @submit.prevent="signup" class="space-y-4">
+        <input v-model="firstname" type="text" :placeholder="t('firstName')" class="input" />
+        <input v-model="lastname" type="text" :placeholder="t('lastName')" class="input" />
+        <div class="flex gap-2">
+          <div class="relative w-1/4">
+            <select
+              v-model="selectedCountryCode"
+              class="w-full h-[49.33px] px-2 py-3 text-sm border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 text-transparent"
+            >
+              <option
+                v-for="country in countries"
+                :key="country.code"
+                :value="country.code"
+                style="color: #1a202c; background: white"
+              >
+                {{ country.name }} ({{ country.code }})
+              </option>
+            </select>
+            <span class="absolute left-[1.25rem] top-3.5 pointer-events-none text-gray-700 text-sm">
+              {{ selectedCountryCode }}
+            </span>
+          </div>
+          <input v-model="phone" type="tel" :placeholder="t('phoneNumber')" class="w-3/4 input" />
+        </div>
+        <input v-model="email" type="email" :placeholder="t('email')" class="input" />
+        <p v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</p>
+        <input v-model="username" type="text" :placeholder="t('username')" class="input" />
+        <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
+        <input v-model="password" type="password" :placeholder="t('password')" class="input" />
+        <p v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</p>
+        <input
+          v-model="testpassword"
+          type="password"
+          :placeholder="t('confirmPassword')"
+          class="input"
+        />
+        <p v-if="errors.password && password !== testpassword" class="text-red-500 text-sm">
+          {{ errors.password }}
+        </p>
+        <button type="submit" class="button">
+          <div v-if="!loading">{{ t('signup') }}</div>
+          <div v-else class="flex justify-center items-center">
+            <Loader2 class="animate-spin w-4 h-4" />
+          </div>
+        </button>
+      </form>
+      <div class="mt-6 border-t pt-4 text-sm text-gray-700">
+        {{ t('haveAccount') }}
+        <a href="/login" class="text-blue-500 font-bold">{{ t('login') }}</a>
+      </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div
+      v-if="showVerification"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
+        <h2 class="text-lg font-semibold mb-4">{{ t('verificationTitle') }}</h2>
+        <input
+          v-model="verificationCode"
+          maxlength="5"
+          class="w-full text-center text-lg tracking-widest px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="_ _ _ _ _"
+        />
+        <p v-if="verificationFailed" class="text-red-500 text-sm mt-2">
+          {{ t('verificationFailed') }}
+        </p>
+        <button
+          class="mt-4 w-full py-2 rounded-lg font-bold text-white transition-all"
+          :class="
+            verificationCode.length === 5
+              ? 'bg-blue-500 hover:bg-blue-600'
+              : 'bg-gray-400 cursor-not-allowed'
+          "
+          :disabled="verificationCode.length !== 5"
+          @click="verifyCode"
+        >
+          {{ t('verify') }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Language Modal -->
+    <div
+      v-if="showLanguageModal"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
+        <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
+        <div class="flex flex-wrap justify-center gap-2">
+          <button
+            v-for="(lang, code) in languages"
+            :key="code"
+            @click="
+              setLanguage(code);
+              showLanguageModal = false;
+            "
+            class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {{ code.toUpperCase() }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  outline: none;
+}
+.button {
+  width: 100%;
+  background-color: #3b82f6;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+.button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+</style>
