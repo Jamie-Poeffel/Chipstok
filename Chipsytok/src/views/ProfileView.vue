@@ -1,5 +1,6 @@
 <template>
   <div class="profile-container">
+    <!-- Profile header and user meta -->
     <div class="profile-header">
       <div class="header-top">
         <div class="flex flex-col">
@@ -13,11 +14,7 @@
             </div>
             <div class="user-meta">
               <p class="handle">@{{ username || 'error' }}</p>
-              <p class="bio">
-                {{
-                  useAuthStore().user.profile.bio === '' ? '\n' : useAuthStore().user.profile.bio
-                }}
-              </p>
+              <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
               <div class="stats">
                 <div>
                   <strong
@@ -35,28 +32,20 @@
               </div>
             </div>
           </div>
+
+          <!-- Buttons -->
           <div class="flex items-center gap-1 w-full h-[24px] mt-3">
-            <button
-              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-100"
-            >
-              Profil bearbeiten
-            </button>
-            <button
-              @click="share"
-              class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-100"
-            >
-              Profil Teilen
-            </button>
-            <button
-              class="h-[30px] w-[30px] flex justify-center items-center rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-all duration-300 ease-in-out transform hover:scale-105"
-            >
-              <Settings class="w-4 h-4" @click="openSettings = true" />
+            <button class="flex-1 button">Profil bearbeiten</button>
+            <button @click="share" class="flex-1 button">Profil Teilen</button>
+            <button class="icon-button" @click="openSettings = true">
+              <Settings class="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs">
       <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
         >Posts</span
@@ -75,15 +64,17 @@
       >
     </div>
 
+    <!-- Posts Grid -->
     <div class="posts-grid">
       <div v-for="n in 9" :key="n" class="post-thumb"></div>
     </div>
 
+    <!-- Settings Modal -->
     <div v-if="openSettings" class="modal-overlay" @click.self="openSettings = false">
       <div class="modal">
         <h3>Settings</h3>
         <ul class="settings-list">
-          <li>Change Password</li>
+          <li @click="openChangePassword = true">Change Password</li>
           <li>Settings and Privacy</li>
           <li @click="logout">Log Out</li>
           <li class="cancel-btn" @click="openSettings = false">Cancel</li>
@@ -91,6 +82,32 @@
       </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div v-if="openChangePassword" class="modal-overlay" @click.self="openChangePassword = false">
+      <div class="modal">
+        <h3>Change Password</h3>
+        <input
+          v-model="currentPassword"
+          placeholder="Current Password"
+          type="password"
+          class="input"
+        />
+        <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
+        <input
+          v-model="confirmPassword"
+          placeholder="Confirm New Password"
+          type="password"
+          class="input"
+        />
+        <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }">
+          {{ passwordMessage }}
+        </p>
+        <button class="button w-full mt-2" @click="changePassword">Change</button>
+        <button class="cancel-btn w-full mt-2" @click="openChangePassword = false">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
     <div v-if="Share" class="modal-overlay" @click.self="Share = false">
       <div class="modal">
         <h3>Share Profile</h3>
@@ -104,20 +121,31 @@
 
 <script setup>
 import { ref, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
 import { Settings } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import QRCodeStyling from 'qr-code-styling';
 
 const activeTab = ref('posts');
 const openSettings = ref(false);
+const openChangePassword = ref(false);
 const username = ref(useAuthStore().username);
 const Share = ref(false);
 const qrCodeContainer = ref(null);
 const qrCode = ref(null);
+const router = useRouter();
+
+// Password change state
+const currentPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+const passwordMessage = ref('');
+const passwordError = ref(false);
 
 function logout() {
-  alert('Logged out!');
+  // Simulate logout and go to login page
   openSettings.value = false;
+  router.push('/login');
 }
 
 function share() {
@@ -149,26 +177,103 @@ watchEffect(() => {
 function formatNumber(value) {
   return value > 9999 ? (value / 1000).toFixed(0) + 'k' : value;
 }
+
+function changePassword() {
+  const simulatedCorrectPassword = '123456'; // Simulate correct password check
+
+  if (currentPassword.value !== simulatedCorrectPassword) {
+    passwordMessage.value = 'Current password is incorrect.';
+    passwordError.value = true;
+    return;
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    passwordMessage.value = 'New passwords do not match.';
+    passwordError.value = true;
+    return;
+  }
+
+  passwordMessage.value = 'Password changed successfully!';
+  passwordError.value = false;
+
+  // Reset form after success
+  setTimeout(() => {
+    openChangePassword.value = false;
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    passwordMessage.value = '';
+  }, 1500);
+}
 </script>
 
 <style scoped>
-/* ... [Same CSS as you already have] ... (I kept it clean) */
+/* Simplified button styles */
+.button {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
+}
 
-/* Smooth tab animations */
+.button:hover {
+  background-color: #d1d5db;
+  transform: scale(1);
+}
+
+.icon-button {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
+}
+
+.icon-button:hover {
+  background-color: #d1d5db;
+  transform: scale(1.05);
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+}
+
+.success {
+  color: green;
+  font-size: 0.875rem;
+}
+
+/* Tabs and posts */
 .tab {
   transition: all 0.3s ease;
   transform-origin: center;
 }
-.tab:hover {
-  color: #ff2d55;
-  transform: scale(1.05);
-}
+.tab:hover,
 .tab.active {
   color: #ff2d55;
   transform: scale(1.05);
 }
 
-/* Smooth post thumb hover */
 .post-thumb {
   transition:
     transform 0.3s ease,
@@ -179,8 +284,7 @@ function formatNumber(value) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Smooth cancel button in modal */
-.settings-list .cancel-btn {
+.cancel-btn {
   background-color: #ff2d55;
   color: white;
   border-radius: 8px;
@@ -190,7 +294,7 @@ function formatNumber(value) {
   transition: all 0.3s ease;
   cursor: pointer;
 }
-.settings-list .cancel-btn:hover {
+.cancel-btn:hover {
   background-color: #e60039;
   transform: scale(1.05);
 }
