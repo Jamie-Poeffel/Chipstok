@@ -1,27 +1,21 @@
 ﻿import express from 'express';
+import cors from 'cors';
 import UserRouter from './routes/userRoutes';
 import PostRouter from './routes/postRoutes';
 import { connectDB } from './config/db';
 import cookieParser from 'cookie-parser';
 import AuthRouter from './routes/authRoutes';
 import OAuthRouter from './routes/oauthRoutes';
+import { config } from 'dotenv';
+config();
 
 const app = express();
-const allowedOrigins: string[] = ['https://sub1.bbzwinf.ch', 'https://sub2.bbzwinf.ch'];
-
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-
-    if (allowedOrigins.includes(origin as string)) {
-        res.setHeader('Access-Control-Allow-Origin', (origin as string));
-    }
-
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-    next();
-});
-
+const corsOptions = {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
