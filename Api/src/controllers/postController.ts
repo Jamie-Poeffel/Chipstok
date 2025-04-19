@@ -2,20 +2,20 @@ import { Request, RequestHandler, Response } from "express";
 import { Post } from "../models/Posts";
 import { Comments } from "../models/Comments";
 import { User } from "../models/User";
+import { createReadStream, promises as fsPromises } from "fs";
+import path from "path";
+
+
 
 export const getAllPosts: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    Post.findAll()
-        .then((posts) => {
-            res.status(200).json(posts);
-        })
-        .catch((error) => {
-            res.status(500).json({ error: error });
-        });
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+    const posts = await Post.findAll({ limit });
+    res.status(200).json(posts);
 }
 
 export const newPost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { userid } = req.body;
+        const { userid, url } = req.body;
 
 
         const newCommentsList = await Comments.create({});
@@ -28,7 +28,7 @@ export const newPost: RequestHandler = async (req: Request, res: Response): Prom
             commentCount: 0,
             commentListID: commentListID,
             Hashtags: [],
-            URL: "idk",
+            URL: url,
         });
 
         const user = await User.findByPk(userid);
@@ -74,3 +74,35 @@ export const likePost: RequestHandler = async (req: Request, res: Response): Pro
         console.error(e)
     }
 }
+
+
+// Helper function to get a random integer in a given range
+const randomInt = (max: number): number => Math.floor(Math.random() * max);
+
+
+export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+
+    const id = req.params.id
+    try {
+        const url = await Post.findByPk(id).then(e => e?.URL);
+        const filePath = path.resolve(__dirname, `./../../public/posts/${url}`);
+
+        // Get file stats
+        const stat = await fsPromises.stat(filePath);
+        const fileSize = stat.size;
+
+        // Set the appropriate headers for streaming the whole file
+        res.writeHead(200, {
+            "Content-Length": fileSize,
+            "Content-Type": "video/mp4",  // You can change this to match your file type
+        });
+
+        // Stream the whole video file (without Range header)
+        const stream = createReadStream(filePath);
+        stream.pipe(res);
+
+    } catch (err) {
+        console.error("Error while streaming video:", err);
+        res.status(500).json({ message: "Internal Server Error", error: (err as Error).message });
+    }
+};

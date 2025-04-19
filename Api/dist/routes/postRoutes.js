@@ -6,4 +6,5 @@ const router = (0, express_1.Router)();
 router.get('/', postController_1.getAllPosts);
 router.post('/new', postController_1.newPost);
 router.post('/:id/like', postController_1.likePost);
+router.get('/stream/:id', postController_1.getStream);
 exports.default = router;

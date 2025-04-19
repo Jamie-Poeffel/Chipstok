@@ -66,6 +66,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.login = login;
 const success = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    res.json({ message: "success", username: user.username, user: user });
+    const token = jsonwebtoken_1.default.sign({ id: user._id, username: user.username, email: user.email, firstname: user.firstname, lastname: user.lastname, profilePicture: user.profile.profilePicture }, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '15m' });
+    res.json({ message: "success", username: user.username, user: user, token: token });
 });
 exports.success = success;

@@ -18,15 +18,18 @@ const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const db_1 = require("./config/db");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
-const cors_1 = __importDefault(require("cors"));
 const oauthRoutes_1 = __importDefault(require("./routes/oauthRoutes"));
-const isDev = process.env.NODE_ENV !== 'production';
 const app = (0, express_1.default)();
-const corsOptions = {
-    origin: isDev ? true : 'https://Chipsytok.bbzwinf.ch',
-    credentials: true,
-};
-app.use((0, cors_1.default)(corsOptions));
+const allowedOrigins = ['https://sub1.bbzwinf.ch', 'https://sub2.bbzwinf.ch'];
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());

@@ -1,6 +1,7 @@
 import { RequestHandler, Request, Response } from "express";
-import { OAuthConfig } from "../config/oauth";
+import { OAuthConfigs } from "../config/oauth";
 import { config } from "dotenv";
+import { generateCharString } from "../services/oAuthService";
 config();
 
 interface AuthQuery {
@@ -14,24 +15,34 @@ interface AuthQuery {
 export const Authorize: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { client_id, redirect_uri, response_type, scope, state } = req.query as unknown as AuthQuery;
 
+    const checkcli = generateCharString(new Date());
+
+    if (client_id !== checkcli) {
+        res.status(400).json({ error: "Invalid client_id" });
+        return;
+    }
+
     if (!client_id || !redirect_uri || !response_type) {
         res.status(400).json({ error: "Missing required parameters" });
         return;
     }
 
-    const isValidClient = client_id === OAuthConfig.clientId;
-    const isValidRedirectUri = true;
-    const isValidResponseType = response_type === "code";
+    const isValidRedirectUri = OAuthConfigs.some(config => config.redirectUrl === redirect_uri);
 
-
-    if (!isValidClient) {
-        res.status(400).json({ error: "Invalid client_id" });
-        return;
-    }
     if (!isValidRedirectUri) {
         res.status(400).json({ error: "Invalid redirect_uri" });
         return;
     }
+
+    const config = OAuthConfigs.find(cfg => cfg.clientId === client_id && cfg.redirectUrl === redirect_uri);
+
+    if (!config) {
+        res.status(400).json({ error: "Invalid client_id or redirect_uri" });
+        return;
+    }
+
+    const isValidResponseType = response_type === "code";
+
     if (!isValidResponseType) {
         res.status(400).json({ error: "Invalid response_type" });
         return;

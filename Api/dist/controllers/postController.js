@@ -8,24 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likePost = exports.newPost = exports.getAllPosts = void 0;
+exports.getStream = exports.likePost = exports.newPost = exports.getAllPosts = void 0;
 const Posts_1 = require("../models/Posts");
 const Comments_1 = require("../models/Comments");
 const User_1 = require("../models/User");
+const fs_1 = require("fs");
+const path_1 = __importDefault(require("path"));
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    Posts_1.Post.findAll()
-        .then((posts) => {
-        res.status(200).json(posts);
-    })
-        .catch((error) => {
-        res.status(500).json({ error: error });
-    });
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const posts = yield Posts_1.Post.findAll({ limit });
+    res.status(200).json(posts);
 });
 exports.getAllPosts = getAllPosts;
 const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userid } = req.body;
+        const { userid, url } = req.body;
         const newCommentsList = yield Comments_1.Comments.create({});
         const commentListID = newCommentsList._id;
         const newPost = yield Posts_1.Post.create({
@@ -33,7 +34,8 @@ const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             likeCount: 0,
             commentCount: 0,
             commentListID: commentListID,
-            URL: "idk",
+            Hashtags: [],
+            URL: url,
         });
         const user = yield User_1.User.findByPk(userid);
         if (!user) {
@@ -69,3 +71,28 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.likePost = likePost;
+// Helper function to get a random integer in a given range
+const randomInt = (max) => Math.floor(Math.random() * max);
+const getStream = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    try {
+        const url = yield Posts_1.Post.findByPk(id).then(e => e === null || e === void 0 ? void 0 : e.URL);
+        const filePath = path_1.default.resolve(__dirname, `./../../public/posts/${url}`);
+        // Get file stats
+        const stat = yield fs_1.promises.stat(filePath);
+        const fileSize = stat.size;
+        // Set the appropriate headers for streaming the whole file
+        res.writeHead(200, {
+            "Content-Length": fileSize,
+            "Content-Type": "video/mp4", // You can change this to match your file type
+        });
+        // Stream the whole video file (without Range header)
+        const stream = (0, fs_1.createReadStream)(filePath);
+        stream.pipe(res);
+    }
+    catch (err) {
+        console.error("Error while streaming video:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+});
+exports.getStream = getStream;

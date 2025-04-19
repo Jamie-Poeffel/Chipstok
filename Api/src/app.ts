@@ -4,17 +4,25 @@ import PostRouter from './routes/postRoutes';
 import { connectDB } from './config/db';
 import cookieParser from 'cookie-parser';
 import AuthRouter from './routes/authRoutes';
-import cors from 'cors'
 import OAuthRouter from './routes/oauthRoutes';
 
-const isDev = process.env.NODE_ENV !== 'production';
 const app = express();
-const corsOptions = {
-    origin: isDev ? true : 'https://Chipsytok.bbzwinf.ch',
-    credentials: true,
-};
+const allowedOrigins: string[] = ['https://sub1.bbzwinf.ch', 'https://sub2.bbzwinf.ch'];
 
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin as string)) {
+        res.setHeader('Access-Control-Allow-Origin', (origin as string));
+    }
+
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    next();
+});
+
+
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 

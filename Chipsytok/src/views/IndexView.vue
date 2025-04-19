@@ -2,6 +2,32 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Plus, Heart, MessageCircle, Send, RefreshCcw } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
+import { useFetch } from '@/composables/useFetch';
+
+async function img() {
+    const { data } = await useFetch('/posts');
+    const list = [];
+
+    data.forEach(e => {
+        list.push({
+            _id: `${e._id}`,
+            url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
+            type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
+            username: `${'TEST USER'}`,
+            profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
+            caption: 'Check out this awesome content! 🚀',
+            likes: `${e.likeCount}`,
+            comments: `${e.commentCount}`,
+        });
+    });
+
+    return list;
+}
+const imgs = ref([]);
+
+onMounted(async () => {
+    imgs.value = (await img())
+})
 
 const showFull = ref(false);
 const authStore = useAuthStore();
@@ -19,33 +45,6 @@ const showBanner = () => {
         showFull.value = false;
     }, 4000);
 };
-
-
-const imgs = ref([
-    {
-        _id: 1,
-        url: `https://placehold.co/1080x1920?text=Video1`,
-        type: 'image',
-        username: 'user1',
-        profilePicture: `https://randomuser.me/portraits/men/3.jpg`,
-        caption: 'Check out this awesome content! 🚀',
-        likes: Math.floor(Math.random() * 1000),
-        comments: Math.floor(Math.random() * 500),
-        shares: Math.floor(Math.random() * 200),
-    },
-    {
-        _id: 2,
-        url: `https://placehold.co/1080x1920?text=Video2`,
-        type: 'image',
-        username: 'user2',
-        profilePicture: `https://randomuser.me/portraits/men/4.jpg`,
-        caption: 'Check out this awesome content! 🚀',
-        likes: Math.floor(Math.random() * 1000),
-        comments: Math.floor(Math.random() * 500),
-        shares: Math.floor(Math.random() * 200),
-    },
-]);
-
 // Reactive flag to show the loader
 const isLoading = ref(false);
 const username = ref(authStore.username);
@@ -62,14 +61,13 @@ const loadMore = () => {
         const newId = baseId + i;
         imgs.value.push({
             _id: newId,
-            url: `https://placehold.co/1080x1920?text=Video${newId}`,
-            type: 'image',
+            url: `http://localhost:8080/posts/stream`,
+            type: 'video',
             username: `user${newId}`,
             profilePicture: `https://randomuser.me/portraits/men/${(newId % 100) + 1}.jpg`,
             caption: 'Check out this awesome content! 🚀',
             likes: Math.floor(Math.random() * 1000),
             comments: Math.floor(Math.random() * 500),
-            shares: Math.floor(Math.random() * 200),
         });
     }
 };
@@ -147,7 +145,7 @@ onUnmounted(() => {
                 </template>
                 <template v-else-if="img.type === 'video'">
                     <video :src="img.url" :alt="'Video posted by ' + img.username" class="w-full h-full object-cover"
-                        autoplay loop muted playsinline>
+                        autoplay loop muted playsinline preload="auto">
                     </video>
                 </template>
 

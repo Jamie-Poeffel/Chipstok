@@ -1,7 +1,5 @@
 <h1 align="center">Chipstok</h1>
 
-
-
 <br>
 <br>
 
@@ -20,28 +18,13 @@
 
 ## 📥 How to use
 
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/Jamie-Poeffel/chipstok.git
-   ```
-2. Navigate to the project folder:
-   ```sh
-   cd chipstok
-   ```
-3. Install dependencies:
-   ```sh
-   npm install
-   ```
-4. Run the application:
-   ```sh
-   npm run dev
-   ```
+1. `Go to Website: `[Chipsytok](https://www.chipsytok.bbzwinf.ch/)
 
 <br>
 
 ## 📖 Documentation
 
-For detailed documentation, please visit our [Docs](docs).
+For detailed documentation, please visit our [Documentation](docs).
 
 ---
 
