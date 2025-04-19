@@ -76,10 +76,6 @@ export const likePost: RequestHandler = async (req: Request, res: Response): Pro
 }
 
 
-// Helper function to get a random integer in a given range
-const randomInt = (max: number): number => Math.floor(Math.random() * max);
-
-
 export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
 
     const id = req.params.id
