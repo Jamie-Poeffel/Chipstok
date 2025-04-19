@@ -3,12 +3,15 @@
 <br>
 <br>
 
-
 <p align="center">
-  <img src="./Chipstok/assets/Untitled.png" alt="Chipstok Logo" width="300">
+  <a href="https://www.chipsytok.bbzwinf.ch" target="_blank" style="text-decoration: none;">
+    <img src="./Chipsytok/public/icon_light.png" alt="Chipstok Logo" width="300">
+    <br>
+    <strong style="font-size: 1.2em;">CLICK LOGO</strong>
+  </a>
 </p>
 
-<br>
+
 
 ## 🚀 Description
 
@@ -43,16 +46,17 @@ For detailed documentation, please visit our [Documentation](docs).
 
 ### 🎨 Kush Srigiri (Frontend Developer)
 
-**Contribution:** Improved UI components for accessibility and responsiveness.  
-✅ Enhanced layout with better padding and font sizes for a seamless **UI/UX flow**.  
-✅ Refactored styles for better maintainability.
+✅ Improved UI components for better accessibility and responsiveness  
+✅ Designed and implemented **Sign Up** and **Login** pages  
+✅ Created a consistent **color palette** and modern layout  
+✅ Refactored styles for maintainability and scalability
 
 <br>
 
-### 📝 Alessio Huber (Mockup Creator)  
+### 📝 Alessio Huber (Mockup Maker)
 
-**Contribution:** Created an **ER-Diagram** for better visibility and structure.  
-✅ Improved planning for better **time management** and visualization.
+✅ Created detailed **ER-Diagram** for better structure and planning  
+✅ Enhanced **mockup designs** to support visualization and time management
 
 <br>
 

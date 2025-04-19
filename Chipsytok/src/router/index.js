@@ -1,6 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
-import { useAuthStore } from '@/stores/auth' // Assuming you have a Pinia store for auth
+import { useAuthStore } from '@/stores/auth' 
+import ResetPassword from '@/views/ResetPassword.vue';
+
+
+
+const routes = [
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword
+  },
+];
+
+// Assuming you have a Pinia store for auth
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

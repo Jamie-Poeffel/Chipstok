@@ -1,321 +1,301 @@
 <template>
-    <div class="profile-container">
-        <div class="profile-header">
-            <div class="header-top">
-                <div class="flex flex-col">
-                    <div class="flex flex-row">
-                        <div class="avatar-wrapper">
-                            <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
-                        </div>
-                        <div class="user-meta">
-                            <p class="handle">@{{ username || "error" }}</p>
-                            <p class="bio">{{ useAuthStore().user.profile.bio === '' ? '\n' :
-                                useAuthStore().user.profile.bio }}
-                            </p>
-                            <div class="stats">
-                                <div><strong>{{ (useAuthStore().user.profile.followers > 9999 ?
-                                    (useAuthStore().user.profile.followers / 1000).toFixed(0) + 'k' :
-                                    useAuthStore().user.profile.followers)
-                                        }} Following</strong></div>
-                                <div><strong>{{ (useAuthStore().user.profile.following > 9999 ?
-                                    (useAuthStore().user.profile.following / 1000).toFixed(0) + 'k' :
-                                    useAuthStore().user.profile.following) }} Followers</strong></div>
-                                <div><strong>{{ (useAuthStore().user.profile.likeCount > 9999 ?
-                                    (useAuthStore().user.profile.likeCount / 1000).toFixed(0) + 'k' :
-                                    useAuthStore().user.profile.likeCount) }} Likes</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-1 w-full h-[24px] mt-3">
-                        <button
-                            class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
-                            Profil bearbeiten
-                        </button>
-                        <button @click="share()"
-                            class="flex-1 py-1 px-3 rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
-                            Profil Teilen
-                        </button>
-                        <button
-                            class="h-[30px] w-[30px] flex justify-center items-center rounded-md text-sm font-medium text-gray-700 border hover:bg-gray-300 transition-colors duration-200 ease-in-out">
-                            <Settings class="w-4 h-4" @click="openSettings = true" />
-                        </button>
-
-                    </div>
-
+  <div class="profile-container">
+    <!-- Profile header and user meta -->
+    <div class="profile-header">
+      <div class="header-top">
+        <div class="flex flex-col">
+          <div class="flex flex-row">
+            <div class="avatar-wrapper">
+              <img
+                class="avatar"
+                src="https://randomuser.me/api/portraits/men/3.jpg"
+                alt="avatar"
+              />
+            </div>
+            <div class="user-meta">
+              <p class="handle">@{{ username || 'error' }}</p>
+              <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
+              <div class="stats">
+                <div>
+                  <strong
+                    >{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong
+                  >
                 </div>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
-            <span class="tab" :class="{ active: activeTab === 'followers' }"
-                @click="activeTab = 'followers'">Saved</span>
-            <span class="tab" :class="{ active: activeTab === 'following' }"
-                @click="activeTab = 'following'">Tagged</span>
-        </div>
-
-        <div class="posts-grid">
-            <div v-for="n in 9" :key="n" class="post-thumb"></div>
-        </div>
-
-        <div v-if="openSettings" class="modal-overlay" @click.self="openSettings = false">
-            <div class="modal">
-                <h3>Settings</h3>
-                <ul class="settings-list">
-                    <li>Change Password</li>
-                    <li>Settings and Privacy</li>
-                    <li @click="logout">Log Out</li>
-                    <li class="cancel-btn" @click="openSettings = false">Cancel</li>
-                </ul>
-            </div>
-        </div>
-
-        <div v-if="Share" class="modal-overlay" @click.self="Share = false">
-            <div class="modal">
-                <h3>Share Profile</h3>
-                <div class="mt-4 w-full flex justify-center items-center">
-                    <div ref="qrCodeContainer"></div>
+                <div>
+                  <strong
+                    >{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong
+                  >
                 </div>
+                <div>
+                  <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-1 w-full h-[24px] mt-3">
+            <button class="flex-1 button">Profil bearbeiten</button>
+            <button @click="share" class="flex-1 button">Profil Teilen</button>
+            <button class="icon-button" @click="openSettings = true">
+              <Settings class="w-4 h-4" />
+            </button>
+          </div>
         </div>
+      </div>
     </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
+        >Posts</span
+      >
+      <span
+        class="tab"
+        :class="{ active: activeTab === 'followers' }"
+        @click="activeTab = 'followers'"
+        >Saved</span
+      >
+      <span
+        class="tab"
+        :class="{ active: activeTab === 'following' }"
+        @click="activeTab = 'following'"
+        >Tagged</span
+      >
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="posts-grid">
+      <div v-for="n in 9" :key="n" class="post-thumb"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div v-if="openSettings" class="modal-overlay" @click.self="openSettings = false">
+      <div class="modal">
+        <h3>Settings</h3>
+        <ul class="settings-list">
+          <li @click="openChangePassword = true">Change Password</li>
+          <li>Settings and Privacy</li>
+          <li @click="logout">Log Out</li>
+          <li class="cancel-btn" @click="openSettings = false">Cancel</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div v-if="openChangePassword" class="modal-overlay" @click.self="openChangePassword = false">
+      <div class="modal">
+        <h3>Change Password</h3>
+        <input
+          v-model="currentPassword"
+          placeholder="Current Password"
+          type="password"
+          class="input"
+        />
+        <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
+        <input
+          v-model="confirmPassword"
+          placeholder="Confirm New Password"
+          type="password"
+          class="input"
+        />
+        <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }">
+          {{ passwordMessage }}
+        </p>
+        <button class="button w-full mt-2" @click="changePassword">Change</button>
+        <button class="cancel-btn w-full mt-2" @click="openChangePassword = false">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div v-if="Share" class="modal-overlay" @click.self="Share = false">
+      <div class="modal">
+        <h3>Share Profile</h3>
+        <div class="mt-4 w-full flex justify-center items-center">
+          <div ref="qrCodeContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue'
-import { Settings } from 'lucide-vue-next'
-import { useAuthStore } from '@/stores/auth'
+import { ref, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
+import { Settings } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth';
 import QRCodeStyling from 'qr-code-styling';
 
-
-const activeTab = ref('posts')
-const openSettings = ref(false)
+const activeTab = ref('posts');
+const openSettings = ref(false);
+const openChangePassword = ref(false);
 const username = ref(useAuthStore().username);
 const Share = ref(false);
 const qrCodeContainer = ref(null);
 const qrCode = ref(null);
+const router = useRouter();
+
+// Password change state
+const currentPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+const passwordMessage = ref('');
+const passwordError = ref(false);
 
 function logout() {
-    alert('Logged out!')
-    openSettings.value = false
+  // Simulate logout and go to login page
+  openSettings.value = false;
+  router.push('/login');
 }
 
-
-async function share() {
-    Share.value = true
+function share() {
+  Share.value = true;
 }
 
 const initQRCode = () => {
-    qrCode.value = new QRCodeStyling({
-        "type": "canvas", "shape": "square", "width": 300, "height": 300, "data": "Hello World", "margin": 16, "qrOptions": { "typeNumber": "0", "mode": "Byte", "errorCorrectionLevel": "H" }, "imageOptions": { "saveAsBlob": true, "hideBackgroundDots": true, "imageSize": 0.4, "margin": 0 }, "dotsOptions": { "type": "dots", "color": "#6a1a4c", "roundSize": true, "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405de6" }, { "offset": 1, "color": "#190110" }] } }, "backgroundOptions": { "round": 0, "color": "#ffffff", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#ffffff" }, { "offset": 1, "color": "#ffffff" }] } }, "image": null, "dotsOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#6a1a4c", "color2": "#6a1a4c", "rotation": "0" } }, "cornersSquareOptions": { "type": "extra-rounded", "color": "#000000", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405def" }, { "offset": 1, "color": "#000000" }] } }, "cornersSquareOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "cornersDotOptions": { "type": "dot", "color": "#000000", "gradient": { "type": "linear", "rotation": 0.7853981633974483, "colorStops": [{ "offset": 0, "color": "#405de6" }, { "offset": 1, "color": "#000000" }] } }, "cornersDotOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "backgroundOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#ffffff", "color2": "#ffffff", "rotation": "0" } }
-    });
+  qrCode.value = new QRCodeStyling({
+    width: 300,
+    height: 300,
+    data: 'Hello World',
+    dotsOptions: {
+      color: '#6a1a4c',
+      type: 'dots',
+    },
+    backgroundOptions: {
+      color: '#ffffff',
+    },
+  });
 };
+
 watchEffect(() => {
-    if (Share.value && qrCodeContainer.value) {
-        initQRCode();
-        qrCode.value.append(qrCodeContainer.value);
-    }
+  if (Share.value && qrCodeContainer.value) {
+    initQRCode();
+    qrCode.value.append(qrCodeContainer.value);
+  }
 });
+
+function formatNumber(value) {
+  return value > 9999 ? (value / 1000).toFixed(0) + 'k' : value;
+}
+
+function changePassword() {
+  const simulatedCorrectPassword = '123456'; // Simulate correct password check
+
+  if (currentPassword.value !== simulatedCorrectPassword) {
+    passwordMessage.value = 'Current password is incorrect.';
+    passwordError.value = true;
+    return;
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    passwordMessage.value = 'New passwords do not match.';
+    passwordError.value = true;
+    return;
+  }
+
+  passwordMessage.value = 'Password changed successfully!';
+  passwordError.value = false;
+
+  // Reset form after success
+  setTimeout(() => {
+    openChangePassword.value = false;
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    passwordMessage.value = '';
+  }, 1500);
+}
 </script>
 
 <style scoped>
-.profile-container {
-    padding: 20px;
-    max-width: 700px;
-    margin: 0 auto;
-    font-family: 'Segoe UI', sans-serif;
+/* Simplified button styles */
+.button {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
 }
 
-.header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 20px;
+.button:hover {
+  background-color: #d1d5db;
+  transform: scale(1);
 }
 
-.avatar-wrapper {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.icon-button {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
 }
 
-.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ff2d55;
+.icon-button:hover {
+  background-color: #d1d5db;
+  transform: scale(1.05);
 }
 
-.handle {
-    font-size: 16px;
-    color: #777;
-    margin-top: 8px;
-    transform: translateY(5px);
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.user-meta {
-    flex-grow: 1;
-    margin-left: 20px;
-    margin-top: -10px;
+.error {
+  color: red;
+  font-size: 0.875rem;
 }
 
-.username {
-    font-size: 20px;
-    margin: 0;
-    color: #111;
-    text-decoration: wavy;
-    transform: translateY(12px);
+.success {
+  color: green;
+  font-size: 0.875rem;
 }
 
-.bio {
-    font-size: 14px;
-    color: #444;
-    margin-top: 6px;
-}
-
-.stats {
-    display: flex;
-    gap: 20px;
-    font-size: 14px;
-    margin-top: 8px;
-}
-
-.stats div {
-    text-align: center;
-}
-
-.stats strong {
-    display: block;
-    font-size: 16px;
-    color: #111;
-}
-
-.tabs {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
+/* Tabs and posts */
 .tab {
-    font-weight: 500;
-    font-size: 16px;
-    cursor: pointer;
-    position: relative;
-    transition: color 0.3s ease;
-    color: #000;
+  transition: all 0.3s ease;
+  transform-origin: center;
 }
-
-.tab:hover {
-    color: #ff2d55;
-}
-
-.tab.active::after,
-.tab:hover::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #ff2d55;
-}
-
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 20px;
+.tab:hover,
+.tab.active {
+  color: #ff2d55;
+  transform: scale(1.05);
 }
 
 .post-thumb {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-color: #eee;
-    border-radius: 4px;
-    transition: transform 0.2s;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
-
 .post-thumb:hover {
-    transform: scale(1.03);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
+.cancel-btn {
+  background-color: #ff2d55;
+  color: white;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
-
-.modal {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    width: 300px;
-}
-
-.modal h3 {
-    margin-top: 0;
-    font-size: 18px;
-    text-align: center;
-}
-
-.settings-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-    text-align: center;
-}
-
-.settings-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.settings-list .cancel-btn {
-    background-color: #ff2d55;
-    color: white;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-weight: 600;
-    border: none;
-}
-
-.ig-qr-container {
-    background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
-    padding: 8px;
-    border-radius: 24px;
-    display: inline-block;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.ig-qr-code {
-    background: white;
-    padding: 12px;
-    border-radius: 16px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.qr-image {
-    width: 200px;
-    height: 200px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.cancel-btn:hover {
+  background-color: #e60039;
+  transform: scale(1.05);
 }
 </style>
