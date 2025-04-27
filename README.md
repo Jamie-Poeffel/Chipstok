@@ -35,7 +35,7 @@ For detailed documentation, please visit our [Documentation](docs).
 
 
 <a href="https://github.com/Jamie-Poeffel/chipstok/graphs/contributors">
-  <img src="https://contrib.rocks/image?&columns=25&max=10000&&repo=sherlock-project/sherlock" noZoom />
+  <img src="https://contrib.rocks/image?&columns=25&max=10000&&repo=Jamie-Poeffel/chipstok" noZoom />
 </a>
 
 ### 🎯 Jamie Poeffel (Backend Developer)
