@@ -19,7 +19,7 @@
 
 ## 📥 How to use
 
-1. `Go to Website: `[Chipsytok](https://www.chipsytok.bbzwinf.ch/)
+1. Go to Website: [Chipsytok](https://www.chipsytok.bbzwinf.ch/)
 
 <br>
 
@@ -33,17 +33,18 @@ For detailed documentation, please visit our [Documentation](docs).
 
 ## 👥 Contributors
 
-
 <a href="https://github.com/Jamie-Poeffel/chipstok/graphs/contributors">
   <img src="https://contrib.rocks/image?&columns=25&max=10000&&repo=Jamie-Poeffel/chipstok" noZoom />
 </a>
 
+
 ### 🎯 Jamie Poeffel (Backend Developer)
 
-**Contribution:** Optimized database queries for faster response times.  
+✅ Optimized database queries for faster response times.  
 ✅ Improved SQL queries to reduce execution time by **40%**.  
 ✅ Added indexing to frequently queried columns.  
 ✅ Removed unnecessary joins to enhance performance.
+✅ Created a connection with ChipsyFans
 
 <br>
 
@@ -62,6 +63,8 @@ For detailed documentation, please visit our [Documentation](docs).
 ✅ Enhanced **mockup designs** to support visualization and time management
 
 <br>
+
+
 
 ---
 
