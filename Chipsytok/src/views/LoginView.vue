@@ -80,7 +80,10 @@ const sendResetEmail = async () => {
       body: JSON.stringify({ email: forgotEmail.value.trim() }),
       credentials: 'include',
     });
-  } catch (_) {
+  } catch (error) {
+    // handle error (e.g., show a message to the user)
+    forgotError.value = error.message || 'An error occurred. Please try again.';
+    console.error('Error sending reset email:', error);
     /* optional logging – UI still shows success for privacy */
   } finally {
     showForgotRequestModal.value = false;
