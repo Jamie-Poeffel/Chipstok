@@ -5,7 +5,7 @@ import { useFetch } from '@/composables/useFetch';
 import { Loader2, Globe, MailCheck } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
 
-const { selectedLanguage, setLanguage, languages, t } = useLanguage();
+const { setLanguage, languages, t } = useLanguage();
 
 const router = useRouter();
 const username = ref(''); // email or phone number entered by the user
