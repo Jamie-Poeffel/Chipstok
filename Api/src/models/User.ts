@@ -1,4 +1,5 @@
-﻿import { Table, Column, Model, DataType, PrimaryKey } from "sequelize-typescript";
+﻿import { Table, Column, Model, DataType, PrimaryKey, HasMany } from "sequelize-typescript";
+import { Comment } from "./Comment";
 
 @Table({ tableName: "users", timestamps: true })
 export class User extends Model {
@@ -63,4 +64,14 @@ export class User extends Model {
         defaultValue: []
     })
     postedVideos!: string[];
+
+    @Column({
+        type: DataType.JSON,
+        allowNull: false,
+        defaultValue: []
+    })
+    viewedVideos!: string[];
+
+    @HasMany(() => Comment, { foreignKey: "userId", as: "comments" })
+    comments!: Comment[];
 }

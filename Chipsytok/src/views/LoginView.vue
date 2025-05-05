@@ -53,20 +53,12 @@ onMounted(() => {
 
 <template>
   <div
-    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
-  >
-    <div
-      class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
-    >
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
+    <div class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10">
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">{{ t('title') }}</h1>
       <form @submit.prevent="login" class="space-y-4">
         <div>
-          <input
-            v-model="username"
-            type="text"
-            :placeholder="t('placeholderPhone')"
-            class="input"
-          />
+          <input v-model="username" type="text" :placeholder="t('placeholderPhone')" class="input" />
           <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
         </div>
         <div>
@@ -83,29 +75,21 @@ onMounted(() => {
       <div class="mt-4 text-sm text-gray-500">
         <a href="#" class="text-blue-500 hover:underline">{{ t('forgotPassword') }}</a>
       </div>
-      <div class="mt-6 border-t pt-4 text-sm text-gray-700">
+      <div class="mt-6 border-t pt-4 text-sm text-gray-700 flex flex-row justify-center items-center gap-2">
         {{ t('noAccount') }}
-        <a href="/signup" class="text-blue-500 font-bold">{{ t('signup') }}</a>
+        <div @click="$router.push('/signup');" class="text-blue-500 font-bold">{{ t('signup') }}</div>
       </div>
     </div>
 
     <!-- Language Modal -->
-    <div
-      v-if="showLanguageModal"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-    >
+    <div v-if="showLanguageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
         <div class="flex flex-wrap justify-center gap-2">
-          <button
-            v-for="(lang, code) in languages"
-            :key="code"
-            @click="
-              setLanguage(code);
-              showLanguageModal = false;
-            "
-            class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
+          <button v-for="(lang, code) in languages" :key="code" @click="
+            setLanguage(code);
+          showLanguageModal = false;
+          " class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             {{ code.toUpperCase() }}
           </button>
         </div>
@@ -123,6 +107,7 @@ onMounted(() => {
   background-color: #f3f4f6;
   outline: none;
 }
+
 .button {
   width: 100%;
   background-color: #3b82f6;
@@ -133,6 +118,7 @@ onMounted(() => {
   font-size: 1rem;
   transition: all 0.3s;
 }
+
 .button:hover {
   background-color: #2563eb;
   transform: scale(1.05);

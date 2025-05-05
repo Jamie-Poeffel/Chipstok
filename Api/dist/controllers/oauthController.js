@@ -12,9 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Authorize = void 0;
 const oauth_1 = require("../config/oauth");
 const dotenv_1 = require("dotenv");
+const oAuthService_1 = require("../services/oAuthService");
 (0, dotenv_1.config)();
 const Authorize = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { client_id, redirect_uri, response_type, scope, state } = req.query;
+    const checkcli = (0, oAuthService_1.generateCharString)(new Date());
+    if (client_id !== checkcli) {
+        res.status(400).json({ error: "Invalid client_id" });
+        return;
+    }
     if (!client_id || !redirect_uri || !response_type) {
         res.status(400).json({ error: "Missing required parameters" });
         return;

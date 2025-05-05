@@ -5,15 +5,16 @@ import { useAuthStore } from '@/stores/auth';
 import { useFetch } from '@/composables/useFetch';
 
 async function img() {
-    const { data } = await useFetch('/posts');
+    const { data } = await useFetch('/posts?limit=4', { credentials: 'include' });
     const list = [];
+    let ddata = data.sortedPosts;
 
-    data.forEach(e => {
+    ddata.forEach(e => {
         list.push({
             _id: `${e._id}`,
             url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
             type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-            username: `${'TEST USER'}`,
+            username: `${data.username}`,
             profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
             caption: 'Check out this awesome content! 🚀',
             likes: `${e.likeCount}`,
@@ -54,24 +55,23 @@ const lastItemRef = ref(null);
 let observer = null;
 
 // Function to load two new videos (simulate network delay)
-const loadMore = () => {
-    const last = imgs.value[imgs.value.length - 1];
-    const baseId = last._id;
-    for (let i = 1; i <= 2; i++) {
-        const newId = baseId + i;
-        imgs.value.push({
-            _id: newId,
-            url: `http://localhost:8080/posts/stream`,
-            type: 'video',
-            username: `user${newId}`,
-            profilePicture: `https://randomuser.me/portraits/men/${(newId % 100) + 1}.jpg`,
-            caption: 'Check out this awesome content! 🚀',
-            likes: Math.floor(Math.random() * 1000),
-            comments: Math.floor(Math.random() * 500),
-        });
-    }
-};
+const loadMore = async () => {
+    const { data } = await useFetch('/posts?limit=2', { credentials: 'include' });
+    let ddata = data.sortedPosts;
 
+    ddata.forEach(e => {
+        imgs.value.push({
+            _id: `${e._id}`,
+            url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
+            type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
+            username: `${data.username}`,
+            profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
+            caption: 'Check out this awesome content! 🚀',
+            likes: `${e.likeCount}`,
+            comments: `${e.commentCount}`,
+        });
+    });
+};
 // Callback ref to assign the last element for observation
 const setLastItemRef = (el) => {
     if (lastItemRef.value) {
@@ -93,14 +93,14 @@ onMounted(async () => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting && !isLoading.value) {
                         isLoading.value = true;
-                        setTimeout(() => {
-                            loadMore();
+                        setTimeout(async () => {
+                            await loadMore();
                             isLoading.value = false;
-                        }, 10);
+                        }, 1000);
                     }
                 });
             },
-            { threshold: 0.4 }
+            { threshold: 0.3 }
         );
         if (lastItemRef.value) {
             observer.observe(lastItemRef.value);
@@ -137,7 +137,7 @@ onUnmounted(() => {
 
         <div v-for="(img, index) in imgs" :key="img._id"
             class="snap-start h-full max-w-[450px] mx-auto relative flex-shrink-0"
-            :ref="index === imgs.length - 1 ? setLastItemRef : null">
+            :ref="index === imgs.length - 2 ? setLastItemRef : null">
             <div class="relative h-full w-full">
                 <template v-if="img.type === 'image'">
                     <img :src="img.url" :alt="'Image posted by ' + img.username" class="w-full h-full object-cover"
@@ -212,7 +212,7 @@ onUnmounted(() => {
     display: inline-block;
     width: 10px;
     height: 10px;
-    background-color: #000;
+    background-color: #fff;
     border-radius: 50%;
     animation: bounce 1.2s infinite ease-in-out;
 }

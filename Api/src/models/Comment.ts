@@ -1,25 +1,39 @@
-import { Table, Column, Model, DataType, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
-import { Comments } from "./Comments"; // Importiere die Comments-Tabelle
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    PrimaryKey,
+    ForeignKey,
+    BelongsTo
+} from "sequelize-typescript";
+import { Post } from "./Posts"; // Each comment belongs to a post
+import { User } from "./User"; // Optionally link comment to user
 
-@Table({ tableName: "comment", timestamps: true })
-export class Comment extends Model {
+@Table({ tableName: "comments", timestamps: true })
+export class Comment extends Model<Comment> {
+
     @PrimaryKey
-    @Column({ type: DataType.UUID, allowNull: false, unique: true, defaultValue: DataType.UUIDV4 })
+    @Column({ type: DataType.UUID, allowNull: false, defaultValue: DataType.UUIDV4 })
     _id!: string;
 
-    @ForeignKey(() => Comments) // Verknüpfung mit "Comments"
+    @ForeignKey(() => Post)
     @Column({ type: DataType.UUID, allowNull: false })
-    commentsId!: string;
+    postId!: string;
 
+    @ForeignKey(() => User)
     @Column({ type: DataType.UUID, allowNull: false })
     userId!: string;
-
-    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 }) // Fix: Number → Integer
-    likeCount!: number;
 
     @Column({ type: DataType.STRING, allowNull: false })
     text!: string;
 
-    @BelongsTo(() => Comments) // Jeder Kommentar gehört zu einer "Comments"-Gruppe
-    parentComments!: Comments;
+    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+    likeCount!: number;
+
+    @BelongsTo(() => Post)
+    post!: Post;
+
+    @BelongsTo(() => User)
+    user!: User;
 }

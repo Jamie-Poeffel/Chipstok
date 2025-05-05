@@ -49,7 +49,9 @@ export const createUser: RequestHandler = async (req: Request, res: Response): P
             likeCount: 0
         },
         likedPosts: [],
-        postedVideos: []
+        postedVideos: [],
+        emailVeryfied: false,
+        viewedVideos: [],
     };
 
     User.create(newUserData)

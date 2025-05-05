@@ -71,8 +71,6 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.likePost = likePost;
-// Helper function to get a random integer in a given range
-const randomInt = (max) => Math.floor(Math.random() * max);
 const getStream = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {

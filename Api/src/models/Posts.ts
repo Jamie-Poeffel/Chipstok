@@ -1,5 +1,6 @@
-import { Table, Column, Model, DataType, PrimaryKey, AfterCreate, AfterUpdate, Sequelize } from "sequelize-typescript";
+import { Table, Column, Model, DataType, PrimaryKey, AfterCreate, AfterUpdate, Sequelize, HasMany } from "sequelize-typescript";
 import { User } from "./User"; // Assuming you have a User model
+import { Comment } from "./Comment"; // Assuming you have a Comment model
 
 @Table({ tableName: "posts", timestamps: true })
 export class Post extends Model {
@@ -16,8 +17,8 @@ export class Post extends Model {
     @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
     commentCount!: number;
 
-    @Column({ type: DataType.UUID, allowNull: false, unique: true })
-    commentListID!: string;
+    @HasMany(() => Comment, { foreignKey: "postId", as: "comments" })
+    comments!: Comment[];
 
     @Column({ type: DataType.STRING, allowNull: false })
     URL!: string;

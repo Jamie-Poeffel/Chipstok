@@ -1,49 +1,93 @@
 import { Request, RequestHandler, Response } from "express";
 import { Post } from "../models/Posts";
-import { Comments } from "../models/Comments";
 import { User } from "../models/User";
+import { scorePostByHashtags } from "../services/postService"
 import { createReadStream, promises as fsPromises } from "fs";
 import path from "path";
 
 
 
-export const getAllPosts: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    const limit = parseInt(req.query.limit as string, 10) || 10;
-    const posts = await Post.findAll({ limit });
-    res.status(200).json(posts);
-}
+export const getPosts: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const user = (req as any).user as unknown as User;
+        const limit = parseInt(req.query.limit as string, 10) || 10;
+
+        const likedHashtags = user?.taste?.likedHashtags || [];
+
+        const posts = await Post.findAll();
+
+        let viewdVideost = user.viewedVideos || [];
+
+        const scoredPosts = posts.map(post => {
+            const postHashtags = post.Hashtags || [];
+            const score = scorePostByHashtags(postHashtags, post._id, likedHashtags, viewdVideost);
+            return { post, score };
+        });
+
+
+        const sortedPosts = scoredPosts
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map(item => item.post);
+
+        const viewedSet = new Set(viewdVideost);
+
+        const newPostIds = sortedPosts
+            .filter(post => !viewedSet.has(post._id))
+            .map(post => post._id);
+
+        viewdVideost.push(...newPostIds);
+
+        if (viewdVideost.length > 200) {
+            viewdVideost = viewdVideost.slice(-200); // Behalte nur die letzten 200 IDs
+        }
+
+        await User.update(
+            { viewedVideos: viewdVideost },
+            { where: { _id: user._id } }
+        );
+        const username = user.username || "Random User";
+
+
+        res.status(200).json({ sortedPosts, username });
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
+    }
+};
 
 export const newPost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { userid, url } = req.body;
+        const { url, Hashtags } = req.body;
+        const user = (req as any).user;
 
-
-        const newCommentsList = await Comments.create({});
-        const commentListID = newCommentsList._id;
-
-
-        const newPost = await Post.create({
-            userid: userid,
-            likeCount: 0,
-            commentCount: 0,
-            commentListID: commentListID,
-            Hashtags: [],
-            URL: url,
-        });
-
-        const user = await User.findByPk(userid);
-
-        if (!user) {
+        if (!user || !user._id) {
             res.status(404).json({ message: "Benutzer nicht gefunden" });
             return;
         }
 
-        const updatedPostedVideos = [...user.postedVideos, newPost._id];
+        const userid = user._id;
 
-        const updatedProfile = { ...user.profile, posts: user.profile.posts + 1 };
+        const newPost = await Post.create({
+            likeCount: 0,
+            commentCount: 0,
+            userid: user._id,
+            URL: url,
+            Hashtags: Hashtags || []
+        });
+
+        // Aktualisiere postedVideos und Profil
+        const updatedPostedVideos = [...(user.postedVideos || []), newPost._id];
+        const updatedProfile = {
+            ...user.profile,
+            posts: (user.profile?.posts || 0) + 1
+        };
 
         await User.update(
-            { postedVideos: updatedPostedVideos, profile: updatedProfile },
+            {
+                postedVideos: updatedPostedVideos,
+                profile: updatedProfile
+            },
             { where: { _id: userid } }
         );
 
@@ -64,16 +108,38 @@ export const likePost: RequestHandler = async (req: Request, res: Response): Pro
     try {
         const post = await Post.findByPk(id);
 
-        if (post) {
-            post.likeCount = post.likeCount + 1;
-            await post.save();  // This will trigger the @AfterUpdate hook
+        if (!post) {
+            res.status(404).json({ message: "Post nicht gefunden" });
+            return;
+        }
+        const user = (req as any).user as unknown as User;
+        const userId = user._id;
+
+        const likedPosts = user.likedPosts || [];
+        const taste = user.taste || { likedHashtags: [] };
+        const likedHashtags = taste.likedHashtags || [];
+        if (likedPosts.includes(id)) {
+            res.status(400).json({ message: "Post wurde bereits geliket" });
+            return;
         }
 
-        res.status(200).json({ id: id, message: id + " Liked" });
+        likedHashtags.push(...post.Hashtags);
+        likedPosts.push(id);
+        await User.update(
+            { likedPosts: likedPosts, taste: { ...taste, likedHashtags: [...new Set(likedHashtags)] } },
+            { where: { _id: userId } }
+        );
+
+        post.likeCount += 1;
+        await post.save();
+
+        res.status(200).json({ message: `Post ${id} wurde geliked.` });
     } catch (e) {
-        console.error(e)
+        console.error("Fehler beim Liken:", e);
+        res.status(500).json({ message: "Fehler beim Liken", error: (e as Error).message });
     }
-}
+};
+
 
 
 export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
