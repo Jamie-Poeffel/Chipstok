@@ -44,7 +44,6 @@ For detailed documentation, please visit our [Documentation](docs).
 ✅ Improved SQL queries to reduce execution time by **40%**.  
 ✅ Added indexing to frequently queried columns.  
 ✅ Removed unnecessary joins to enhance performance.
-✅ Created a connection with ChipsyFans
 
 <br>
 
