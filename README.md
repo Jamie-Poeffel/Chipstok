@@ -19,7 +19,7 @@
 
 ## 📥 How to use
 
-1. `Go to Website: `[Chipsytok](https://www.chipsytok.bbzwinf.ch/)
+1. Go to Website: [Chipsytok](https://www.chipsytok.bbzwinf.ch/)
 
 <br>
 
@@ -33,33 +33,33 @@ For detailed documentation, please visit our [Documentation](docs).
 
 ## 👥 Contributors
 
-
 <a href="https://github.com/Jamie-Poeffel/chipstok/graphs/contributors">
   <img src="https://contrib.rocks/image?&columns=25&max=10000&&repo=Jamie-Poeffel/chipstok" noZoom />
 </a>
 
+
 ### 🎯 Jamie Poeffel (Backend Developer)
 
-**Contribution:** Optimized database queries for faster response times.  
-✅ Improved SQL queries to reduce execution time by **40%**.  
-✅ Added indexing to frequently queried columns.  
-✅ Removed unnecessary joins to enhance performance.
+- Optimized database queries for faster response times  
+- Improved SQL queries to reduce execution time by **40%**  
+- Added indexing to frequently queried columns  
+- Removed unnecessary joins to enhance performance
 
 <br>
 
 ### 🎨 Kush Srigiri (Frontend Developer)
 
-✅ Improved UI components for better accessibility and responsiveness  
-✅ Designed and implemented **Sign Up** and **Login** pages  
-✅ Created a consistent **color palette** and modern layout  
-✅ Refactored styles for maintainability and scalability
+- Improved UI components for better accessibility and responsiveness  
+- Designed and implemented **Sign Up** and **Login** pages  
+- Created a consistent **color palette** and modern layout  
+- Refactored styles for maintainability and scalability
 
 <br>
 
 ### 📝 Alessio Huber (Mockup Maker)
 
-✅ Created detailed **ER-Diagram** for better structure and planning  
-✅ Enhanced **mockup designs** to support visualization and time management
+- Created detailed **ER-Diagram** for better structure and planning  
+- Enhanced **mockup designs** to support visualization and time management
 
 <br>
 
