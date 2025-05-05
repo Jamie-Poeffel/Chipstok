@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 const languages = {
     en: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: 'Log in',
       signup: 'Sign up',
       firstName: 'First Name',
@@ -33,7 +33,7 @@ const languages = {
       },
     },
     de: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: 'Anmelden',
       signup: 'Registrieren',
       firstName: 'Vorname',
@@ -64,7 +64,7 @@ const languages = {
       },
     },
     fr: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: 'Se connecter',
       signup: "S'inscrire",
       firstName: 'Prénom',
@@ -95,7 +95,7 @@ const languages = {
       },
     },
     it: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: 'Accedi',
       signup: 'Registrati',
       firstName: 'Nome',
@@ -126,7 +126,7 @@ const languages = {
       },
     },
     es: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: 'Iniciar sesión',
       signup: 'Registrarse',
       firstName: 'Nombre',
@@ -157,7 +157,7 @@ const languages = {
       },
     },
     zh: {
-      title: 'ChipsTok',
+      title: 'Chipsytok',
       login: '登录',
       signup: '注册',
       firstName: '名字',
@@ -190,18 +190,46 @@ const languages = {
   };
   
 
-const selectedLanguage = ref(localStorage.getItem('language') || '');
+  const englishNames = {
+    en: 'English',
+    de: 'German',
+    fr: 'French',
+    it: 'Italian',
+    es: 'Spanish',
+    zh: 'Chinese',
+  };
+  
+ 
+  const selectedLanguage = ref(localStorage.getItem('language') || '');
+  
+  function setLanguage(lang) {
+    selectedLanguage.value = lang;
+    localStorage.setItem('language', lang);
+  }
+  
+  function t(key) {
+    const lang = selectedLanguage.value || 'en';
+    return (
+      key
+        .split('.')
+        .reduce((o, i) => (o ? o[i] : null), languages[lang]) || key
+    );
+  }
+  
+  function getEnglishName(lang) {
+    return englishNames[lang] || lang;
+  }
+  
+  
+  export function useLanguage() {
+    return {
+      languages,
+      selectedLanguage,
+      setLanguage,
+      t,
+      getEnglishName, 
+    };
+  }
 
-function setLanguage(lang) {
-  selectedLanguage.value = lang;
-  localStorage.setItem('language', lang);
-}
 
-function t(key) {
-  const lang = selectedLanguage.value || 'en';
-  return key.split('.').reduce((o, i) => (o ? o[i] : null), languages[lang]) || key;
-}
 
-export function useLanguage() {
-  return { languages, selectedLanguage, setLanguage, t };
-}

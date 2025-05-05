@@ -1,19 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
-import { Loader2 } from 'lucide-vue-next';
+import { Loader2, Globe } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
 
 const { selectedLanguage, setLanguage, languages, t } = useLanguage();
-const router = useRouter();
-const route = useRoute();
 
+const router = useRouter();
 const username = ref('');
 const password = ref('');
 const loading = ref(false);
 const errors = ref({ username: '', password: '' });
-const showLanguageModal = ref(!selectedLanguage.value);
+const showLanguageModal = ref(false); // ← starts closed (no auto pop‑up)
 
 const login = async () => {
   errors.value = { username: '', password: '' };
@@ -43,23 +42,20 @@ const login = async () => {
     }
   }
 };
-
-onMounted(() => {
-  if (!selectedLanguage.value) {
-    showLanguageModal.value = true;
-  }
-});
 </script>
 
 <template>
   <div
     class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
   >
+    <!-- login card -->
     <div
       class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
     >
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">{{ t('title') }}</h1>
+
       <form @submit.prevent="login" class="space-y-4">
+        <!-- username -->
         <div>
           <input
             v-model="username"
@@ -69,10 +65,14 @@ onMounted(() => {
           />
           <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
         </div>
+
+        <!-- password -->
         <div>
           <input v-model="password" type="password" :placeholder="t('password')" class="input" />
           <p v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</p>
         </div>
+
+        <!-- submit -->
         <button type="submit" class="button">
           <div v-if="!loading">{{ t('login') }}</div>
           <div v-else class="flex justify-center items-center">
@@ -80,33 +80,47 @@ onMounted(() => {
           </div>
         </button>
       </form>
+
+      <!-- forgot password -->
       <div class="mt-4 text-sm text-gray-500">
         <a href="#" class="text-blue-500 hover:underline">{{ t('forgotPassword') }}</a>
       </div>
+
+      <!-- sign‑up row -->
       <div class="mt-6 border-t pt-4 text-sm text-gray-700">
         {{ t('noAccount') }}
         <a href="/signup" class="text-blue-500 font-bold">{{ t('signup') }}</a>
       </div>
+
+      <!-- globe icon (opens modal) -->
+      <button
+        @click="showLanguageModal = true"
+        aria-label="Choose language"
+        class="mt-4 mx-auto block text-gray-500 hover:text-gray-700"
+      >
+        <Globe class="w-6 h-6" />
+      </button>
     </div>
 
-    <!-- Language Modal -->
+    <!-- language modal -->
     <div
       v-if="showLanguageModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
+
         <div class="flex flex-wrap justify-center gap-2">
           <button
-            v-for="(lang, code) in languages"
+            v-for="(_, code) in languages"
             :key="code"
             @click="
               setLanguage(code);
               showLanguageModal = false;
             "
-            class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 uppercase"
           >
-            {{ code.toUpperCase() }}
+            {{ code }}
           </button>
         </div>
       </div>
