@@ -13,7 +13,7 @@
               />
             </div>
             <div class="user-meta">
-              <p class="handle">@{{ username || 'error' }}</p>
+              <p class="handle">@{{ useAuthStore().username }}</p>
               <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
               <div class="stats">
                 <div>
@@ -70,52 +70,83 @@
     </div>
 
     <!-- Settings Modal -->
-    <div v-if="openSettings" class="modal-overlay" @click.self="openSettings = false">
-      <div class="modal">
-        <h3>Settings</h3>
-        <ul class="settings-list">
-          <li @click="openChangePassword = true">Change Password</li>
-          <li>Settings and Privacy</li>
-          <li @click="logout">Log Out</li>
-          <li class="cancel-btn" @click="openSettings = false">Cancel</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div v-if="openChangePassword" class="modal-overlay" @click.self="openChangePassword = false">
-      <div class="modal">
-        <h3>Change Password</h3>
-        <input
-          v-model="currentPassword"
-          placeholder="Current Password"
-          type="password"
-          class="input"
-        />
-        <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
-        <input
-          v-model="confirmPassword"
-          placeholder="Confirm New Password"
-          type="password"
-          class="input"
-        />
-        <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }">
-          {{ passwordMessage }}
-        </p>
-        <button class="button w-full mt-2" @click="changePassword">Change</button>
-        <button class="cancel-btn w-full mt-2" @click="openChangePassword = false">Cancel</button>
-      </div>
-    </div>
-
-    <!-- Share Modal -->
-    <div v-if="Share" class="modal-overlay" @click.self="Share = false">
-      <div class="modal">
-        <h3>Share Profile</h3>
-        <div class="mt-4 w-full flex justify-center items-center">
-          <div ref="qrCodeContainer"></div>
+    <Transition name="fade">
+      <div
+        v-if="openSettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="openSettings = false"
+      >
+        <div
+          class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6 transform transition-all duration-300 scale-100"
+        >
+          <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
+          <ul class="settings-list space-y-3 text-gray-800">
+            <li @click="openChangePassword = true" class="cursor-pointer hover:text-pink-600">
+              Change Password
+            </li>
+            <li class="cursor-pointer hover:text-pink-600">Settings and Privacy</li>
+            <li @click="logout" class="cursor-pointer hover:text-pink-600">Log Out</li>
+          </ul>
+          <button
+            class="w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            @click="openSettings = false"
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    </div>
+    </Transition>
+
+    <!-- Change Password Modal -->
+    <Transition name="fade">
+      <div
+        v-if="openChangePassword"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="openChangePassword = false"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Change Password</h3>
+          <input
+            v-model="currentPassword"
+            placeholder="Current Password"
+            type="password"
+            class="input"
+          />
+          <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
+          <input
+            v-model="confirmPassword"
+            placeholder="Confirm New Password"
+            type="password"
+            class="input"
+          />
+          <p
+            v-if="passwordMessage"
+            :class="{ error: passwordError, success: !passwordError }"
+            class="mt-2 text-center"
+          >
+            {{ passwordMessage }}
+          </p>
+          <button class="button w-full mt-4" @click="changePassword">Change</button>
+          <button class="cancel-btn w-full mt-2" @click="openChangePassword = false">Cancel</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Share Modal -->
+    <Transition name="fade">
+      <div
+        v-if="shareModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
+          <div class="w-full flex justify-center items-center">
+            <div ref="qrCodeContainer"></div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -126,14 +157,11 @@ import { Settings } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import QRCodeStyling from 'qr-code-styling';
 
+// Tabs & modals
 const activeTab = ref('posts');
 const openSettings = ref(false);
 const openChangePassword = ref(false);
-const username = ref(useAuthStore().username);
-const Share = ref(false);
-const qrCodeContainer = ref(null);
-const qrCode = ref(null);
-const router = useRouter();
+const shareModal = ref(false);
 
 // Password change state
 const currentPassword = ref('');
@@ -142,21 +170,27 @@ const confirmPassword = ref('');
 const passwordMessage = ref('');
 const passwordError = ref(false);
 
+// Router
+const router = useRouter();
+
+// QR code
+const qrCodeContainer = ref(null);
+const qrCode = ref(null);
+
 function logout() {
-  // Simulate logout and go to login page
   openSettings.value = false;
   router.push('/login');
 }
 
 function share() {
-  Share.value = true;
+  shareModal.value = true;
 }
 
 const initQRCode = () => {
   qrCode.value = new QRCodeStyling({
     width: 300,
     height: 300,
-    data: 'Hello World',
+    data: window.location.href,
     dotsOptions: {
       color: '#6a1a4c',
       type: 'dots',
@@ -168,7 +202,7 @@ const initQRCode = () => {
 };
 
 watchEffect(() => {
-  if (Share.value && qrCodeContainer.value) {
+  if (shareModal.value && qrCodeContainer.value) {
     initQRCode();
     qrCode.value.append(qrCodeContainer.value);
   }
@@ -266,94 +300,136 @@ function changePassword() {
   font-weight: 600;
 }
 
-/* Simplified button styles */
-.button {
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
-  border: 1px solid #d1d5db;
-  transition: all 0.3s ease-in-out;
-  transform: scale(1);
+.popup,
+.modal,
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
+.button {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #4b5563;
+  background: transparent;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
 .button:hover {
-  background-color: #d1d5db;
-  transform: scale(1);
+  background: #e5e7eb;
+}
+.button:active {
+  transform: scale(0.95);
 }
 
 .icon-button {
-  height: 32.5px !important;
-  width: 32.5px !important;
+  height: 30px;
+  width: 30px;
   display: flex;
-  justify-content: center;
+  width: 30px;
+  height: 30px;
   align-items: center;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
+  justify-content: center;
   border: 1px solid #d1d5db;
-  transition: all 0.3s ease-in-out;
-  transform: scale(1);
+  border-radius: 0.5rem;
+  color: #4b5563;
+  background: transparent;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .icon-button:hover {
-  background-color: #d1d5db;
-  transform: scale(1.05);
+  background: #e5e7eb;
+}
+.icon-button:active {
+  transform: scale(0.95);
 }
 
 .input {
   width: 100%;
-  padding: 8px;
-  margin-top: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font: inherit;
+  color: inherit;
+  box-sizing: border-box;
 }
 
 .error {
-  color: red;
+  color: #dc2626;
   font-size: 0.875rem;
 }
-
 .success {
-  color: green;
+  color: #16a34a;
   font-size: 0.875rem;
 }
 
-/* Tabs and posts */
 .tab {
-  transition: all 0.3s ease;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
 }
 .tab:hover,
 .tab.active {
-  color: #ff2d55;
+  color: #ef4444;
   transform: scale(1.05);
 }
 
 .post-thumb {
   transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 .post-thumb:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .cancel-btn {
-  background-color: #ff2d55;
-  color: white;
-  border-radius: 8px;
-  margin-top: 10px;
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  background: #ef4444;
+  color: #fff;
   font-weight: 600;
   border: none;
-  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  text-align: center;
   cursor: pointer;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .cancel-btn:hover {
-  background-color: #e60039;
+  background: #dc2626;
+}
+.cancel-btn:focus {
+  outline: none;
+}
+.cancel-btn:active {
   transform: scale(1.05);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
 }
 </style>
