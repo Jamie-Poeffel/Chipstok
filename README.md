@@ -60,7 +60,7 @@ For detailed documentation, please visit our [Documentation](docs).
 
 <br>
 
-### 📝 Alessio Huber (Mockup Maker)
+### 📝 Alessio Huber (Mockup Creator)
 
 - Created detailed **ER-Diagram** for better structure and planning  
 - Enhanced **mockup designs** to support visualization and time management
