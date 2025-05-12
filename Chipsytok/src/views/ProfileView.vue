@@ -2,44 +2,38 @@
   <div class="profile-container">
     <!-- Profile header and user meta -->
     <div class="profile-header">
-      <div class="header-top">
-        <div class="flex flex-col">
-          <div class="flex flex-row">
-            <div class="avatar-wrapper">
-              <img
-                class="avatar"
-                src="https://randomuser.me/api/portraits/men/3.jpg"
-                alt="avatar"
-              />
-            </div>
-            <div class="user-meta">
-              <p class="handle">@{{ useAuthStore().username }}</p>
-              <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
-              <div class="stats">
-                <div>
-                  <strong
-                    >{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong
-                  >
-                </div>
-                <div>
-                  <strong
-                    >{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong
-                  >
-                </div>
-                <div>
-                  <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
-                </div>
+      <div class="header-top flex flex-col lg:flex-row lg:items-start lg:justify-between w-full">
+        <!-- Left: avatar + meta -->
+        <div class="flex flex-row">
+          <div class="avatar-wrapper">
+            <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
+          </div>
+          <div class="user-meta">
+            <p class="handle">@{{ useAuthStore().username }}</p>
+            <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
+
+            <div class="stats">
+              <div>
+                <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong>
+              </div>
+              <div>
+                <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong>
+              </div>
+              <div>
+                <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
               </div>
             </div>
-          </div>
 
-          <!-- Buttons -->
-          <div class="flex items-center gap-1 w-full h-[24px] mt-3">
-            <button class="flex-1 button">Profil bearbeiten</button>
-            <button @click="share" class="flex-1 button">Profil Teilen</button>
-            <button class="icon-button" @click="openSettings = true">
-              <Settings class="w-4 h-4" />
-            </button>
+            <!-- Action buttons -->
+            <!-- Action bar – stretches full screen -->
+            <div class="flex items-center gap-1 w-full h-[24px] mt-3">
+              <button class="flex-1 button">Profil bearbeiten</button>
+              <button @click="share" class="flex-1 button">Profil Teilen</button>
+              <button class="icon-button" @click="openSettings = true">
+                <Settings class="w-4 h-4" />
+              </button>
+              <!-- Settings keeps its original size -->
+            </div>
           </div>
         </div>
       </div>
@@ -50,45 +44,64 @@
       <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
         >Posts</span
       >
-      <span
-        class="tab"
-        :class="{ active: activeTab === 'followers' }"
-        @click="activeTab = 'followers'"
+      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
         >Saved</span
       >
-      <span
-        class="tab"
-        :class="{ active: activeTab === 'following' }"
-        @click="activeTab = 'following'"
+      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
         >Tagged</span
       >
     </div>
 
-    <!-- Posts Grid -->
-    <div class="posts-grid">
-      <div v-for="n in 9" :key="n" class="post-thumb"></div>
-    </div>
+    <!-- Profile grid section -->
+    <section class="profile-grid-section w-full">
+      <!-- Videos -->
+      <div v-if="importedVideos.length" class="videos-grid grid grid-cols-3 gap-1 mt-4">
+        <div
+          v-for="(video, index) in importedVideos"
+          :key="index"
+          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100"
+        >
+          <video
+            :src="video.src"
+            class="absolute inset-0 w-full h-full object-cover"
+            muted
+            playsinline
+          ></video>
+        </div>
+      </div>
 
-    <!-- Settings Modal -->
+      <!-- Posts grid (infinite scroll) -->
+      <div v-if="activeTab === 'posts'" class="posts-grid">
+        <div v-for="(post, index) in posts" :key="index" class="post-thumb" />
+      </div>
+
+      <!-- Placeholders for Saved & Tagged -->
+      <div v-if="activeTab === 'saved'" class="posts-grid">
+        <div v-for="n in 6" :key="n" class="post-thumb bg-gray-200" />
+      </div>
+      <div v-if="activeTab === 'tagged'" class="posts-grid">
+        <div v-for="n in 6" :key="n" class="post-thumb bg-gray-200" />
+      </div>
+    </section>
+
+    <!-- Settings drawer -->
     <Transition name="fade">
       <div
         v-if="openSettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-end z-40"
         @click.self="openSettings = false"
       >
-        <div
-          class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6 transform transition-all duration-300 scale-100"
-        >
+        <div class="bg-white h-full w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl">
           <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
-          <ul class="settings-list space-y-3 text-gray-800">
-            <li @click="openChangePassword = true" class="cursor-pointer hover:text-pink-600">
+          <ul class="settings-list space-y-3 text-center text-gray-800">
+            <li @click="openChangePassword = true" class="cursor-pointer hover:text-red-600">
               Change Password
             </li>
-            <li class="cursor-pointer hover:text-pink-600">Settings and Privacy</li>
-            <li @click="logout" class="cursor-pointer hover:text-pink-600">Log Out</li>
+            <li class="cursor-pointer hover:text-red-600">Settings and Privacy</li>
+            <li @click="logout" class="cursor-pointer hover:text-red-600">Log Out</li>
           </ul>
           <button
-            class="w-full mt-6 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
             @click="openSettings = false"
           >
             Cancel
@@ -97,7 +110,7 @@
       </div>
     </Transition>
 
-    <!-- Change Password Modal -->
+    <!-- Change‑password modal -->
     <Transition name="fade">
       <div
         v-if="openChangePassword"
@@ -132,7 +145,7 @@
       </div>
     </Transition>
 
-    <!-- Share Modal -->
+    <!-- Share profile modal -->
     <Transition name="fade">
       <div
         v-if="shareModal"
@@ -151,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { Settings } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
@@ -169,6 +182,32 @@ const newPassword = ref('');
 const confirmPassword = ref('');
 const passwordMessage = ref('');
 const passwordError = ref(false);
+
+// Infinite‑scroll post grid
+const INITIAL_POSTS = 30;
+const BATCH_SIZE = 15;
+const posts = ref(Array.from({ length: INITIAL_POSTS }));
+
+function addMorePosts() {
+  posts.value.push(...Array.from({ length: BATCH_SIZE }));
+}
+
+function handleScroll() {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+    addMorePosts();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+// Imported videos placeholder
+const importedVideos = ref([]);
 
 // Router
 const router = useRouter();
@@ -191,13 +230,8 @@ const initQRCode = () => {
     width: 300,
     height: 300,
     data: window.location.href,
-    dotsOptions: {
-      color: '#6a1a4c',
-      type: 'dots',
-    },
-    backgroundOptions: {
-      color: '#ffffff',
-    },
+    dotsOptions: { color: '#6a1a4c', type: 'dots' },
+    backgroundOptions: { color: '#ffffff' },
   });
 };
 
@@ -213,24 +247,19 @@ function formatNumber(value) {
 }
 
 function changePassword() {
-  const simulatedCorrectPassword = '123456'; // Simulate correct password check
-
+  const simulatedCorrectPassword = '123456';
   if (currentPassword.value !== simulatedCorrectPassword) {
     passwordMessage.value = 'Current password is incorrect.';
     passwordError.value = true;
     return;
   }
-
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = 'New passwords do not match.';
     passwordError.value = true;
     return;
   }
-
   passwordMessage.value = 'Password changed successfully!';
   passwordError.value = false;
-
-  // Reset form after success
   setTimeout(() => {
     openChangePassword.value = false;
     currentPassword.value = '';
@@ -242,10 +271,17 @@ function changePassword() {
 </script>
 
 <style scoped>
-
-/* Header */
+/* Container & header */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+}
 .profile-header {
   padding: 2rem;
+  width: 100%;
 }
 
 /* Avatar */
@@ -253,7 +289,6 @@ function changePassword() {
   margin-right: 1rem;
   flex-shrink: 0;
 }
-
 .avatar {
   width: 96px;
   height: 96px;
@@ -262,32 +297,24 @@ function changePassword() {
   object-fit: cover;
 }
 
-/* User Meta */
-.flex-row {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
+/* User meta */
 .user-meta {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
-
 .handle {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
+  word-break: break-word;
 }
-
 .bio {
   font-size: 0.95rem;
   color: #6b7280;
   white-space: pre-line;
 }
-
 .stats {
   display: flex;
   gap: 1rem;
@@ -295,23 +322,13 @@ function changePassword() {
   font-size: 0.9rem;
   color: #4b5563;
 }
-
 .stats strong {
   font-weight: 600;
 }
 
-.popup,
-.modal,
-.dialog {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.button {
-  padding: 0.25rem 0.75rem;
+/* Buttons */
+.button,
+.icon-button {
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   font-size: 0.875rem;
@@ -323,47 +340,36 @@ function changePassword() {
     transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.button:hover {
-  background: #e5e7eb;
+.button {
+  padding: 0.25rem 0.75rem;
 }
-.button:active {
-  transform: scale(0.95);
-}
-
 .icon-button {
-  height: 30px;
-  width: 30px;
+  height: 36px;
+  width: 36px;
   display: flex;
-  width: 30px;
-  height: 30px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  color: #4b5563;
-  background: transparent;
-  transition:
-    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+.button:hover,
 .icon-button:hover {
   background: #e5e7eb;
 }
+.button:active,
 .icon-button:active {
   transform: scale(0.95);
 }
 
+/* Inputs */
 .input {
   width: 100%;
   margin-top: 0.5rem;
   padding: 0.5rem 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
-  font: inherit;
-  color: inherit;
   box-sizing: border-box;
 }
 
+/* Validation text */
 .error {
   color: #dc2626;
   font-size: 0.875rem;
@@ -373,9 +379,22 @@ function changePassword() {
   font-size: 0.875rem;
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
 .tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.75rem 0;
+  font-weight: 600;
+  cursor: pointer;
   transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
 }
 .tab:hover,
 .tab.active {
@@ -383,7 +402,26 @@ function changePassword() {
   transform: scale(1.05);
 }
 
+/* Grid section */
+.profile-grid-section {
+  width: 100%;
+}
+
+/* Posts grid */
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  max-width: 640px;
+  width: 100%;
+  margin: 2rem auto 0;
+}
 .post-thumb {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  background-color: #e5e7eb;
+  border-radius: 0.25rem;
   transition:
     transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -396,6 +434,21 @@ function changePassword() {
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Video thumbnails share hover style */
+.video-thumb {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.video-thumb:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Misc buttons */
 .cancel-btn {
   display: inline-block;
   margin-top: 0.75rem;
@@ -405,7 +458,6 @@ function changePassword() {
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
-  text-align: center;
   cursor: pointer;
   transition:
     transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -414,13 +466,11 @@ function changePassword() {
 .cancel-btn:hover {
   background: #dc2626;
 }
-.cancel-btn:focus {
-  outline: none;
-}
 .cancel-btn:active {
   transform: scale(1.05);
 }
 
+/* Fade transitions */
 .fade-enter-active,
 .fade-leave-active {
   transition:
