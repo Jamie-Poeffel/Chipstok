@@ -13,13 +13,7 @@
 
 ## 🚀 Description
 
-**Chipstok**  is a full-stack social media platform where users can upload, browse, and watch short-form videos in a fast, interactive interface. It features a modern Vue 3 + TypeScript front-end and a REST-style back-end API, built for responsive performance and clean UX.
-
-**Languages used:**
-
-- 🟢 Vue  
-- 🔵 TypeScript  
-- 🟡 JavaScript
+**Chipstok**  is a social media platform where users can upload, browse, and watch short-form videos in a fast, interactive interface. It features a modern Vue 3 + TypeScript front-end and a REST-style back-end API, built for responsive performance and clean UX.
 
 
 [1]: https://github.com/Jamie-Poeffel/Chipstok "GitHub - Jamie-Poeffel/Chipstok"
