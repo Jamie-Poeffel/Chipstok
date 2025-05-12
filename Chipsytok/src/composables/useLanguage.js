@@ -30,6 +30,7 @@ const languages = {
         passwordRequired: 'Password is required',
         emailRequired: 'Email is required',
         passwordsMismatch: 'Passwords do not match',
+        generalError: 'An error occurred. Please try again.',
       },
     },
     de: {
@@ -61,6 +62,7 @@ const languages = {
         passwordRequired: 'Passwort ist erforderlich',
         emailRequired: 'E-Mail ist erforderlich',
         passwordsMismatch: 'Passwörter stimmen nicht überein',
+        generalError: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
       },
     },
     fr: {
@@ -92,6 +94,7 @@ const languages = {
         passwordRequired: 'Le mot de passe est requis',
         emailRequired: "L'e-mail est requis",
         passwordsMismatch: 'Les mots de passe ne correspondent pas',
+        generalError: 'Une erreur s’est produite. Veuillez réessayer.',
       },
     },
     it: {
@@ -123,6 +126,7 @@ const languages = {
         passwordRequired: 'La password è obbligatoria',
         emailRequired: "L'email è obbligatoria",
         passwordsMismatch: 'Le password non corrispondono',
+        generalError: 'Si è verificato un errore. Riprova.',
       },
     },
     es: {
@@ -154,6 +158,7 @@ const languages = {
         passwordRequired: 'La contraseña es obligatoria',
         emailRequired: 'El correo electrónico es obligatorio',
         passwordsMismatch: 'Las contraseñas no coinciden',
+        generalError: 'Ocurrió un error. Por favor, inténtalo de nuevo.',
       },
     },
     zh: {
@@ -185,6 +190,7 @@ const languages = {
         passwordRequired: '密码是必填项',
         emailRequired: '电子邮件是必填项',
         passwordsMismatch: '两次输入的密码不一致',
+        generalError: '发生错误。请再试一次。',
       },
     },
   };
@@ -203,9 +209,10 @@ const languages = {
   const selectedLanguage = ref(localStorage.getItem('language') || '');
   
   function setLanguage(lang) {
-    selectedLanguage.value = lang;
-    localStorage.setItem('language', lang);
-  }
+  localStorage.setItem('language', lang);
+  window.location.reload(); 
+}
+
   
   function t(key) {
     const lang = selectedLanguage.value || 'en';
