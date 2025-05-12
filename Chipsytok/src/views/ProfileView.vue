@@ -284,8 +284,8 @@ function changePassword() {
 }
 
 .icon-button {
-  height: 30px;
-  width: 30px;
+  height: 32.5px !important;
+  width: 32.5px !important;
   display: flex;
   justify-content: center;
   align-items: center;
