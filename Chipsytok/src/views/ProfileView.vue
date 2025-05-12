@@ -88,7 +88,7 @@
             <li @click="logout" class="cursor-pointer hover:text-pink-600">Log Out</li>
           </ul>
           <button
-            class="w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            class="w-full mt-6 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
             @click="openSettings = false"
           >
             Cancel
