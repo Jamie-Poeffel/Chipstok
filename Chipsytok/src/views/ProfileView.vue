@@ -242,6 +242,64 @@ function changePassword() {
 </script>
 
 <style scoped>
+
+/* Header */
+.profile-header {
+  padding: 2rem;
+}
+
+/* Avatar */
+.avatar-wrapper {
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid #e5e7eb;
+  object-fit: cover;
+}
+
+/* User Meta */
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.handle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.bio {
+  font-size: 0.95rem;
+  color: #6b7280;
+  white-space: pre-line;
+}
+
+.stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.stats strong {
+  font-weight: 600;
+}
+
 .popup,
 .modal,
 .dialog {
@@ -273,6 +331,8 @@ function changePassword() {
 }
 
 .icon-button {
+  height: 30px;
+  width: 30px;
   display: flex;
   width: 30px;
   height: 30px;
