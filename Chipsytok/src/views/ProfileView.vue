@@ -88,10 +88,10 @@
     <Transition name="fade">
       <div
         v-if="openSettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-end z-40"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
         @click.self="openSettings = false"
       >
-        <div class="bg-white h-full w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl">
+        <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
           <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
             <li @click="openChangePassword = true" class="cursor-pointer hover:text-red-600">
