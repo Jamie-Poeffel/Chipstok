@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
-import { useAuthStore } from '@/stores/auth' 
+import { useAuthStore } from '@/stores/auth'
 import ResetPassword from '@/views/ResetPassword.vue';
 
 
@@ -50,8 +50,14 @@ const router = createRouter({
     },
     {
       path: '/profile',
-      name: 'Profile',
+      name: 'ProfileWithUsername',
       component: () => import('@/views/ProfileView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/me',
+      name: 'Profile',
+      component: () => import('@/views/UserProfileView.vue'),
       meta: { requiresAuth: true }
     },
     {
