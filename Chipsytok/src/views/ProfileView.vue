@@ -10,18 +10,18 @@
                             <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
                         </div>
                         <div class="user-meta">
-                            <p class="handle">@{{ useAuthStore().username }}</p>
-                            <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
+                            <p class="handle">@{{ user?.username }}</p>
+                            <p class="bio">{{ user?.profile?.bio || '\n' }}</p>
 
                             <div class="stats">
                                 <div>
-                                    <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong>
+                                    <strong>{{ formatNumber(user?.profile?.followers) }} Following</strong>
                                 </div>
                                 <div>
-                                    <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong>
+                                    <strong>{{ formatNumber(user?.profile?.following) }} Followers</strong>
                                 </div>
                                 <div>
-                                    <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
+                                    <strong>{{ formatNumber(user?.profile?.likeCount) }} Likes</strong>
                                 </div>
                             </div>
 
@@ -64,12 +64,22 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+
+const user = ref(null);
+
+onMounted(async () => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}`, {
+        credentials: 'include',
+    });
+    user.value = await res.json();
+});
 
 // Tabs & modals
 const activeTab = ref('posts');
-
-
 
 // Infinite‑scroll post grid
 const INITIAL_POSTS = 30;
@@ -86,9 +96,7 @@ function handleScroll() {
     }
 }
 
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-});
+
 
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);

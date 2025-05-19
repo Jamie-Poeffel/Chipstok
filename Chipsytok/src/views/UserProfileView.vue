@@ -7,11 +7,7 @@
         <div class="flex flex-col w-full">
           <div class="flex flex-row">
             <div class="avatar-wrapper">
-              <img
-                class="avatar"
-                src="https://randomuser.me/api/portraits/men/3.jpg"
-                alt="avatar"
-              />
+              <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
             </div>
             <div class="user-meta">
               <p class="handle">@{{ useAuthStore().username }}</p>
@@ -19,14 +15,10 @@
 
               <div class="stats">
                 <div>
-                  <strong
-                    >{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong
-                  >
+                  <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong>
                 </div>
                 <div>
-                  <strong
-                    >{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong
-                  >
+                  <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong>
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
@@ -51,32 +43,18 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
-        >Posts</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
-        >Saved</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
-        >Tagged</span
-      >
+      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
+      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'">Saved</span>
+      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'">Tagged</span>
     </div>
 
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
       <!-- Videos -->
       <div v-if="importedVideos.length" class="videos-grid grid grid-cols-3 gap-1 mt-4">
-        <div
-          v-for="(video, index) in importedVideos"
-          :key="index"
-          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100"
-        >
-          <video
-            :src="video.src"
-            class="absolute inset-0 w-full h-full object-cover"
-            muted
-            playsinline
-          ></video>
+        <div v-for="(video, index) in importedVideos" :key="index"
+          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100">
+          <video :src="video.src" class="absolute inset-0 w-full h-full object-cover" muted playsinline></video>
         </div>
       </div>
 
@@ -96,11 +74,8 @@
 
     <!-- Settings drawer -->
     <Transition name="fade">
-      <div
-        v-if="openSettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
-        @click.self="openSettings = false"
-      >
+      <div v-if="openSettings" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
+        @click.self="openSettings = false">
         <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
           <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
@@ -112,8 +87,7 @@
           </ul>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openSettings = false"
-          >
+            @click="openSettings = false">
             Cancel
           </button>
         </div>
@@ -122,31 +96,15 @@
 
     <!-- Change‑password modal -->
     <Transition name="fade">
-      <div
-        v-if="openChangePassword"
+      <div v-if="openChangePassword"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openChangePassword = false"
-      >
+        @click.self="openChangePassword = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Change Password</h3>
-          <input
-            v-model="currentPassword"
-            placeholder="Current Password"
-            type="password"
-            class="input"
-          />
+          <input v-model="currentPassword" placeholder="Current Password" type="password" class="input" />
           <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
-          <input
-            v-model="confirmPassword"
-            placeholder="Confirm New Password"
-            type="password"
-            class="input"
-          />
-          <p
-            v-if="passwordMessage"
-            :class="{ error: passwordError, success: !passwordError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="confirmPassword" placeholder="Confirm New Password" type="password" class="input" />
+          <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }" class="mt-2 text-center">
             {{ passwordMessage }}
           </p>
           <button class="button w-full mt-4" @click="changePassword">Change</button>
@@ -157,11 +115,8 @@
 
     <!-- Share profile modal -->
     <Transition name="fade">
-      <div
-        v-if="shareModal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="shareModal = false"
-      >
+      <div v-if="shareModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
           <div class="w-full flex justify-center items-center">
@@ -239,7 +194,7 @@ const initQRCode = () => {
   qrCode.value = new QRCodeStyling({
     width: 300,
     height: 300,
-    data: window.location.href,
+    data: 'https://www.chipsytok.bbzwinf.ch/profile?username=' + useAuthStore().username,
     dotsOptions: { color: '#6a1a4c', type: 'dots' },
     backgroundOptions: { color: '#ffffff' },
   });
@@ -289,6 +244,7 @@ function changePassword() {
   width: 100%;
   min-height: 100vh;
 }
+
 .profile-header {
   padding: 2rem;
   width: 100%;
@@ -299,6 +255,7 @@ function changePassword() {
   margin-right: 1rem;
   flex-shrink: 0;
 }
+
 .avatar {
   width: 96px;
   height: 96px;
@@ -314,17 +271,20 @@ function changePassword() {
   flex-direction: column;
   gap: 0.25rem;
 }
+
 .handle {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
   word-break: break-word;
 }
+
 .bio {
   font-size: 0.95rem;
   color: #6b7280;
   white-space: pre-line;
 }
+
 .stats {
   display: flex;
   gap: 1rem;
@@ -332,6 +292,7 @@ function changePassword() {
   font-size: 0.9rem;
   color: #4b5563;
 }
+
 .stats strong {
   font-weight: 600;
 }
@@ -350,9 +311,11 @@ function changePassword() {
     transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .button {
   padding: 0.25rem 0.75rem;
 }
+
 .icon-button {
   height: 30px;
   width: 30px;
@@ -360,10 +323,12 @@ function changePassword() {
   align-items: center;
   justify-content: center;
 }
+
 .button:hover,
 .icon-button:hover {
   background: #e5e7eb;
 }
+
 .button:active,
 .icon-button:active {
   transform: scale(0.95);
@@ -384,6 +349,7 @@ function changePassword() {
   color: #dc2626;
   font-size: 0.875rem;
 }
+
 .success {
   color: #16a34a;
   font-size: 0.875rem;
@@ -398,6 +364,7 @@ function changePassword() {
   border-bottom: 1px solid #e5e7eb;
   margin-top: 1rem;
 }
+
 .tab {
   flex: 1;
   text-align: center;
@@ -406,6 +373,7 @@ function changePassword() {
   cursor: pointer;
   transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .tab:hover,
 .tab.active {
   color: #ef4444;
@@ -426,6 +394,7 @@ function changePassword() {
   width: 100%;
   margin: 2rem auto 0;
 }
+
 .post-thumb {
   position: relative;
   width: 100%;
@@ -437,6 +406,7 @@ function changePassword() {
     box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .post-thumb:hover {
   transform: scale(1.05);
   box-shadow:
@@ -451,6 +421,7 @@ function changePassword() {
     box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .video-thumb:hover {
   transform: scale(1.05);
   box-shadow:
@@ -473,9 +444,11 @@ function changePassword() {
     transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .cancel-btn:hover {
   background: #dc2626;
 }
+
 .cancel-btn:active {
   transform: scale(1.05);
 }
@@ -487,6 +460,7 @@ function changePassword() {
     opacity 0.25s ease,
     transform 0.25s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

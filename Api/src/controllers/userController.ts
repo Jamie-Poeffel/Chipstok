@@ -13,10 +13,10 @@ export const getAllUsers: RequestHandler = async (req: Request, res: Response): 
 
 }
 
-export const getUserById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params.id;
+export const getUserByUsername: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const username = req.params.username;
 
-    User.findByPk(userId)
+    User.findOne({ where: { username } })
         .then((user) => {
             if (user) {
                 res.status(200).json(user);
