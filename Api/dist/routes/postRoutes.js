@@ -6,5 +6,5 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = (0, express_1.Router)();
 router.get('/', authMiddleware_1.authMiddleware, postController_1.getPosts);
 router.post('/:id/like', authMiddleware_1.authMiddleware, postController_1.likePost);
-router.get('/stream/:id', authMiddleware_1.authMiddleware, postController_1.getStream);
+router.get('/stream/:id', postController_1.getStream);
 exports.default = router;
