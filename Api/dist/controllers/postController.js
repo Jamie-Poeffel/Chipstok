@@ -12,39 +12,71 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStream = exports.likePost = exports.newPost = exports.getAllPosts = void 0;
+exports.getStream = exports.likePost = exports.newPost = exports.getPosts = void 0;
 const Posts_1 = require("../models/Posts");
-const Comments_1 = require("../models/Comments");
 const User_1 = require("../models/User");
+const postService_1 = require("../services/postService");
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
-const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const posts = yield Posts_1.Post.findAll({ limit });
-    res.status(200).json(posts);
-});
-exports.getAllPosts = getAllPosts;
-const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const { userid, url } = req.body;
-        const newCommentsList = yield Comments_1.Comments.create({});
-        const commentListID = newCommentsList._id;
-        const newPost = yield Posts_1.Post.create({
-            userid: userid,
-            likeCount: 0,
-            commentCount: 0,
-            commentListID: commentListID,
-            Hashtags: [],
-            URL: url,
+        const user = req.user;
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const likedHashtags = ((_a = user === null || user === void 0 ? void 0 : user.taste) === null || _a === void 0 ? void 0 : _a.likedHashtags) || [];
+        const posts = yield Posts_1.Post.findAll();
+        let viewdVideost = user.viewedVideos || [];
+        const scoredPosts = posts.map(post => {
+            const postHashtags = post.Hashtags || [];
+            const score = (0, postService_1.scorePostByHashtags)(postHashtags, post._id, likedHashtags, viewdVideost);
+            return { post, score };
         });
-        const user = yield User_1.User.findByPk(userid);
-        if (!user) {
+        const sortedPosts = scoredPosts
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map(item => item.post);
+        const viewedSet = new Set(viewdVideost);
+        const newPostIds = sortedPosts
+            .filter(post => !viewedSet.has(post._id))
+            .map(post => post._id);
+        viewdVideost.push(...newPostIds);
+        if (viewdVideost.length > 200) {
+            viewdVideost = viewdVideost.slice(-200); // Behalte nur die letzten 200 IDs
+        }
+        yield User_1.User.update({ viewedVideos: viewdVideost }, { where: { _id: user._id } });
+        const username = user.username || "Random User";
+        res.status(200).json({ sortedPosts, username });
+    }
+    catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+});
+exports.getPosts = getPosts;
+const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { url, Hashtags } = req.body;
+        const user = req.user;
+        if (!user || !user._id) {
             res.status(404).json({ message: "Benutzer nicht gefunden" });
             return;
         }
-        const updatedPostedVideos = [...user.postedVideos, newPost._id];
-        const updatedProfile = Object.assign(Object.assign({}, user.profile), { posts: user.profile.posts + 1 });
-        yield User_1.User.update({ postedVideos: updatedPostedVideos, profile: updatedProfile }, { where: { _id: userid } });
+        const userid = user._id;
+        const newPost = yield Posts_1.Post.create({
+            likeCount: 0,
+            commentCount: 0,
+            userid: user._id,
+            URL: url,
+            Hashtags: Hashtags || []
+        });
+        // Aktualisiere postedVideos und Profil
+        const updatedPostedVideos = [...(user.postedVideos || []), newPost._id];
+        const updatedProfile = Object.assign(Object.assign({}, user.profile), { posts: (((_a = user.profile) === null || _a === void 0 ? void 0 : _a.posts) || 0) + 1 });
+        yield User_1.User.update({
+            postedVideos: updatedPostedVideos,
+            profile: updatedProfile
+        }, { where: { _id: userid } });
         res.status(201).json({
             message: "Post erfolgreich erstellt!",
             post: newPost
@@ -60,14 +92,29 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
         const post = yield Posts_1.Post.findByPk(id);
-        if (post) {
-            post.likeCount = post.likeCount + 1;
-            yield post.save(); // This will trigger the @AfterUpdate hook
+        if (!post) {
+            res.status(404).json({ message: "Post nicht gefunden" });
+            return;
         }
-        res.status(200).json({ id: id, message: id + " Liked" });
+        const user = req.user;
+        const userId = user._id;
+        const likedPosts = user.likedPosts || [];
+        const taste = user.taste || { likedHashtags: [] };
+        const likedHashtags = taste.likedHashtags || [];
+        if (likedPosts.includes(id)) {
+            res.status(400).json({ message: "Post wurde bereits geliket" });
+            return;
+        }
+        likedHashtags.push(...post.Hashtags);
+        likedPosts.push(id);
+        yield User_1.User.update({ likedPosts: likedPosts, taste: Object.assign(Object.assign({}, taste), { likedHashtags: [...new Set(likedHashtags)] }) }, { where: { _id: userId } });
+        post.likeCount += 1;
+        yield post.save();
+        res.status(200).json({ message: `Post ${id} wurde geliked.` });
     }
     catch (e) {
-        console.error(e);
+        console.error("Fehler beim Liken:", e);
+        res.status(500).json({ message: "Fehler beim Liken", error: e.message });
     }
 });
 exports.likePost = likePost;

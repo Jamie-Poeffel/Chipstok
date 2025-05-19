@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, PrimaryKey, AfterCreate, AfterUpdate, Sequelize, HasMany } from "sequelize-typescript";
+import { Table, Column, Model, DataType, PrimaryKey, AfterCreate, AfterUpdate, Sequelize, HasMany, AllowNull } from "sequelize-typescript";
 import { User } from "./User"; // Assuming you have a User model
 import { Comment } from "./Comment"; // Assuming you have a Comment model
 
@@ -22,6 +22,9 @@ export class Post extends Model {
 
     @Column({ type: DataType.STRING, allowNull: false })
     URL!: string;
+
+    @Column({ type: DataType.JSON, allowNull: true, defaultValue: [] })
+    photos!: string[]
 
     @Column({ type: DataType.JSON, allowNull: false })
     Hashtags!: string[];

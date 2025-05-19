@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
+const Comment_1 = require("./Comment");
 let User = class User extends sequelize_typescript_1.Model {
 };
 exports.User = User;
@@ -87,6 +88,18 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], User.prototype, "postedVideos", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.JSON,
+        allowNull: false,
+        defaultValue: []
+    }),
+    __metadata("design:type", Array)
+], User.prototype, "viewedVideos", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => Comment_1.Comment, { foreignKey: "userId", as: "comments" }),
+    __metadata("design:type", Array)
+], User.prototype, "comments", void 0);
 exports.User = User = __decorate([
     (0, sequelize_typescript_1.Table)({ tableName: "users", timestamps: true })
 ], User);

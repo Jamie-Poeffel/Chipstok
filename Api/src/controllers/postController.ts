@@ -11,96 +11,76 @@ export const getPosts: RequestHandler = async (req: Request, res: Response): Pro
     try {
         const user = (req as any).user as unknown as User;
         const limit = parseInt(req.query.limit as string, 10) || 10;
-
         const likedHashtags = user?.taste?.likedHashtags || [];
 
         const posts = await Post.findAll();
+        let viewedVideos = user.viewedVideos || [];
 
-        let viewdVideost = user.viewedVideos || [];
+        if (posts.length === 0) {
+            res.status(200).json({ message: "no posts posted" })
+            return;
+        }
 
+        // Score all posts
         const scoredPosts = posts.map(post => {
             const postHashtags = post.Hashtags || [];
-            const score = scorePostByHashtags(postHashtags, post._id, likedHashtags, viewdVideost);
+            const score = scorePostByHashtags(postHashtags, post._id, likedHashtags, viewedVideos);
             return { post, score };
         });
 
-
+        // Sort by score
         const sortedPosts = scoredPosts
             .sort((a, b) => b.score - a.score)
-            .slice(0, limit)
             .map(item => item.post);
 
-        const viewedSet = new Set(viewdVideost);
+        const viewedSet = new Set(viewedVideos);
+        const unviewedPosts = sortedPosts.filter(post => !viewedSet.has(post._id));
+        const viewedPosts = sortedPosts.filter(post => viewedSet.has(post._id));
 
-        const newPostIds = sortedPosts
-            .filter(post => !viewedSet.has(post._id))
-            .map(post => post._id);
+        // Fill with unviewed first
+        let filledPosts: typeof sortedPosts = [...unviewedPosts];
 
-        viewdVideost.push(...newPostIds);
+        // Add viewed posts if needed
+        if (filledPosts.length < limit) {
+            const remaining = limit - filledPosts.length;
+            filledPosts.push(...viewedPosts.slice(0, remaining));
+        }
 
-        if (viewdVideost.length > 200) {
-            viewdVideost = viewdVideost.slice(-200); // Behalte nur die letzten 200 IDs
+        // Still not enough? Repeat posts to fill the rest
+        if (filledPosts.length < limit) {
+            const allPosts = [...filledPosts, ...viewedPosts]; // total pool to repeat from
+            let i = 0;
+            while (filledPosts.length < limit) {
+                filledPosts.push(allPosts[i % allPosts.length].toJSON());
+                i++;
+            }
+        }
+
+        // Final slice to ensure limit
+        const finalPosts = filledPosts.slice(0, limit);
+
+        // Update viewed video list
+        const newPostIds = finalPosts.map(post => post._id);
+        viewedVideos.push(...newPostIds);
+        if (viewedVideos.length > 200) {
+            viewedVideos = viewedVideos.slice(-200);
         }
 
         await User.update(
-            { viewedVideos: viewdVideost },
+            { viewedVideos },
             { where: { _id: user._id } }
         );
+
         const username = user.username || "Random User";
 
+        res.status(200).json({ sortedPosts: finalPosts, username });
 
-        res.status(200).json({ sortedPosts, username });
     } catch (error) {
         console.error("Error fetching posts:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
     }
 };
 
-export const newPost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { url, Hashtags } = req.body;
-        const user = (req as any).user;
-
-        if (!user || !user._id) {
-            res.status(404).json({ message: "Benutzer nicht gefunden" });
-            return;
-        }
-
-        const userid = user._id;
-
-        const newPost = await Post.create({
-            likeCount: 0,
-            commentCount: 0,
-            userid: user._id,
-            URL: url,
-            Hashtags: Hashtags || []
-        });
-
-        // Aktualisiere postedVideos und Profil
-        const updatedPostedVideos = [...(user.postedVideos || []), newPost._id];
-        const updatedProfile = {
-            ...user.profile,
-            posts: (user.profile?.posts || 0) + 1
-        };
-
-        await User.update(
-            {
-                postedVideos: updatedPostedVideos,
-                profile: updatedProfile
-            },
-            { where: { _id: userid } }
-        );
-
-        res.status(201).json({
-            message: "Post erfolgreich erstellt!",
-            post: newPost
-        });
-
-    } catch (error) {
-        console.error("Fehler beim Erstellen des Posts:", error);
-        res.status(500).json({ message: "Interner Serverfehler", error });
-    }
-};
 
 export const likePost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
@@ -143,25 +123,50 @@ export const likePost: RequestHandler = async (req: Request, res: Response): Pro
 
 
 export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
 
-    const id = req.params.id
     try {
-        const url = await Post.findByPk(id).then(e => e?.URL);
-        const filePath = path.resolve(__dirname, `./../../public/posts/${url}`);
+        const post = await Post.findByPk(id);
+        const url = post?.URL;
 
-        // Get file stats
+        if (!url) {
+            res.status(404).json({ message: "Video not found" });
+            return;
+        }
+
+        const filePath = path.resolve(__dirname, `../../public/posts/${url}`);
+
         const stat = await fsPromises.stat(filePath);
         const fileSize = stat.size;
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
 
-        // Set the appropriate headers for streaming the whole file
         res.writeHead(200, {
             "Content-Length": fileSize,
-            "Content-Type": "video/mp4",  // You can change this to match your file type
+            "Content-Type": "video/mp4",
         });
 
-        // Stream the whole video file (without Range header)
         const stream = createReadStream(filePath);
+
         stream.pipe(res);
+
+        stream.on("end", () => {
+            console.log(`Stream ended for file: ${filePath}`);
+            stream.destroy()
+            res.end();
+        });
+
+        stream.on("error", (err) => {
+            console.error("Stream error:", err);
+            stream.destroy();
+            res.end();
+        });
+
+        req.on("close", async () => {
+            if (!res.writableEnded) {
+                stream.destroy();
+                res.end()
+            }
+        });
 
     } catch (err) {
         console.error("Error while streaming video:", err);

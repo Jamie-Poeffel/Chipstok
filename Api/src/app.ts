@@ -6,6 +6,7 @@ import { connectDB } from './config/db';
 import cookieParser from 'cookie-parser';
 import AuthRouter from './routes/authRoutes';
 import OAuthRouter from './routes/oauthRoutes';
+import UploadRouter from './routes/uploadRoutes';
 import { config } from 'dotenv';
 config();
 
@@ -24,6 +25,7 @@ app.use('/users', UserRouter);
 app.use('/posts', PostRouter);
 app.use('/auth', AuthRouter);
 app.use('/oauth', OAuthRouter);
+app.use('/upload', UploadRouter);
 
 
 const PORT = process.env.PORT || 8080;

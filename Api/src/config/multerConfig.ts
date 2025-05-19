@@ -1,5 +1,6 @@
 import multer from 'multer';
 import path from 'path';
+const { v4: uuidv4 } = require('uuid');
 
 // Konfiguration für Profilbilder
 const profileStorage = multer.diskStorage({
@@ -7,9 +8,9 @@ const profileStorage = multer.diskStorage({
         cb(null, 'public/profile/'); // Speicherort für Profilbilder
     },
     filename: (req, file, cb) => {
-        const userId = req.body.userId; // Benutzer-ID wird über den Request geschickt
-        const extname = path.extname(file.originalname); // Dateiendung extrahieren
-        cb(null, `${userId}${extname}`); // Dateiname = userId + Dateiendung
+        const userId = (req as any).userId;
+        const extname = path.extname(file.originalname);
+        cb(null, `${uuidv4()}${extname}`);
     }
 });
 
@@ -19,10 +20,21 @@ const postStorage = multer.diskStorage({
         cb(null, 'public/posts/'); // Speicherort für Post-Dateien
     },
     filename: (req, file, cb) => {
-        const extname = path.extname(file.originalname); // Dateiendung extrahieren
-        cb(null, `${Date.now()}${extname}`); // Dateiname = Zeitstempel + Dateiendung
+        const extname = path.extname(file.originalname);
+        cb(null, `${uuidv4()}${extname}`);
     }
 });
+
+const fileFilter = (req: any, file: any, cb: any) => {
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedVideoTypes = ['video/mp4', 'video/mov'];
+
+    if (allowedImageTypes.includes(file.mimetype) || allowedVideoTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Unsupported file type'), false);
+    }
+};
 
 // Multer Upload-Initialisierung
 const uploadProfile = multer({ storage: profileStorage });

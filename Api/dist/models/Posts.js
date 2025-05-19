@@ -22,6 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const User_1 = require("./User"); // Assuming you have a User model
+const Comment_1 = require("./Comment"); // Assuming you have a Comment model
 let Post = Post_1 = class Post extends sequelize_typescript_1.Model {
     // Hook to update likeCount for the User when a new Post is created
     static updateUserLikeCountAfterPostCreate(post) {
@@ -78,9 +79,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "commentCount", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, unique: true }),
-    __metadata("design:type", String)
-], Post.prototype, "commentListID", void 0);
+    (0, sequelize_typescript_1.HasMany)(() => Comment_1.Comment, { foreignKey: "postId", as: "comments" }),
+    __metadata("design:type", Array)
+], Post.prototype, "comments", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false }),
     __metadata("design:type", String)

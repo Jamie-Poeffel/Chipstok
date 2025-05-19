@@ -9,19 +9,20 @@ async function img() {
     const list = [];
     let ddata = data.sortedPosts;
 
-    ddata.forEach(e => {
-        list.push({
-            _id: `${e._id}`,
-            url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
-            type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-            username: `${data.username}`,
-            profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
-            caption: 'Check out this awesome content! 🚀',
-            likes: `${e.likeCount}`,
-            comments: `${e.commentCount}`,
+    if (data.message !== "no posts posted") {
+        ddata.forEach(e => {
+            list.push({
+                _id: `${e._id}`,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
+                type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
+                username: `${data.username}`,
+                profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
+                caption: 'Check out this awesome content! 🚀',
+                likes: `${e.likeCount}`,
+                comments: `${e.commentCount}`,
+            });
         });
-    });
-
+    }
     return list;
 }
 const imgs = ref([]);
@@ -59,18 +60,20 @@ const loadMore = async () => {
     const { data } = await useFetch('/posts?limit=2', { credentials: 'include' });
     let ddata = data.sortedPosts;
 
-    ddata.forEach(e => {
-        imgs.value.push({
-            _id: `${e._id}`,
-            url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
-            type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-            username: `${data.username}`,
-            profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
-            caption: 'Check out this awesome content! 🚀',
-            likes: `${e.likeCount}`,
-            comments: `${e.commentCount}`,
+    if (data.message !== "no posts posted") {
+        ddata.forEach(e => {
+            imgs.value.push({
+                _id: `${e._id}`,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
+                type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
+                username: `${data.username}`,
+                profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
+                caption: 'Check out this awesome content! 🚀',
+                likes: `${e.likeCount}`,
+                comments: `${e.commentCount}`,
+            });
         });
-    });
+    }
 };
 // Callback ref to assign the last element for observation
 const setLastItemRef = (el) => {
@@ -145,7 +148,7 @@ onUnmounted(() => {
                 </template>
                 <template v-else-if="img.type === 'video'">
                     <video :src="img.url" :alt="'Video posted by ' + img.username" class="w-full h-full object-cover"
-                        autoplay loop muted playsinline preload="auto">
+                        autoplay muted playsinline>
                     </video>
                 </template>
 

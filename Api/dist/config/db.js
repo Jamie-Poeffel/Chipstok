@@ -18,7 +18,6 @@ const promise_1 = __importDefault(require("mysql2/promise"));
 const User_1 = require("../models/User");
 const dotenv_1 = __importDefault(require("dotenv"));
 const Posts_1 = require("../models/Posts");
-const Comments_1 = require("../models/Comments");
 const Comment_1 = require("../models/Comment");
 dotenv_1.default.config();
 // Datenbank-Parameter aus .env
@@ -48,7 +47,7 @@ exports.sequelize = new sequelize_typescript_1.Sequelize({
     password: DB_PASS,
     host: DB_HOST,
     dialect: "mariadb",
-    models: [User_1.User, Posts_1.Post, Comments_1.Comments, Comment_1.Comment],
+    models: [User_1.User, Posts_1.Post, Comment_1.Comment],
     logging: false,
 });
 // Verbindung herstellen und Tabellen synchronisieren

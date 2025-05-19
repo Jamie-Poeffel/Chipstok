@@ -24,6 +24,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             }
 
             (req as any).user = user;
+            (req as any).userId = user._id;
             return next();
         }
 

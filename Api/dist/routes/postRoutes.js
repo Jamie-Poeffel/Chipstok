@@ -4,7 +4,7 @@ const express_1 = require("express");
 const postController_1 = require("../controllers/postController");
 const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = (0, express_1.Router)();
-router.get('/', authMiddleware_1.authMiddleware, postController_1.getAllPosts);
+router.get('/', authMiddleware_1.authMiddleware, postController_1.getPosts);
 router.post('/new', authMiddleware_1.authMiddleware, postController_1.newPost);
 router.post('/:id/like', authMiddleware_1.authMiddleware, postController_1.likePost);
 router.get('/stream/:id', authMiddleware_1.authMiddleware, postController_1.getStream);

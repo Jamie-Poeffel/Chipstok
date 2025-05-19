@@ -59,7 +59,9 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             likeCount: 0
         },
         likedPosts: [],
-        postedVideos: []
+        postedVideos: [],
+        emailVeryfied: false,
+        viewedVideos: [],
     };
     User_1.User.create(newUserData)
         .then((user) => {

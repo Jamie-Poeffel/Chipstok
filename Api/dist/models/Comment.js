@@ -11,39 +11,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Comment = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-const Comments_1 = require("./Comments"); // Importiere die Comments-Tabelle
+const Posts_1 = require("./Posts"); // Each comment belongs to a post
+const User_1 = require("./User"); // Optionally link comment to user
 let Comment = class Comment extends sequelize_typescript_1.Model {
 };
 exports.Comment = Comment;
 __decorate([
     sequelize_typescript_1.PrimaryKey,
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, unique: true, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], Comment.prototype, "_id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => Comments_1.Comments) // Verknüpfung mit "Comments"
-    ,
+    (0, sequelize_typescript_1.ForeignKey)(() => Posts_1.Post),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false }),
     __metadata("design:type", String)
-], Comment.prototype, "commentsId", void 0);
+], Comment.prototype, "postId", void 0);
 __decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => User_1.User),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false }),
     __metadata("design:type", String)
 ], Comment.prototype, "userId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER, allowNull: false, defaultValue: 0 }) // Fix: Number → Integer
-    ,
-    __metadata("design:type", Number)
-], Comment.prototype, "likeCount", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false }),
     __metadata("design:type", String)
 ], Comment.prototype, "text", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => Comments_1.Comments) // Jeder Kommentar gehört zu einer "Comments"-Gruppe
-    ,
-    __metadata("design:type", Comments_1.Comments)
-], Comment.prototype, "parentComments", void 0);
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER, allowNull: false, defaultValue: 0 }),
+    __metadata("design:type", Number)
+], Comment.prototype, "likeCount", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => Posts_1.Post),
+    __metadata("design:type", Posts_1.Post)
+], Comment.prototype, "post", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => User_1.User),
+    __metadata("design:type", User_1.User)
+], Comment.prototype, "user", void 0);
 exports.Comment = Comment = __decorate([
-    (0, sequelize_typescript_1.Table)({ tableName: "comment", timestamps: true })
+    (0, sequelize_typescript_1.Table)({ tableName: "comments", timestamps: true })
 ], Comment);
