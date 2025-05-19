@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
-import { Loader2, Globe, MailCheck } from 'lucide-vue-next';
+import { Loader2, MailCheck } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
 
 const { setLanguage, languages, t, getEnglishName, selectedLanguage } = useLanguage();
@@ -102,7 +102,7 @@ const sendResetEmail = async () => {
   >
     <!-- login card -->
     <div
-      class="w-96 p-8 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
+      class="w-96 p-8 pb-2 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
     >
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">{{ t('title') }}</h1>
 
@@ -151,9 +151,7 @@ const sendResetEmail = async () => {
         @click="showLanguageModal = true"
         aria-label="Choose language"
         class="mt-4 mx-auto block text-gray-500 hover:text-gray-700"
-      >
-        <Globe class="w-6 h-6" />
-      </button>
+      ></button>
     </div>
 
     <!-- language modal -->
