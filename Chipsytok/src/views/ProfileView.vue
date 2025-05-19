@@ -4,37 +4,47 @@
     <div class="profile-header">
       <div class="header-top flex flex-col lg:flex-row lg:items-start lg:justify-between w-full">
         <!-- Left: avatar + meta -->
-        <div class="flex flex-row">
-          <div class="avatar-wrapper">
-            <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
-          </div>
-          <div class="user-meta">
-            <p class="handle">@{{ useAuthStore().username }}</p>
-            <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
-
-            <div class="stats">
-              <div>
-                <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong>
-              </div>
-              <div>
-                <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong>
-              </div>
-              <div>
-                <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
-              </div>
+        <div class="flex flex-col w-full">
+          <div class="flex flex-row">
+            <div class="avatar-wrapper">
+              <img
+                class="avatar"
+                src="https://randomuser.me/api/portraits/men/3.jpg"
+                alt="avatar"
+              />
             </div>
+            <div class="user-meta">
+              <p class="handle">@{{ useAuthStore().username }}</p>
+              <p class="bio">{{ useAuthStore().user.profile.bio || '\n' }}</p>
 
-            <!-- Action buttons -->
-            <!-- Action bar – stretches full screen -->
-            <div class="flex items-center gap-1 w-full h-[24px] mt-3">
-              <button class="flex-1 button">Profil bearbeiten</button>
-              <button @click="share" class="flex-1 button">Profil Teilen</button>
-              <button class="icon-button" @click="openSettings = true">
-                <Settings class="w-4 h-4" />
-              </button>
-              <!-- Settings keeps its original size -->
+              <div class="stats">
+                <div>
+                  <strong
+                    >{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong
+                  >
+                </div>
+                <div>
+                  <strong
+                    >{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong
+                  >
+                </div>
+                <div>
+                  <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <!-- Action bar – stretches full screen -->
             </div>
           </div>
+          <div class="flex items-center gap-1 w-full h-[24px] mt-3">
+            <button class="flex-1 button">Profil bearbeiten</button>
+            <button @click="share" class="flex-1 button">Profil Teilen</button>
+            <button class="icon-button" @click="openSettings = true">
+              <Settings class="w-4 h-4" />
+            </button>
+          </div>
+          <!-- Settings keeps its original size -->
         </div>
       </div>
     </div>
@@ -344,8 +354,8 @@ function changePassword() {
   padding: 0.25rem 0.75rem;
 }
 .icon-button {
-  height: 36px;
-  width: 36px;
+  height: 30px;
+  width: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
