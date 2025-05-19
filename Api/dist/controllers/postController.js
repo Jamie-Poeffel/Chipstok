@@ -17,6 +17,7 @@ const Posts_1 = require("../models/Posts");
 const User_1 = require("../models/User");
 const postService_1 = require("../services/postService");
 const fs_1 = require("fs");
+const fs_2 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -120,28 +121,39 @@ const getStream = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const stat = yield fs_1.promises.stat(filePath);
         const fileSize = stat.size;
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
-        res.writeHead(200, {
-            "Content-Length": fileSize,
+        res.setHeader("Cache-Control", "public, max-age=600");
+        const range = req.headers.range;
+        if (!range) {
+            res.status(416).json({ message: "Range header required" });
+            return;
+        }
+        const CHUNK_SIZE = Math.pow(10, 6); // 1MB
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
+        if (start >= fileSize || end >= fileSize) {
+            res.status(416).json({ message: "Requested range not satisfiable" });
+            return;
+        }
+        const contentLength = end - start + 1;
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
             "Content-Type": "video/mp4",
-        });
-        const stream = (0, fs_1.createReadStream)(filePath);
+        };
+        res.writeHead(206, headers);
+        const stream = fs_2.default.createReadStream(filePath, { start, end });
         stream.pipe(res);
-        stream.on("end", () => {
-            console.log(`Stream ended for file: ${filePath}`);
-            stream.destroy();
-            res.end();
-        });
         stream.on("error", (err) => {
             console.error("Stream error:", err);
-            stream.destroy();
-            res.end();
+            res.status(500).end();
         });
-        req.on("close", () => __awaiter(void 0, void 0, void 0, function* () {
+        req.on("close", () => {
             if (!res.writableEnded) {
                 stream.destroy();
-                res.end();
             }
-        }));
+        });
     }
     catch (err) {
         console.error("Error while streaming video:", err);

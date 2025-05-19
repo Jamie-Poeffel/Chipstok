@@ -2,7 +2,8 @@ import { Request, RequestHandler, Response } from "express";
 import { Post } from "../models/Posts";
 import { User } from "../models/User";
 import { scorePostByHashtags } from "../services/postService"
-import { createReadStream, promises as fsPromises } from "fs";
+import { promises as fsPromises } from "fs";
+import fs from "fs";
 import path from "path";
 
 
@@ -135,36 +136,50 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         }
 
         const filePath = path.resolve(__dirname, `../public/posts/${url}`);
-
         const stat = await fsPromises.stat(filePath);
         const fileSize = stat.size;
+
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
+        res.setHeader("Cache-Control", "public, max-age=600");
 
-        res.writeHead(200, {
-            "Content-Length": fileSize,
+
+        const range = req.headers.range;
+        if (!range) {
+            res.status(416).json({ message: "Range header required" });
+            return;
+        }
+
+        const CHUNK_SIZE = 10 ** 6; // 1MB
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
+
+        if (start >= fileSize || end >= fileSize) {
+            res.status(416).json({ message: "Requested range not satisfiable" });
+            return;
+        }
+
+        const contentLength = end - start + 1;
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
             "Content-Type": "video/mp4",
-        });
+        };
 
-        const stream = createReadStream(filePath);
+        res.writeHead(206, headers);
 
+        const stream = fs.createReadStream(filePath, { start, end });
         stream.pipe(res);
 
-        stream.on("end", () => {
-            console.log(`Stream ended for file: ${filePath}`);
-            stream.destroy()
-            res.end();
-        });
-
-        stream.on("error", (err) => {
+        stream.on("error", (err: any) => {
             console.error("Stream error:", err);
-            stream.destroy();
-            res.end();
+            res.status(500).end();
         });
 
-        req.on("close", async () => {
+        req.on("close", () => {
             if (!res.writableEnded) {
                 stream.destroy();
-                res.end()
             }
         });
 
