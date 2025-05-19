@@ -13,7 +13,11 @@
 
 ## 🚀 Description
 
-...
+**Chipstok**  is a social media platform where users can upload, browse, and watch short-form videos in a fast, interactive interface. It features a modern Vue 3 + TypeScript front-end and a REST-style back-end API, built for responsive performance and clean UX.
+
+
+[1]: https://github.com/Jamie-Poeffel/Chipstok "GitHub - Jamie-Poeffel/Chipstok"
+
 
 <br>
 
@@ -56,7 +60,7 @@ For detailed documentation, please visit our [Documentation](docs).
 
 <br>
 
-### 📝 Alessio Huber (Mockup Maker)
+### 📝 Alessio Huber (Mockup Creator)
 
 - Created detailed **ER-Diagram** for better structure and planning  
 - Enhanced **mockup designs** to support visualization and time management
