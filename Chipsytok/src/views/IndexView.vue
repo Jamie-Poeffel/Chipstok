@@ -148,7 +148,7 @@ onUnmounted(() => {
                 </template>
                 <template v-else-if="img.type === 'video'">
                     <video :src="img.url" :alt="'Video posted by ' + img.username" class="w-full h-full object-cover"
-                        autoplay muted playsinline>
+                        autoplay muted playsinline loading="lazy">
                     </video>
                 </template>
 

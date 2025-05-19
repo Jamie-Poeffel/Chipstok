@@ -6,6 +6,6 @@ const router = Router();
 
 router.get('/', authMiddleware, getPosts);
 router.post('/:id/like', authMiddleware, likePost);
-router.get('/stream/:id', authMiddleware, getStream)
+router.get('/stream/:id', getStream)
 
 export default router;
