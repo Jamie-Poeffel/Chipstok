@@ -29,7 +29,7 @@ const post = async () => {
   const blob = base64ToBlob(tempImage.value, mimeType);
   const filename = isVideo.value ? 'video.mp4' : 'image.jpg';
 
-  form.append('file', blob, filename);
+  form.append('video', blob, filename);
 
   const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/upload/post`, {
     method: 'POST',
