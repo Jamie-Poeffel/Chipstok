@@ -87,6 +87,10 @@ __decorate([
     __metadata("design:type", String)
 ], Post.prototype, "URL", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.JSON, allowNull: true, defaultValue: [] }),
+    __metadata("design:type", Array)
+], Post.prototype, "photos", void 0);
+__decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.JSON, allowNull: false }),
     __metadata("design:type", Array)
 ], Post.prototype, "Hashtags", void 0);

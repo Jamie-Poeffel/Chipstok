@@ -134,7 +134,7 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
             return;
         }
 
-        const filePath = path.resolve(__dirname, `../../public/posts/${url}`);
+        const filePath = path.resolve(__dirname, `../public/posts/${url}`);
 
         const stat = await fsPromises.stat(filePath);
         const fileSize = stat.size;

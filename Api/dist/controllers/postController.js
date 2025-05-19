@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStream = exports.likePost = exports.newPost = exports.getPosts = void 0;
+exports.getStream = exports.likePost = exports.getPosts = void 0;
 const Posts_1 = require("../models/Posts");
 const User_1 = require("../models/User");
 const postService_1 = require("../services/postService");
@@ -25,27 +25,51 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const limit = parseInt(req.query.limit, 10) || 10;
         const likedHashtags = ((_a = user === null || user === void 0 ? void 0 : user.taste) === null || _a === void 0 ? void 0 : _a.likedHashtags) || [];
         const posts = yield Posts_1.Post.findAll();
-        let viewdVideost = user.viewedVideos || [];
+        let viewedVideos = user.viewedVideos || [];
+        if (posts.length === 0) {
+            res.status(200).json({ message: "no posts posted" });
+            return;
+        }
+        // Score all posts
         const scoredPosts = posts.map(post => {
             const postHashtags = post.Hashtags || [];
-            const score = (0, postService_1.scorePostByHashtags)(postHashtags, post._id, likedHashtags, viewdVideost);
+            const score = (0, postService_1.scorePostByHashtags)(postHashtags, post._id, likedHashtags, viewedVideos);
             return { post, score };
         });
+        // Sort by score
         const sortedPosts = scoredPosts
             .sort((a, b) => b.score - a.score)
-            .slice(0, limit)
             .map(item => item.post);
-        const viewedSet = new Set(viewdVideost);
-        const newPostIds = sortedPosts
-            .filter(post => !viewedSet.has(post._id))
-            .map(post => post._id);
-        viewdVideost.push(...newPostIds);
-        if (viewdVideost.length > 200) {
-            viewdVideost = viewdVideost.slice(-200); // Behalte nur die letzten 200 IDs
+        const viewedSet = new Set(viewedVideos);
+        const unviewedPosts = sortedPosts.filter(post => !viewedSet.has(post._id));
+        const viewedPosts = sortedPosts.filter(post => viewedSet.has(post._id));
+        // Fill with unviewed first
+        let filledPosts = [...unviewedPosts];
+        // Add viewed posts if needed
+        if (filledPosts.length < limit) {
+            const remaining = limit - filledPosts.length;
+            filledPosts.push(...viewedPosts.slice(0, remaining));
         }
-        yield User_1.User.update({ viewedVideos: viewdVideost }, { where: { _id: user._id } });
+        // Still not enough? Repeat posts to fill the rest
+        if (filledPosts.length < limit) {
+            const allPosts = [...filledPosts, ...viewedPosts]; // total pool to repeat from
+            let i = 0;
+            while (filledPosts.length < limit) {
+                filledPosts.push(allPosts[i % allPosts.length].toJSON());
+                i++;
+            }
+        }
+        // Final slice to ensure limit
+        const finalPosts = filledPosts.slice(0, limit);
+        // Update viewed video list
+        const newPostIds = finalPosts.map(post => post._id);
+        viewedVideos.push(...newPostIds);
+        if (viewedVideos.length > 200) {
+            viewedVideos = viewedVideos.slice(-200);
+        }
+        yield User_1.User.update({ viewedVideos }, { where: { _id: user._id } });
         const username = user.username || "Random User";
-        res.status(200).json({ sortedPosts, username });
+        res.status(200).json({ sortedPosts: finalPosts, username });
     }
     catch (error) {
         console.error("Error fetching posts:", error);
@@ -53,41 +77,6 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getPosts = getPosts;
-const newPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const { url, Hashtags } = req.body;
-        const user = req.user;
-        if (!user || !user._id) {
-            res.status(404).json({ message: "Benutzer nicht gefunden" });
-            return;
-        }
-        const userid = user._id;
-        const newPost = yield Posts_1.Post.create({
-            likeCount: 0,
-            commentCount: 0,
-            userid: user._id,
-            URL: url,
-            Hashtags: Hashtags || []
-        });
-        // Aktualisiere postedVideos und Profil
-        const updatedPostedVideos = [...(user.postedVideos || []), newPost._id];
-        const updatedProfile = Object.assign(Object.assign({}, user.profile), { posts: (((_a = user.profile) === null || _a === void 0 ? void 0 : _a.posts) || 0) + 1 });
-        yield User_1.User.update({
-            postedVideos: updatedPostedVideos,
-            profile: updatedProfile
-        }, { where: { _id: userid } });
-        res.status(201).json({
-            message: "Post erfolgreich erstellt!",
-            post: newPost
-        });
-    }
-    catch (error) {
-        console.error("Fehler beim Erstellen des Posts:", error);
-        res.status(500).json({ message: "Interner Serverfehler", error });
-    }
-});
-exports.newPost = newPost;
 const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
@@ -121,19 +110,38 @@ exports.likePost = likePost;
 const getStream = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
-        const url = yield Posts_1.Post.findByPk(id).then(e => e === null || e === void 0 ? void 0 : e.URL);
-        const filePath = path_1.default.resolve(__dirname, `./../../public/posts/${url}`);
-        // Get file stats
+        const post = yield Posts_1.Post.findByPk(id);
+        const url = post === null || post === void 0 ? void 0 : post.URL;
+        if (!url) {
+            res.status(404).json({ message: "Video not found" });
+            return;
+        }
+        const filePath = path_1.default.resolve(__dirname, `../../public/posts/${url}`);
         const stat = yield fs_1.promises.stat(filePath);
         const fileSize = stat.size;
-        // Set the appropriate headers for streaming the whole file
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
         res.writeHead(200, {
             "Content-Length": fileSize,
-            "Content-Type": "video/mp4", // You can change this to match your file type
+            "Content-Type": "video/mp4",
         });
-        // Stream the whole video file (without Range header)
         const stream = (0, fs_1.createReadStream)(filePath);
         stream.pipe(res);
+        stream.on("end", () => {
+            console.log(`Stream ended for file: ${filePath}`);
+            stream.destroy();
+            res.end();
+        });
+        stream.on("error", (err) => {
+            console.error("Stream error:", err);
+            stream.destroy();
+            res.end();
+        });
+        req.on("close", () => __awaiter(void 0, void 0, void 0, function* () {
+            if (!res.writableEnded) {
+                stream.destroy();
+                res.end();
+            }
+        }));
     }
     catch (err) {
         console.error("Error while streaming video:", err);

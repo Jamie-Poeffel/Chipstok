@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.getUserById = exports.getAllUsers = void 0;
+exports.createUser = exports.getUserByUsername = exports.getAllUsers = void 0;
 const User_1 = require("../models/User");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,9 +25,9 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     });
 });
 exports.getAllUsers = getAllUsers;
-const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.id;
-    User_1.User.findByPk(userId)
+const getUserByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.params.username;
+    User_1.User.findOne({ where: { username } })
         .then((user) => {
         if (user) {
             res.status(200).json(user);
@@ -40,7 +40,7 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ error: error });
     });
 });
-exports.getUserById = getUserById;
+exports.getUserByUsername = getUserByUsername;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     const salt = yield bcryptjs_1.default.genSalt(Math.floor(Math.random() * 9) + 1);

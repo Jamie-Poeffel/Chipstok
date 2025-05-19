@@ -31,6 +31,7 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                 return res.status(401).json({ message: 'User does not exist' });
             }
             req.user = user;
+            req.userId = user._id;
             return next();
         }
         if (refreshToken) {
