@@ -8,6 +8,7 @@ import { useLanguage } from '@/composables/useLanguage';
 const { selectedLanguage, setLanguage, languages, t } = useLanguage();
 const router = useRouter();
 
+
 const firstname = ref('');
 const lastname = ref('');
 const phone = ref('');
@@ -23,6 +24,29 @@ const showLanguageModal = ref(!selectedLanguage.value);
 const loading = ref(false);
 
 const errors = ref({ username: '', email: '', password: '' });
+const phonePrefix = ref('');
+const phoneNumber = ref('');
+
+const countryPrefixes = {
+  '+1': 'USA',
+  '+41': 'Switzerland',
+  '+49': 'Germany',
+  '+33': 'France',
+  '+34': 'Spain',
+  '+351': 'Portugal',
+  '+423': 'Liechtenstein',
+  '+43': 'Austria',
+  '+48': 'Poland',
+  '+39': 'Italy'
+};
+
+
+
+const sortedCountryPrefixes = Object.fromEntries(
+  Object.entries(countryPrefixes).sort(([, a], [, b]) => a.localeCompare(b))
+);
+
+
 
 
 const signup = async () => {
@@ -44,7 +68,7 @@ const signup = async () => {
         body: JSON.stringify({
           firstname: firstname.value,
           lastname: lastname.value,
-          phone: phone.value,
+          phone: phonePrefix.value + phone.value,
           email: email.value,
           username: username.value,
           password: password.value,
@@ -101,11 +125,46 @@ onMounted(() => {
         <input v-model="firstname" type="text" :placeholder="t('firstName')" class="input" />
         <input v-model="lastname" type="text" :placeholder="t('lastName')" class="input" />
 
-        <!-- phone with country code -->
+        <!-- Country code dropdown -->
         <div class="flex gap-2">
+          <!-- Country Code Selector -->
+          <div class="relative w-1/4">
+            <input
+              list="prefixes"
+              v-model="phonePrefix"
+              placeholder="+..."
+              class="input font-mono pr-8"
+              autocomplete="off"
+            />
+            <!-- Custom Arrow -->
+            <div
+              class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+            >
+              ▼
+            </div>
 
-          <input v-model="phone" type="tel" :placeholder="t('phoneNumber')" class="w-3/4 input" />
+            <datalist id="prefixes">
+              <option
+                v-for="(name, code) in sortedCountryPrefixes"
+                :key="code"
+                :value="code"
+              >
+                {{ name }}
+              </option>
+            </datalist>
+          </div>
+
+          <!-- Phone Number -->
+          <input
+            v-model="phoneNumber"
+            type="tel"
+            :placeholder="t('phoneNumber')"
+            class="w-3/4 input"
+          />
         </div>
+
+
+
 
         <input v-model="email" type="email" :placeholder="t('email')" class="input" />
         <p v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</p>
@@ -203,6 +262,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.input::-webkit-calendar-picker-indicator {
+  display: none !important;
+  appearance: none;
+}
+
 .input {
   width: 100%;
   padding: 12px;
@@ -210,7 +274,16 @@ onMounted(() => {
   border-radius: 8px;
   background-color: #f3f4f6;
   outline: none;
+  appearance: none;
+  font-family: inherit;
+  max-height: 150px;
+  overflow-y: auto;
 }
+
+select.input {
+  font-family: monospace;
+}
+
 .button {
   width: 100%;
   background-color: #3b82f6;
