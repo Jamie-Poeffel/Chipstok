@@ -116,7 +116,7 @@ const getStream = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(404).json({ message: "Video not found" });
             return;
         }
-        const filePath = path_1.default.resolve(__dirname, `../../public/posts/${url}`);
+        const filePath = path_1.default.resolve(__dirname, `../public/posts/${url}`);
         const stat = yield fs_1.promises.stat(filePath);
         const fileSize = stat.size;
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
