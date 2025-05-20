@@ -83,7 +83,7 @@ We extend our heartfelt gratitude to the following contributors who have dedicat
   <tr>
     <td align="center">
       <a href="https://github.com/Jamie-Poeffel">
-        <img src="https://avatars.githubusercontent.com/u/YOUR_JAMIE_ID?v=4" width="100px;" alt=""/>
+        <img src="https://avatars.githubusercontent.com/u/168637927?v=4" width="100px;" alt=""/>
         <br />
         <sub><b>Jamie Poeffel</b></sub>
       </a>
@@ -92,7 +92,7 @@ We extend our heartfelt gratitude to the following contributors who have dedicat
     </td>
     <td align="center">
       <a href="https://github.com/Kush-Srigiri">
-        <img src="https://avatars.githubusercontent.com/u/YOUR_KUSH_ID?v=4" width="100px;" alt=""/>
+        <img src="https://avatars.githubusercontent.com/u/168637948?v=4" width="100px;" alt=""/>
         <br />
         <sub><b>Kush Srigiri</b></sub>
       </a>
@@ -101,7 +101,7 @@ We extend our heartfelt gratitude to the following contributors who have dedicat
     </td>
     <td align="center">
       <a href="https://github.com/AlessioHuber">
-        <img src="https://avatars.githubusercontent.com/u/YOUR_ALESSIO_ID?v=4" width="100px;" alt=""/>
+        <img src="https://avatars.githubusercontent.com/u/173238776?v=4" width="100px;" alt=""/>
         <br />
         <sub><b>Alessio Huber</b></sub>
       </a>
