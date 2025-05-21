@@ -34,7 +34,7 @@
 
 ## 📥 How to Use
 
-1.  **Visit the Website:** Navigate to [Chipsytok](https://www.chipsytok.bbzwinf.ch/).
+1.  **Visit the Website:** Navigate to [Chipstok](https://www.chipsytok.bbzwinf.ch/).
 2.  **Explore the Feed:** Browse through the curated feed of short-form videos. Use the intuitive interface to like, comment, and share your favorite content.
 3.  **Create an Account:** Click on the "Sign Up" button to create a new account. Fill in the required details and verify your email address.
 4.  **Log In:** If you already have an account, click on the "Log In" button and enter your credentials.
