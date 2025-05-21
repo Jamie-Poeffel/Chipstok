@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 
 const languages = {
+  //English
   en: {
     title: 'Chipsytok',
     login: 'Log in',
@@ -241,6 +242,8 @@ const languages = {
       '+998': 'Uzbekistan',
     },
   },
+
+  //German
   de: {
     title: 'Chipsytok',
     login: 'Anmelden',
@@ -481,6 +484,8 @@ const languages = {
       '+998': 'Usbekistan',
     },
   },
+
+  //French
   fr: {
     title: 'Chipsytok',
     login: 'Se connecter',
@@ -722,6 +727,8 @@ const languages = {
     },
 
   },
+
+  //Italian
   it: {
     title: 'Chipsytok',
     login: 'Accedi',
@@ -963,6 +970,7 @@ const languages = {
     },
 
   },
+  //Spanish
   es: {
     title: 'Chipsytok',
     login: 'Iniciar sesión',
@@ -1202,6 +1210,7 @@ const languages = {
     },
 
   },
+  //Chinese
   zh: {
     title: 'Chipsytok',
     login: '登录',
