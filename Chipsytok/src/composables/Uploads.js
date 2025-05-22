@@ -25,6 +25,19 @@ export async function saveToIndexedDB(fileData) {
   });
 }
 
+export async function clearIndexedDB() {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['uploads'], 'readwrite');
+    const store = transaction.objectStore('uploads');
+
+    const request = store.clear();
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
 export async function getLastUploadFromIndexedDB() {
   const db = await openDatabase();
   return new Promise((resolve, reject) => {

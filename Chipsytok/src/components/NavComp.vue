@@ -7,17 +7,11 @@
     <div class="nav-item plus">
       <label for="file-upload">
         <PlusCircleIcon />
-        <input
-          id="file-upload"
-          type="file"
-          accept="image/*,video/*"
-          class="file-input"
-          @change="handleFileUpload"
-        />
+        <input id="file-upload" type="file" accept="image/*,video/*" class="file-input" @change="handleFileUpload" />
       </label>
     </div>
 
-    <router-link to="/profile" class="nav-item">
+    <router-link to="/me" class="nav-item">
       <UserIcon />
     </router-link>
   </div>

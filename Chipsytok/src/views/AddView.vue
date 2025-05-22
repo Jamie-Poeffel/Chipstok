@@ -15,7 +15,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { base64ToBlob, getLastUploadFromIndexedDB } from './../composables/Uploads';
+import { base64ToBlob, clearIndexedDB, getLastUploadFromIndexedDB } from './../composables/Uploads';
 
 const tempImage = ref(null);
 const router = useRouter();
@@ -44,17 +44,7 @@ const post = async () => {
 
   const data = await response.json();
   console.log('Upload successful:', data);
-
-  const deleteRequest = indexedDB.open('uploads', 1);
-  deleteRequest.onsuccess = () => {
-    const db = deleteRequest.result;
-    const transaction = db.transaction('uploads', 'readwrite');
-    const store = transaction.objectStore('uploads');
-    store.delete('lastUpload');
-  };
-  deleteRequest.onerror = (event) => {
-    console.error('Error deleting from IndexedDB:', event.target.error);
-  };
+  await clearIndexedDB();
 
   router.push('/');
 };
@@ -70,7 +60,8 @@ onMounted(async () => {
 });
 
 // Cancel function to redirect manually
-const cancel = () => {
+const cancel = async () => {
+  await clearIndexedDB();
   router.push('/');
 };
 </script>
