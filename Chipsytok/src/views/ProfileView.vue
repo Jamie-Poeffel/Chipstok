@@ -15,10 +15,10 @@
 
                             <div class="stats">
                                 <div>
-                                    <strong>{{ formatNumber(user?.profile?.followers) }} Following</strong>
+                                    <strong>{{ formatNumber(user?.profile?.following) }} Gefolgt</strong>
                                 </div>
                                 <div>
-                                    <strong>{{ formatNumber(user?.profile?.following) }} Followers</strong>
+                                    <strong>{{ formatNumber(user?.profile?.followers) }} Follower*innen</strong>
                                 </div>
                                 <div>
                                     <strong>{{ formatNumber(user?.profile?.likeCount) }} Likes</strong>
@@ -26,8 +26,21 @@
                             </div>
 
                             <!-- Action buttons -->
-                            <!-- Action bar – stretches full screen -->
                         </div>
+                    </div>
+                    <div class="flex gap-2 mt-3 w-full">
+                        <button v-if="!isFollowing" @click="followOrUnfollow" class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2
+                            transition-all duration-150 shadow-md active:scale-95">
+                            Follow
+                        </button>
+                        <button v-else @click="followOrUnfollow" class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2
+                            transition-all duration-150 shadow-md active:scale-95">
+                            Unfollow
+                        </button>
+                        <button
+                            class="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
+                            Message
+                        </button>
                     </div>
                 </div>
             </div>
@@ -68,15 +81,37 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const user = ref(null);
+const isFollowing = ref(false);
 
 onMounted(async () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}`, {
+    let res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}`, {
         credentials: 'include',
     });
     user.value = await res.json();
+    res = null;
+    res = await fetch(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}/isFollowing`,
+        { credentials: 'include' }
+    );
+    isFollowing.value = await res.json();
 });
+
+async function followOrUnfollow() {
+    const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}/follow`,
+        {
+            method: 'POST',
+            credentials: 'include',
+        }
+    );
+    if (res.ok) {
+        isFollowing.value = !isFollowing.value;
+    } else {
+        console.error('Error following/unfollowing user');
+    }
+}
 
 // Tabs & modals
 const activeTab = ref('posts');

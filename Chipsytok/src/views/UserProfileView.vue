@@ -15,10 +15,10 @@
 
               <div class="stats">
                 <div>
-                  <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Following</strong>
+                  <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Gefolgt</strong>
                 </div>
                 <div>
-                  <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Followers</strong>
+                  <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Follower*innen</strong>
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>

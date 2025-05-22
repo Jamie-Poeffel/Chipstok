@@ -1,4 +1,4 @@
-﻿import { Table, Column, Model, DataType, PrimaryKey, HasMany } from "sequelize-typescript";
+﻿import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull } from "sequelize-typescript";
 import { Comment } from "./Comment";
 
 @Table({ tableName: "users", timestamps: true })
@@ -22,6 +22,9 @@ export class User extends Model {
         defaultValue: { likedHashtags: [] }
     })
     taste!: { likedHashtags: string[] };
+
+    @Column({ type: DataType.JSON, allowNull: false, defaultValue: [] })
+    followers!: string[];
 
     @Column({
         type: DataType.BOOLEAN,
