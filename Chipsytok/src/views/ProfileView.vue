@@ -38,19 +38,19 @@
               @click="followOrUnfollow"
               class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
             >
-              {{ t() }}
+              {{ t('follow') }}
             </button>
             <button
               v-else
               @click="followOrUnfollow"
               class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
             >
-              Unfollow
+              {{ t('unfollow') }}
             </button>
             <button
               class="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
             >
-              Message
+              {{ t('message') }}
             </button>
           </div>
         </div>
