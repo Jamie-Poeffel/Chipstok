@@ -1,7 +1,9 @@
 import { RequestHandler } from "express";
 import { Request, Response } from 'express';
 import { User } from "../models/User";
+import path from 'path';
 import { Post } from "../models/Posts";
+import { createThumbnail } from "../services/uploadService";
 
 export const ProfileUpload: RequestHandler = async (req, res): Promise<void> => {
     if (!req.file) {
@@ -62,7 +64,13 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
         }
 
         // Aktualisiere postedVideos und Profil
-        const updatedPostedVideos = [...(user.postedVideos || []), newPost._id];
+        const updatedPostedVideos = [
+            ...(user.postedVideos || []),
+            {
+                _id: newPost._id,
+                url: `${process.env.BASE_URL}/posts/thumbnail/${newPost._id}`
+            }
+        ];
         const updatedProfile = {
             ...user.profile,
             posts: (user.profile?.posts || 0) + 1
@@ -75,6 +83,12 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
             },
             { where: { _id: userid } }
         );
+
+        // create a Thumbnail
+        const inputVideoPath = path.resolve(__dirname, '..', 'public', 'posts', newPost.URL);
+        const outputFolderPath = path.resolve(__dirname, '..', 'public', 'posts', 'thumbnails', `${newPost.URL.split('.')[0]}.jpg`);
+
+        await createThumbnail(inputVideoPath, outputFolderPath);
 
         res.status(201).json({
             message: "Post erfolgreich erstellt!",

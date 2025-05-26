@@ -64,9 +64,9 @@ export class User extends Model {
     @Column({
         type: DataType.JSON,
         allowNull: true,
-        defaultValue: []
+        defaultValue: [{ _id: "", url: "" }]
     })
-    postedVideos!: string[];
+    postedVideos!: { _id: string, url: string }[];
 
     @Column({
         type: DataType.JSON,

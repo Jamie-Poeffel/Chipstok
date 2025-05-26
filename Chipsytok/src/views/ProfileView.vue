@@ -57,10 +57,8 @@
         <section class="profile-grid-section w-full">
             <!-- Posts grid (infinite scroll) -->
             <div v-if="activeTab === 'posts'" class="posts-grid">
-                <div v-for="(video, index) in importedVideos" :key="index"
-                    class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100">
-                    <video :src="video.src" class="absolute inset-0 w-full h-full object-cover" muted
-                        playsinline></video>
+                <div v-for="(post, index) in user?.postedVideos" :key="index" class="post-thumb">
+                    <img :src="post.url" alt="alt text">
                 </div>
             </div>
 
@@ -136,9 +134,6 @@ function handleScroll() {
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
-
-// Imported videos placeholder
-const importedVideos = ref([]);
 
 
 function formatNumber(value) {
@@ -304,13 +299,12 @@ function formatNumber(value) {
     gap: 0.25rem;
     max-width: 640px;
     width: 100%;
-    margin: 2rem auto 0;
+    margin: 10px auto 0;
 }
 
 .post-thumb {
     position: relative;
     width: 100%;
-    padding-top: 100%;
     background-color: #e5e7eb;
     border-radius: 0.25rem;
     transition:

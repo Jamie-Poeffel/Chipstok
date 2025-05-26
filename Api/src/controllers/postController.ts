@@ -188,3 +188,34 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         res.status(500).json({ message: "Internal Server Error", error: (err as Error).message });
     }
 };
+
+
+export const getThumbnail: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+
+    try {
+        const post = await Post.findByPk(id);
+
+        if (!post || !post.URL) {
+            res.status(404).json({ message: 'Post not found or URL missing' });
+            return;
+        }
+
+        const filename = path.basename(post.URL, path.extname(post.URL)); // e.g., "video"
+        const thumbnailName = `${filename}.jpg`; // e.g., "video.jpg"
+        const thumbnailPath = path.resolve(__dirname, '..', 'public', 'posts', 'thumbnails', thumbnailName);
+
+        fs.readFile(thumbnailPath, (err, data) => {
+            if (err) {
+                console.error('Error reading thumbnail:', err);
+                res.status(500).json({ error: 'Error reading file error: ' + (err as Error).message });
+                return;
+            }
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.send(data);
+        });
+    } catch (err) {
+        console.error('Error while streaming video:', err);
+        res.status(500).json({ message: 'Internal Server Error', error: (err as Error).message });
+    }
+};

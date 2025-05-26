@@ -50,17 +50,11 @@
 
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
-      <!-- Videos -->
-      <div v-if="importedVideos.length" class="videos-grid grid grid-cols-3 gap-1 mt-4">
-        <div v-for="(video, index) in importedVideos" :key="index"
-          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100">
-          <video :src="video.src" class="absolute inset-0 w-full h-full object-cover" muted playsinline></video>
-        </div>
-      </div>
 
-      <!-- Posts grid (infinite scroll) -->
       <div v-if="activeTab === 'posts'" class="posts-grid">
-        <div v-for="(post, index) in posts" :key="index" class="post-thumb" />
+        <div v-for="(post, index) in posts" :key="index" class="post-thumb">
+          <img :src="post.url" alt="alt text">
+        </div>
       </div>
 
       <!-- Placeholders for Saved & Tagged -->
@@ -130,6 +124,7 @@
 
 <script setup>
 import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue';
+import { getThumbnails } from '../helpers/getThumbnails.js'
 import { useRouter } from 'vue-router';
 import { Settings } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
@@ -148,10 +143,8 @@ const confirmPassword = ref('');
 const passwordMessage = ref('');
 const passwordError = ref(false);
 
-// Infinite‑scroll post grid
-const INITIAL_POSTS = 30;
 const BATCH_SIZE = 15;
-const posts = ref(Array.from({ length: INITIAL_POSTS }));
+const posts = ref([]);
 
 function addMorePosts() {
   posts.value.push(...Array.from({ length: BATCH_SIZE }));
@@ -163,8 +156,10 @@ function handleScroll() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
+
+  posts.value = await getThumbnails()
 });
 
 onBeforeUnmount(() => {
@@ -172,7 +167,6 @@ onBeforeUnmount(() => {
 });
 
 // Imported videos placeholder
-const importedVideos = ref([]);
 
 // Router
 const router = useRouter();
@@ -392,13 +386,12 @@ function changePassword() {
   gap: 0.25rem;
   max-width: 640px;
   width: 100%;
-  margin: 2rem auto 0;
+  margin: 10px auto 0;
 }
 
 .post-thumb {
   position: relative;
   width: 100%;
-  padding-top: 100%;
   background-color: #e5e7eb;
   border-radius: 0.25rem;
   transition:
