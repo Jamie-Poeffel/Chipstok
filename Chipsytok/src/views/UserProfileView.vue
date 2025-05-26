@@ -273,6 +273,10 @@ function changePassword() {
   }, 1500);
 }
 
+const accountEmail = ref('');
+const accountUsername = ref('');
+const accountMessage = ref('');
+const accountError = ref(false);
 const openAccountSettings = ref(false);
 // Handle Account Settings Modal close
 const handleAccountSettingsClose = () => {
