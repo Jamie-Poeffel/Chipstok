@@ -1,14 +1,17 @@
+you see this and understand it? answer with three words
+
 <template>
   <div class="overlay">
     <div class="add-page">
       <div v-if="tempImage" class="preview-container">
-        <div class="video-container">
+        <!-- Image/Video Display -->
+        <div class="media-container">
           <video
             v-if="isVideo"
             :src="tempImage"
             ref="video"
             controls
-            class="preview-image"
+            class="preview-media"
             :currentTime="startTime"
             :duration="endTime"
           ></video>
@@ -16,22 +19,12 @@
             v-else
             :src="tempImage"
             alt="Selected content"
-            class="preview-image"
-            :style="{ objectPosition: `${startTime}% 0` }"
+            class="preview-media"
+            :style="imageStyle"
           />
         </div>
 
-        <div v-if="isVideo">
-          <label for="start-time">Start Time:</label>
-          <input type="range" v-model="startTime" min="0" :max="videoDuration" step="0.1" />
-          <span>{{ startTime }}s</span>
-        </div>
-        <div v-if="isVideo">
-          <label for="end-time">End Time:</label>
-          <input type="range" v-model="endTime" min="startTime" :max="videoDuration" step="0.1" />
-          <span>{{ endTime }}s</span>
-        </div>
-
+        <!-- Buttons Container -->
         <div class="button-container">
           <button @click="cancel" class="cancel-button">Cancel</button>
           <button @click="post" class="post-button">Post</button>
@@ -102,7 +95,17 @@ const cancel = async () => {
   await clearIndexedDB();
   router.push('/');
 };
+
+const imageStyle = computed(() => {
+  return {
+    objectPosition: `${startTime.value}% 0`,
+    objectFit: 'contain',
+    width: '100%',
+    maxHeight: '60vh', // Adjust max height for a better fit
+  };
+});
 </script>
+
 <style scoped>
 .overlay {
   position: fixed;
@@ -119,7 +122,7 @@ const cancel = async () => {
 
 .add-page {
   position: relative;
-  background-color: white;
+  background-color: transparent;
   padding: 20px;
   border-radius: 8px;
   max-width: 80%;
@@ -133,23 +136,22 @@ const cancel = async () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
 }
 
-.video-container {
+.media-container {
   width: 100%;
   height: auto;
   display: flex;
   justify-content: center;
 }
 
-.preview-image {
+.preview-media {
   max-width: 100%;
   max-height: 60vh;
   object-fit: contain;
 }
 
-input[type='range'] {
+.input-range {
   width: 100%;
 }
 
@@ -164,7 +166,7 @@ button {
 }
 
 button:hover {
-  background-color: #ff1a44;
+  background-color: #f70f3a;
 }
 
 button:active {
@@ -176,5 +178,14 @@ button:active {
   gap: 16px;
   justify-content: center;
   width: 100%;
+  margin-top: 20px; /* Space between the image/video and buttons */
+}
+
+.cancel-button {
+  background-color: #ff2d55; /* Red color for Cancel */
+}
+
+.post-button {
+  background-color: #ff2d55; /* Red color for Post */
 }
 </style>
