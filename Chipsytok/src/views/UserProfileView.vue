@@ -35,7 +35,6 @@
               </div>
 
               <!-- Action buttons -->
-              <!-- Action bar – stretches full screen -->
             </div>
           </div>
           <div class="flex items-center gap-1 w-full h-[24px] mt-3">
@@ -45,7 +44,6 @@
               <Settings class="w-4 h-4" />
             </button>
           </div>
-          <!-- Settings keeps its original size -->
         </div>
       </div>
     </div>
@@ -65,7 +63,6 @@
 
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
-      <!-- Videos -->
       <div v-if="importedVideos.length" class="videos-grid grid grid-cols-3 gap-1 mt-4">
         <div
           v-for="(video, index) in importedVideos"
@@ -161,6 +158,22 @@
       </div>
     </Transition>
 
+    <!-- Share profile modal -->
+    <Transition name="fade">
+      <div
+        v-if="shareModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
+          <div class="w-full flex justify-center items-center">
+            <div ref="qrCodeContainer"></div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Account Settings Modal -->
     <Transition name="fade">
       <div
@@ -170,10 +183,13 @@
       >
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
-          <div class="input-group">
-            <input v-model="userEmail" placeholder="Change Email" type="email" class="input" />
-            <input v-model="userName" placeholder="Change Username" type="text" class="input" />
-          </div>
+          <input v-model="accountEmail" placeholder="Change Email" type="email" class="input" />
+          <input
+            v-model="accountUsername"
+            placeholder="Change Username"
+            type="text"
+            class="input"
+          />
           <p
             v-if="accountMessage"
             :class="{ error: accountError, success: !accountError }"
@@ -209,22 +225,6 @@
         </div>
       </div>
     </Transition>
-
-    <!-- Share profile modal -->
-    <Transition name="fade">
-      <div
-        v-if="shareModal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="shareModal = false"
-      >
-        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
-          <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
-          <div class="w-full flex justify-center items-center">
-            <div ref="qrCodeContainer"></div>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -247,6 +247,12 @@ const newPassword = ref('');
 const confirmPassword = ref('');
 const passwordMessage = ref('');
 const passwordError = ref(false);
+
+// Account settings state
+const accountEmail = ref('');
+const accountUsername = ref('');
+const accountMessage = ref('');
+const accountError = ref(false);
 
 // Infinite‑scroll post grid
 const INITIAL_POSTS = 30;
@@ -334,38 +340,27 @@ function changePassword() {
   }, 1500);
 }
 
-// Account settings state
-const userEmail = ref('');
-const userName = ref('');
-const accountMessage = ref('');
-const accountError = ref(false);
-
-// Handle closing the account settings modal
+// Handle Account Settings Modal close
 const handleAccountSettingsClose = () => {
-  if (userEmail.value || userName.value) {
+  if (accountEmail.value || accountUsername.value) {
     if (confirm('Are you sure you want to discard changes?')) {
       openAccountSettings.value = false;
-      resetAccountSettings();
+      accountEmail.value = '';
+      accountUsername.value = '';
     }
   } else {
     openAccountSettings.value = false;
   }
 };
 
-// Save account settings (just a placeholder function for now)
 const saveAccountSettings = () => {
   accountMessage.value = 'Account updated successfully!';
   accountError.value = false;
   setTimeout(() => {
     openAccountSettings.value = false;
-    resetAccountSettings();
+    accountEmail.value = '';
+    accountUsername.value = '';
   }, 1500);
-};
-
-// Reset account settings
-const resetAccountSettings = () => {
-  userEmail.value = '';
-  userName.value = '';
 };
 </script>
 
