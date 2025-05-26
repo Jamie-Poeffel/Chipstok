@@ -1,12 +1,34 @@
-<template>
-  <div class="add-page">
-    <div v-if="tempImage" class="preview-container">
-      <img v-if="!isVideo" :src="tempImage" alt="Selected content" class="preview-image" />
-      <video v-if="isVideo" :src="tempImage" controls class="preview-image"></video>
+you see this and understand it? answer with three words
 
-      <div>
-        <button @click="cancel">Cancel</button>
-        <button @click="post">Post</button>
+<template>
+  <div class="overlay">
+    <div class="add-page">
+      <div v-if="tempImage" class="preview-container">
+        <!-- Image/Video Display -->
+        <div class="media-container">
+          <video
+            v-if="isVideo"
+            :src="tempImage"
+            ref="video"
+            controls
+            class="preview-media"
+            :currentTime="startTime"
+            :duration="endTime"
+          ></video>
+          <img
+            v-else
+            :src="tempImage"
+            alt="Selected content"
+            class="preview-media"
+            :style="imageStyle"
+          />
+        </div>
+
+        <!-- Buttons Container -->
+        <div class="button-container">
+          <button @click="cancel" class="cancel-button">Cancel</button>
+          <button @click="post" class="post-button">Post</button>
+        </div>
       </div>
     </div>
   </div>
@@ -18,6 +40,9 @@ import { useRouter } from 'vue-router';
 import { base64ToBlob, clearIndexedDB, getLastUploadFromIndexedDB } from './../composables/Uploads';
 
 const tempImage = ref(null);
+const startTime = ref(0);
+const endTime = ref(30);
+const videoDuration = ref(0);
 const router = useRouter();
 
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
@@ -57,30 +82,77 @@ onMounted(async () => {
   } else {
     router.push('/');
   }
+
+  if (isVideo.value) {
+    const videoElement = document.querySelector('video');
+    videoElement.onloadedmetadata = () => {
+      videoDuration.value = videoElement.duration;
+    };
+  }
 });
 
-// Cancel function to redirect manually
 const cancel = async () => {
   await clearIndexedDB();
   router.push('/');
 };
+
+const imageStyle = computed(() => {
+  return {
+    objectPosition: `${startTime.value}% 0`,
+    objectFit: 'contain',
+    width: '100%',
+    maxHeight: '60vh', // Adjust max height for a better fit
+  };
+});
 </script>
 
 <style scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Grayish background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.add-page {
+  position: relative;
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow: hidden;
+}
+
 .preview-container {
   width: 100%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
 }
 
-.preview-image {
+.media-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-media {
   max-width: 100%;
-  max-height: 90vh;
+  max-height: 60vh;
   object-fit: contain;
+}
+
+.input-range {
+  width: 100%;
 }
 
 button {
@@ -90,9 +162,30 @@ button {
   color: white;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #ff1a44;
+  background-color: #f70f3a;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px; /* Space between the image/video and buttons */
+}
+
+.cancel-button {
+  background-color: #ff2d55; /* Red color for Cancel */
+}
+
+.post-button {
+  background-color: #ff2d55; /* Red color for Post */
 }
 </style>

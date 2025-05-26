@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
 import { Loader2, MailCheck } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
+import { Eye, EyeOff } from 'lucide-vue-next';
 
 const { setLanguage, languages, t, getEnglishName, selectedLanguage } = useLanguage();
 const hoveredLang = ref(getEnglishName(selectedLanguage.value || 'en'));
@@ -11,6 +12,7 @@ const hoveredLang = ref(getEnglishName(selectedLanguage.value || 'en'));
 const router = useRouter();
 const username = ref(''); // email or phone number entered by the user
 const password = ref('');
+const showPassword = ref(false);
 
 // forgot‑password flow refs
 const forgotEmail = ref('');
@@ -119,9 +121,22 @@ const sendResetEmail = async () => {
         </div>
 
         <!-- password -->
-        <div>
-          <input v-model="password" type="password" :placeholder="t('password')" class="input" />
-          <p v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</p>
+        <div class="relative">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            v-model="password"
+            :placeholder="t('password')"
+            class="input pr-10"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
+            class="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
+            aria-label="Toggle password visibility"
+          >
+            <component :is="showPassword ? EyeOff : Eye" class="w-5 h-5" />
+          </button>
+          <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
         </div>
 
         <!-- submit -->

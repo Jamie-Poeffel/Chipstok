@@ -29,17 +29,17 @@
                         </div>
                     </div>
                     <div class="flex gap-2 mt-3 w-full">
-                        <button v-if="!isFollowing" @click="followOrUnfollow" class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2
-                            transition-all duration-150 shadow-md active:scale-95">
-                            Follow
+                        <button v-if="!isFollowing" @click="followOrUnfollow"
+                            class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
+                            {{ t('follow') }}
                         </button>
-                        <button v-else @click="followOrUnfollow" class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2
-                            transition-all duration-150 shadow-md active:scale-95">
-                            Unfollow
+                        <button v-else @click="followOrUnfollow"
+                            class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
+                            {{ t('unfollow') }}
                         </button>
                         <button
                             class="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
-                            Message
+                            {{ t('message') }}
                         </button>
                     </div>
                 </div>
@@ -76,6 +76,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
+import { t } from '../composables/useLanguage';
 const route = useRoute();
 
 const user = ref(null);
@@ -91,7 +92,7 @@ onMounted(async () => {
     res = null;
     res = await fetch(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/users/${route.query.username}/isFollowing`,
-        { credentials: 'include' }
+        { credentials: 'include' },
     );
     isFollowing.value = await res.json();
 });
@@ -102,7 +103,7 @@ async function followOrUnfollow() {
         {
             method: 'POST',
             credentials: 'include',
-        }
+        },
     );
     if (res.ok) {
         isFollowing.value = !isFollowing.value;
@@ -129,8 +130,6 @@ function handleScroll() {
     }
 }
 
-
-
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
@@ -139,7 +138,6 @@ onBeforeUnmount(() => {
 function formatNumber(value) {
     return value > 9999 ? (value / 1000).toFixed(0) + 'k' : value;
 }
-
 </script>
 
 <style scoped>

@@ -18,7 +18,10 @@
                   <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Gefolgt</strong>
                 </div>
                 <div>
-                  <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Follower*innen</strong>
+                  <strong>{{
+                    formatNumber(useAuthStore().user.profile.followers)
+                    }}
+                    Follower*innen</strong>
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
@@ -26,7 +29,6 @@
               </div>
 
               <!-- Action buttons -->
-              <!-- Action bar – stretches full screen -->
             </div>
           </div>
           <div class="flex items-center gap-1 w-full h-[24px] mt-3">
@@ -36,7 +38,6 @@
               <Settings class="w-4 h-4" />
             </button>
           </div>
-          <!-- Settings keeps its original size -->
         </div>
       </div>
     </div>
@@ -71,24 +72,29 @@
       <div v-if="openSettings" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
         @click.self="openSettings = false">
         <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
-          <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
+          <h3 class="text-xl font-semibold text-center mb-4">Settings & Privacy</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
             <li @click="openChangePassword = true" class="cursor-pointer hover:text-red-600">
               Change Password
             </li>
-            <li class="cursor-pointer hover:text-red-600">Settings and Privacy</li>
+            <li @click="openAccountSettings = true" class="cursor-pointer hover:text-red-600">
+              Account Settings
+            </li>
+            <li @click="openPrivacySettings = true" class="cursor-pointer hover:text-red-600">
+              Privacy Settings
+            </li>
             <li @click="logout" class="cursor-pointer hover:text-red-600">Log Out</li>
           </ul>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
             @click="openSettings = false">
-            Cancel
+            Close
           </button>
         </div>
       </div>
     </Transition>
 
-    <!-- Change‑password modal -->
+    <!-- Change Password Modal -->
     <Transition name="fade">
       <div v-if="openChangePassword"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
@@ -119,6 +125,44 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Account Settings Modal -->
+    <Transition name="fade">
+      <div v-if="openAccountSettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="handleAccountSettingsClose">
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
+          <input v-model="accountEmail" placeholder="Change Email" type="email" class="input" />
+          <input v-model="accountUsername" placeholder="Change Username" type="text" class="input" />
+          <p v-if="accountMessage" :class="{ error: accountError, success: !accountError }" class="mt-2 text-center">
+            {{ accountMessage }}
+          </p>
+          <button class="button w-full mt-4" @click="saveAccountSettings">Save</button>
+          <button class="cancel-btn w-full mt-2" @click="handleAccountSettingsClose">Cancel</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Privacy Settings Modal -->
+    <Transition name="fade">
+      <div v-if="openPrivacySettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="openPrivacySettings = false">
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
+          <p class="text-sm text-gray-600">
+            Your privacy is important to us. We do not share your personal information with third
+            parties. For more details, please review our full privacy policy.
+          </p>
+          <button
+            class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            @click="openPrivacySettings = false">
+            Close
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -143,6 +187,7 @@ const confirmPassword = ref('');
 const passwordMessage = ref('');
 const passwordError = ref(false);
 
+// Infinite‑scroll post grid
 const BATCH_SIZE = 15;
 const posts = ref([]);
 
@@ -227,6 +272,30 @@ function changePassword() {
     passwordMessage.value = '';
   }, 1500);
 }
+
+const openAccountSettings = ref(false);
+// Handle Account Settings Modal close
+const handleAccountSettingsClose = () => {
+  if (accountEmail.value || accountUsername.value) {
+    if (confirm('Are you sure you want to discard changes?')) {
+      openAccountSettings.value = false;
+      accountEmail.value = '';
+      accountUsername.value = '';
+    }
+  } else {
+    openAccountSettings.value = false;
+  }
+};
+
+const saveAccountSettings = () => {
+  accountMessage.value = 'Account updated successfully!';
+  accountError.value = false;
+  setTimeout(() => {
+    openAccountSettings.value = false;
+    accountEmail.value = '';
+    accountUsername.value = '';
+  }, 1500);
+};
 </script>
 
 <style scoped>
