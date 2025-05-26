@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
 import { Loader2, Globe } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
+import { Eye, EyeOff } from 'lucide-vue-next';
 
 const { selectedLanguage, setLanguage, languages, t } = useLanguage();
 const router = useRouter();
@@ -16,6 +17,7 @@ const email = ref('');
 const username = ref('');
 const password = ref('');
 const testpassword = ref('');
+const showPassword = ref(false);
 
 const verificationCode = ref('');
 const generatedCode = ref('');
@@ -138,13 +140,39 @@ onMounted(() => {
         <input v-model="username" type="text" :placeholder="t('username')" class="input" />
         <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
 
-        <input v-model="password" type="password" :placeholder="t('password')" class="input" />
-        <input
-          v-model="testpassword"
-          type="password"
-          :placeholder="t('confirmPassword')"
-          class="input"
-        />
+        <div class="relative">
+  <input
+    v-model="password"
+    :type="showPassword ? 'text' : 'password'"
+    :placeholder="t('password')"
+    class="input pr-10"
+  />
+  <button
+    type="button"
+    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+    @click="showPassword = !showPassword"
+  >
+    <component :is="showPassword ? EyeOff : Eye" />
+
+  </button>
+</div>
+
+<div class="relative">
+  <input
+    v-model="testpassword"
+    :type="showPassword ? 'text' : 'password'"
+    :placeholder="t('confirmPassword')"
+    class="input pr-10"
+  />
+  <button
+    type="button"
+    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+    @click="showPassword = !showPassword"
+  >
+    <component :is="showPassword ? 'lucide-eye-off' : 'lucide-eye'" class="w-5 h-5" />
+  </button>
+</div>
+
         <p v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</p>
 
         <button type="submit" class="button">
