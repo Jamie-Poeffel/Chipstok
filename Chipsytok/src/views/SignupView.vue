@@ -164,8 +164,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="showLanguageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
+    <div v-if="showLanguageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="showLanguageModal = false">
+      <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center" @click.stop>
         <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
         <div class="flex flex-wrap justify-center gap-2">
           <button v-for="(_, code) in languages" :key="code" @click="
