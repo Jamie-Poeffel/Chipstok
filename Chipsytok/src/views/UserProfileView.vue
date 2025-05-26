@@ -7,7 +7,11 @@
         <div class="flex flex-col w-full">
           <div class="flex flex-row">
             <div class="avatar-wrapper">
-              <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
+              <img
+                class="avatar"
+                src="https://randomuser.me/api/portraits/men/3.jpg"
+                alt="avatar"
+              />
             </div>
             <div class="user-meta">
               <p class="handle">@{{ useAuthStore().username }}</p>
@@ -18,7 +22,12 @@
                   <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Gefolgt</strong>
                 </div>
                 <div>
-                  <strong>{{ formatNumber(useAuthStore().user.profile.followers) }} Follower*innen</strong>
+                  <strong
+                    >{{
+                      formatNumber(useAuthStore().user.profile.followers)
+                    }}
+                    Follower*innen</strong
+                  >
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
@@ -43,18 +52,32 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'">Saved</span>
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'">Tagged</span>
+      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
+        >Posts</span
+      >
+      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
+        >Saved</span
+      >
+      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
+        >Tagged</span
+      >
     </div>
 
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
       <!-- Videos -->
       <div v-if="importedVideos.length" class="videos-grid grid grid-cols-3 gap-1 mt-4">
-        <div v-for="(video, index) in importedVideos" :key="index"
-          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100">
-          <video :src="video.src" class="absolute inset-0 w-full h-full object-cover" muted playsinline></video>
+        <div
+          v-for="(video, index) in importedVideos"
+          :key="index"
+          class="video-thumb relative w-full pt-[100%] overflow-hidden bg-gray-100"
+        >
+          <video
+            :src="video.src"
+            class="absolute inset-0 w-full h-full object-cover"
+            muted
+            playsinline
+          ></video>
         </div>
       </div>
 
@@ -74,37 +97,62 @@
 
     <!-- Settings drawer -->
     <Transition name="fade">
-      <div v-if="openSettings" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
-        @click.self="openSettings = false">
+      <div
+        v-if="openSettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
+        @click.self="openSettings = false"
+      >
         <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
-          <h3 class="text-xl font-semibold text-center mb-4">Settings</h3>
+          <h3 class="text-xl font-semibold text-center mb-4">Settings & Privacy</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
             <li @click="openChangePassword = true" class="cursor-pointer hover:text-red-600">
               Change Password
             </li>
-            <li class="cursor-pointer hover:text-red-600">Settings and Privacy</li>
+            <li @click="openAccountSettings = true" class="cursor-pointer hover:text-red-600">
+              Account Settings
+            </li>
+            <li @click="openPrivacySettings = true" class="cursor-pointer hover:text-red-600">
+              Privacy Settings
+            </li>
             <li @click="logout" class="cursor-pointer hover:text-red-600">Log Out</li>
           </ul>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openSettings = false">
-            Cancel
+            @click="openSettings = false"
+          >
+            Close
           </button>
         </div>
       </div>
     </Transition>
 
-    <!-- Change‑password modal -->
+    <!-- Change Password Modal -->
     <Transition name="fade">
-      <div v-if="openChangePassword"
+      <div
+        v-if="openChangePassword"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openChangePassword = false">
+        @click.self="openChangePassword = false"
+      >
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Change Password</h3>
-          <input v-model="currentPassword" placeholder="Current Password" type="password" class="input" />
+          <input
+            v-model="currentPassword"
+            placeholder="Current Password"
+            type="password"
+            class="input"
+          />
           <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
-          <input v-model="confirmPassword" placeholder="Confirm New Password" type="password" class="input" />
-          <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }" class="mt-2 text-center">
+          <input
+            v-model="confirmPassword"
+            placeholder="Confirm New Password"
+            type="password"
+            class="input"
+          />
+          <p
+            v-if="passwordMessage"
+            :class="{ error: passwordError, success: !passwordError }"
+            class="mt-2 text-center"
+          >
             {{ passwordMessage }}
           </p>
           <button class="button w-full mt-4" @click="changePassword">Change</button>
@@ -113,10 +161,62 @@
       </div>
     </Transition>
 
+    <!-- Account Settings Modal -->
+    <Transition name="fade">
+      <div
+        v-if="openAccountSettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="handleAccountSettingsClose"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
+          <div class="input-group">
+            <input v-model="userEmail" placeholder="Change Email" type="email" class="input" />
+            <input v-model="userName" placeholder="Change Username" type="text" class="input" />
+          </div>
+          <p
+            v-if="accountMessage"
+            :class="{ error: accountError, success: !accountError }"
+            class="mt-2 text-center"
+          >
+            {{ accountMessage }}
+          </p>
+          <button class="button w-full mt-4" @click="saveAccountSettings">Save</button>
+          <button class="cancel-btn w-full mt-2" @click="handleAccountSettingsClose">Cancel</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Privacy Settings Modal -->
+    <Transition name="fade">
+      <div
+        v-if="openPrivacySettings"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="openPrivacySettings = false"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
+          <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
+          <p class="text-sm text-gray-600">
+            Your privacy is important to us. We do not share your personal information with third
+            parties. For more details, please review our full privacy policy.
+          </p>
+          <button
+            class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            @click="openPrivacySettings = false"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Share profile modal -->
     <Transition name="fade">
-      <div v-if="shareModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="shareModal = false">
+      <div
+        v-if="shareModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false"
+      >
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
           <div class="w-full flex justify-center items-center">
@@ -233,6 +333,40 @@ function changePassword() {
     passwordMessage.value = '';
   }, 1500);
 }
+
+// Account settings state
+const userEmail = ref('');
+const userName = ref('');
+const accountMessage = ref('');
+const accountError = ref(false);
+
+// Handle closing the account settings modal
+const handleAccountSettingsClose = () => {
+  if (userEmail.value || userName.value) {
+    if (confirm('Are you sure you want to discard changes?')) {
+      openAccountSettings.value = false;
+      resetAccountSettings();
+    }
+  } else {
+    openAccountSettings.value = false;
+  }
+};
+
+// Save account settings (just a placeholder function for now)
+const saveAccountSettings = () => {
+  accountMessage.value = 'Account updated successfully!';
+  accountError.value = false;
+  setTimeout(() => {
+    openAccountSettings.value = false;
+    resetAccountSettings();
+  }, 1500);
+};
+
+// Reset account settings
+const resetAccountSettings = () => {
+  userEmail.value = '';
+  userName.value = '';
+};
 </script>
 
 <style scoped>
