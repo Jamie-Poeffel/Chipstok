@@ -46,12 +46,17 @@ close: 'Close',
 privacyPolicy: 'Privacy Policy',
 privacyText: 'Your privacy is important to us...',
 shareProfile: 'Share Profile',
+
+// Profile update messages
 editProfile: 'Edit Profile',
-shareProfile: 'Share Profile',
 change: 'Change',
 currentPassword: 'Current Password',
 newPassword: 'New Password',
 confirmNewPassword: 'Confirm New Password',
+profileUpdated: 'Profile updated successfully!',
+avatarUpload: 'Upload a new avatar',
+
+
     // List of countries with their respective calling codes
     countries: {
       '+1': 'United States/Canada',
@@ -309,12 +314,15 @@ close: 'Schließen',
 privacyPolicy: 'Datenschutzrichtlinie',
 privacyText: 'Ihr Datenschutz ist uns wichtig...',
 shareProfile: 'Profil teilen',
+// Profilaktualisierungsnachrichten
 editProfile: 'Profil bearbeiten',
-shareProfile: 'Profil teilen',
 change: 'Ändern',
 currentPassword: 'Aktuelles Passwort',
 newPassword: 'Neues Passwort',
 confirmNewPassword: 'Neues Passwort bestätigen',
+profileUpdated: 'Profil erfolgreich aktualisiert!',
+avatarUpload: 'Neues Profilbild hochladen',
+
     // Liste der Länder mit ihren jeweiligen Vorwahl
     countries: {
       '+1': 'USA',
@@ -571,11 +579,15 @@ close: 'Fermer',
 privacyPolicy: 'Politique de confidentialité',
 privacyText: 'Votre vie privée est importante pour nous...',
 shareProfile: 'Partager le profil',
+// Messages de mise à jour du profil
 editProfile: 'Modifier le profil',
-change: 'Changer',
+change: 'Modifier',
 currentPassword: 'Mot de passe actuel',
 newPassword: 'Nouveau mot de passe',
 confirmNewPassword: 'Confirmer le nouveau mot de passe',
+profileUpdated: 'Profil mis à jour avec succès !',
+avatarUpload: 'Télécharger un nouvel avatar',
+
     // Liste des pays avec leurs indicatifs téléphoniques respectifs
     countries: {
       '+1': 'États-Unis / Canada',
@@ -833,11 +845,15 @@ close: 'Chiudi',
 privacyPolicy: 'Politica sulla privacy',
 privacyText: 'La tua privacy è importante per noi...',
 shareProfile: 'Condividi il profilo',
+// Messaggi di aggiornamento del profilo
 editProfile: 'Modifica il profilo',
 change: 'Cambia',
 currentPassword: 'Password attuale',
 newPassword: 'Nuova password',
 confirmNewPassword: 'Conferma la nuova password',
+profileUpdated: 'Profilo aggiornato con successo!',
+avatarUpload: 'Carica un nuovo avatar',
+
     // Lista dei paesi con i rispettivi prefissi telefonici
     countries: {
       '+1': 'Stati Uniti / Canada',
@@ -1094,11 +1110,16 @@ close: 'Cerrar',
 privacyPolicy: 'Política de privacidad',
 privacyText: 'Tu privacidad es importante para nosotros...',
 shareProfile: 'Compartir perfil',
+// Mensajes de actualización de perfil
 editProfile: 'Editar perfil',
 change: 'Cambiar',
 currentPassword: 'Contraseña actual',
 newPassword: 'Nueva contraseña',
 confirmNewPassword: 'Confirmar nueva contraseña',
+profileUpdated: '¡Perfil actualizado con éxito!',
+avatarUpload: 'Subir un nuevo avatar',
+
+
     // Lista de países con sus respectivos códigos de marcación
     countries: {
       '+1': 'Estados Unidos / Canadá',
