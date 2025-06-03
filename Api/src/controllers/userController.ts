@@ -106,6 +106,13 @@ export const followUser: RequestHandler = async (req: Request, res: Response): P
                 user.changed('profile', true);
                 await user.save();
 
+                User.findByPk(loggedInUser._id)
+                    .then(async (l: any) => {
+                        l.profile.following = followers.length;
+                        l?.changed('profile', true);
+                        await l?.save();
+                    })
+
                 res.status(200).json({ message: "User followed/unfollowed successfully" });
             } else {
                 res.status(404).json({ error: "User not found" });

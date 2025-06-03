@@ -121,6 +121,54 @@ export const likePost: RequestHandler = async (req: Request, res: Response): Pro
     }
 };
 
+export const isLiked: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+    const user = (req as any).user as unknown as User;
+
+    res.status(200).json({ isLiked: user.likedPosts.includes(id) })
+}
+export const unlikePost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+
+    try {
+        const post = await Post.findByPk(id);
+
+        if (!post) {
+            res.status(404).json({ message: "Post nicht gefunden" });
+            return;
+        }
+
+        const user = (req as any).user as unknown as User;
+        const userId = user._id;
+
+        const likedPosts = user.likedPosts || [];
+        const taste = user.taste || { likedHashtags: [] };
+        const likedHashtags = taste.likedHashtags || [];
+
+        if (!likedPosts.includes(id)) {
+            res.status(400).json({ message: "Post wurde nicht geliket" });
+            return;
+        }
+
+        const updatedLikedPosts = likedPosts.filter(postId => postId !== id);
+
+        const postHashtagsSet = new Set(post.Hashtags);
+        const updatedLikedHashtags = likedHashtags.filter(ht => !postHashtagsSet.has(ht));
+
+        await User.update(
+            { likedPosts: updatedLikedPosts, taste: { ...taste, likedHashtags: updatedLikedHashtags } },
+            { where: { _id: userId } }
+        );
+
+        post.likeCount = Math.max(post.likeCount - 1, 0);
+        await post.save();
+
+        res.status(200).json({ message: `Post ${id} wurde ungeliket.` });
+    } catch (e) {
+        console.error("Fehler beim Unliken:", e);
+        res.status(500).json({ message: "Fehler beim Unliken", error: (e as Error).message });
+    }
+};
 
 
 export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
@@ -135,11 +183,11 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
             return;
         }
 
-        const filePath = path.resolve(__dirname, `../public/posts/${url}`);
+        const filePath = path.resolve(__dirname, '..', 'public', 'posts', url);
         const stat = await fsPromises.stat(filePath);
         const fileSize = stat.size;
 
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:80");
+        res.setHeader("Access-Control-Allow-Origin", `${process.env.FRONTEND_URL}`);
         res.setHeader("Cache-Control", "public, max-age=600");
 
 
@@ -188,6 +236,24 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         res.status(500).json({ message: "Internal Server Error", error: (err as Error).message });
     }
 };
+
+// Example controller
+export const getLikeStatus: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const postId = req.params.id;
+    const userId = (req as any).user?.id;
+
+    try {
+        const user = await User.findByPk(userId);
+        if (user?.likedPosts.includes(postId)) {
+            res.status(200).json({ liked: true })
+        }
+        res.status(200).json({ liked: false });
+    } catch (err) {
+        console.error("Error checking like status:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 
 
 export const getThumbnail: RequestHandler = async (req: Request, res: Response): Promise<void> => {

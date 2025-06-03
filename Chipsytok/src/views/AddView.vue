@@ -6,22 +6,9 @@ you see this and understand it? answer with three words
       <div v-if="tempImage" class="preview-container">
         <!-- Image/Video Display -->
         <div class="media-container">
-          <video
-            v-if="isVideo"
-            :src="tempImage"
-            ref="video"
-            controls
-            class="preview-media"
-            :currentTime="startTime"
-            :duration="endTime"
-          ></video>
-          <img
-            v-else
-            :src="tempImage"
-            alt="Selected content"
-            class="preview-media"
-            :style="imageStyle"
-          />
+          <video v-if="isVideo" :src="tempImage" ref="video" controls class="preview-media"
+            :currentTime="startTime"></video>
+          <img v-else :src="tempImage" alt="Selected content" class="preview-media" :style="imageStyle" />
         </div>
 
         <!-- Buttons Container -->
@@ -38,11 +25,10 @@ you see this and understand it? answer with three words
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { base64ToBlob, clearIndexedDB, getLastUploadFromIndexedDB } from './../composables/Uploads';
+import { useFetch } from '@/composables/useFetch';
 
 const tempImage = ref(null);
 const startTime = ref(0);
-const endTime = ref(30);
-const videoDuration = ref(0);
 const router = useRouter();
 
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
@@ -56,18 +42,17 @@ const post = async () => {
 
   form.append('video', blob, filename);
 
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/upload/post`, {
+  const { res, data, error } = await useFetch(`/upload/post`, {
     method: 'POST',
     credentials: 'include',
     body: form,
   });
 
-  if (!response.ok) {
-    console.error('Upload failed:', response.statusText);
+  if (error || !res.ok) {
+    console.error('Upload failed:', error || res.statusText);
     return;
   }
 
-  const data = await response.json();
   console.log('Upload successful:', data);
   await clearIndexedDB();
 
@@ -82,13 +67,6 @@ onMounted(async () => {
   } else {
     router.push('/');
   }
-
-  if (isVideo.value) {
-    const videoElement = document.querySelector('video');
-    videoElement.onloadedmetadata = () => {
-      videoDuration.value = videoElement.duration;
-    };
-  }
 });
 
 const cancel = async () => {
@@ -101,7 +79,7 @@ const imageStyle = computed(() => {
     objectPosition: `${startTime.value}% 0`,
     objectFit: 'contain',
     width: '100%',
-    maxHeight: '60vh', // Adjust max height for a better fit
+    maxHeight: '60vh',
   };
 });
 </script>
@@ -113,7 +91,8 @@ const imageStyle = computed(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Grayish background */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Grayish background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -178,14 +157,17 @@ button:active {
   gap: 16px;
   justify-content: center;
   width: 100%;
-  margin-top: 20px; /* Space between the image/video and buttons */
+  margin-top: 20px;
+  /* Space between the image/video and buttons */
 }
 
 .cancel-button {
-  background-color: #ff2d55; /* Red color for Cancel */
+  background-color: #ff2d55;
+  /* Red color for Cancel */
 }
 
 .post-button {
-  background-color: #ff2d55; /* Red color for Post */
+  background-color: #ff2d55;
+  /* Red color for Post */
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, reactive } from 'vue';
 import { Plus, Heart, MessageCircle, Send, RefreshCcw } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useFetch } from '@/composables/useFetch';
@@ -7,20 +7,25 @@ import { useFetch } from '@/composables/useFetch';
 async function img() {
     const { data } = await useFetch('/posts?limit=4', { credentials: 'include' });
     const list = [];
+    let dt = data
     let ddata = data.sortedPosts;
 
     if (data.message !== "no posts posted") {
-        ddata.forEach(e => {
+        ddata.forEach(async (e) => {
             list.push({
                 _id: `${e._id}`,
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
                 type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-                username: `${data.username}`,
+                username: `${dt.username}`,
                 profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
-                caption: 'Check out this awesome content! 🚀',
+                caption: `${e.caption || 'Check out this awesome content! 🚀'}`,
                 likes: `${e.likeCount}`,
                 comments: `${e.commentCount}`,
             });
+
+            likesCountMap.set(e._id, e.likeCount)
+            const { data } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' })
+            isLikedMap.set(e._id, data.isLiked);
         });
     }
     return list;
@@ -58,20 +63,25 @@ let observer = null;
 // Function to load two new videos (simulate network delay)
 const loadMore = async () => {
     const { data } = await useFetch('/posts?limit=2', { credentials: 'include' });
+    let dt = data
     let ddata = data.sortedPosts;
 
     if (data.message !== "no posts posted") {
-        ddata.forEach(e => {
+        ddata.forEach(async (e) => {
             imgs.value.push({
                 _id: `${e._id}`,
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
                 type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-                username: `${data.username}`,
+                username: `${dt.username}`,
                 profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
                 caption: 'Check out this awesome content! 🚀',
                 likes: `${e.likeCount}`,
                 comments: `${e.commentCount}`,
             });
+
+            likesCountMap.set(e._id, e.likeCount)
+            const { data } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' })
+            isLikedMap.set(e._id, data.isLiked);
         });
     }
 };
@@ -116,6 +126,28 @@ onUnmounted(() => {
         observer.unobserve(lastItemRef.value);
     }
 });
+
+
+const toggleLike = async (postID) => {
+    try {
+        if (isLikedMap.get(postID)) {
+            // Unlike
+            await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/${postID}/unlike`, { method: 'POST', credentials: 'include' })
+            isLikedMap.set(postID, false)
+            likesCountMap.set(postID, likesCountMap.get(postID) - 1)
+        } else {
+            // Like
+            await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/${postID}/like`, { method: 'POST', credentials: 'include' })
+            isLikedMap.set(postID, true)
+            likesCountMap.set(postID, likesCountMap.get(postID) + 1)
+        }
+    } catch (err) {
+        console.error('Error toggling like:', err)
+    }
+}
+
+const isLikedMap = reactive(new Map())
+const likesCountMap = reactive(new Map());
 </script>
 
 <template>
@@ -152,25 +184,28 @@ onUnmounted(() => {
                     </video>
                 </template>
 
-                <div class="absolute bottom-24 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
+                <div class="absolute bottom-10 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
                     <p class="font-semibold text-base mb-1">@{{ img.username }}</p>
                     <p class="text-sm leading-tight">{{ img.caption }}</p>
                 </div>
 
-                <div class="absolute right-3 bottom-24 flex flex-col items-center justify-center gap-5">
+                <div class="absolute right-3 bottom-10 flex flex-col items-center justify-center gap-5">
                     <div class="mb-2 flex flex-col gap-5 justify-center items-center">
                         <div class="flex flex-col justify-center items-center">
                             <img :src="img.profilePicture" :alt="'Profile of ' + img.username"
                                 class="w-12 h-12 rounded-full object-cover hover:cursor-pointer active:scale-90"
                                 loading="lazy" />
                             <button aria-label="Follow user"
-                                class="flex flex-col items-center w-4 h-4 text-white text-2xl bg-[#ff2d55]/90 rounded-full hover:cursor-pointer active:scale-90">
+                                class="flex flex-col items-center w-4 h-4 -translate-y-1 text-white text-2xl bg-[#ff2d55]/90 rounded-full hover:cursor-pointer active:scale-90">
                                 <Plus />
                             </button>
                         </div>
                         <button aria-label="Like post"
-                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
-                            <Heart /><span class="text-xs font-medium">{{ img.likes }}</span>
+                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90"
+                            @click="toggleLike(img._id)">
+                            <Heart :fill="isLikedMap.get(img._id) ? 'red' : 'transparent'"
+                                :class="isLikedMap.get(img._id) ? 'text-[#ff0000]' : 'text-white'" />
+                            <span class="text-xs font-medium">{{ likesCountMap.get(img._id) }}</span>
                         </button>
                         <button aria-label="Comment on post"
                             class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
