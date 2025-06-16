@@ -442,9 +442,6 @@ const saveAccountSettings = () => {
   }, 1500);
 };
 
-const openEditProfile = ref(false);
-const editUsername = ref(useAuthStore().username);
-const editBio = ref(useAuthStore().user.profile.bio || '');
 const profileMessage = ref('');
 const profileError = ref(false);
 
@@ -468,12 +465,7 @@ function saveProfile() {
     profileMessage.value = '';
   }, 1500);
 }
-const openAccountSettings = ref(false);
 const openPrivacySettings = ref(false);
-const accountEmail = ref(''); // für neue E-Mail
-const accountUsername = ref(''); // für neuen Username
-const accountMessage = ref('');
-const accountError = ref(false);
 
 // ==== Methode zum Schließen (mit Abfrage) ====
 function handleAccountSettingsClose() {
