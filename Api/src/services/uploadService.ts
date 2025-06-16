@@ -11,7 +11,7 @@ ffmpeg.setFfmpegPath(ffmpegStatic as string);
 // Storage configuration
 const postStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/posts/');
+        cb(null, 'src/public/posts/');
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
@@ -22,7 +22,7 @@ const postStorage = multer.diskStorage({
 // Profile picture storage
 const profilePictureStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/posts/');
+        cb(null, 'src/public/posts/');
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
@@ -43,7 +43,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
 };
 
 const upload = multer({ storage: postStorage, fileFilter });
-const profileUpload = multer({ storage: profilePictureStorage });
+export const profileUpload = multer({ storage: profilePictureStorage });
 
 // Exported middleware
 export const uploadMiddleware = (
