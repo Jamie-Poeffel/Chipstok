@@ -45,7 +45,7 @@ const login = async () => {
       });
 
       if (res.ok) {
-        router.push('/');
+        router.push('/'); 
       } else {
         errors.value.username = data.message || 'Invalid login credentials';
       }
