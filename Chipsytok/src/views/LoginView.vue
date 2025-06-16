@@ -161,9 +161,13 @@ const sendResetEmail = async () => {
         <a href="/signup" class="text-blue-500 font-bold">{{ t('signup') }}</a>
       </div>
 
-      <button type="button" class="button mt-2">
+      <button
+        type="button"
+        class="button mt-2"
+        @click="window.open('https://chipslyfans.bbzwinf.ch/', '_blank')"
+      >
         <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
-          <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png" />
+          <img class="w-4 h-4" src="../../ChipslyFans.jpg" />
           <p>Chipslyfans</p>
         </div>
         <div v-else class="flex justify-center items-center">
