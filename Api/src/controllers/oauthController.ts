@@ -34,13 +34,6 @@ export const Authorize: RequestHandler = async (req: Request, res: Response): Pr
         return;
     }
 
-    const config = OAuthConfigs.find(cfg => cfg.clientId === client_id && cfg.redirectUrl === redirect_uri);
-
-    if (!config) {
-        res.status(400).json({ error: "Invalid client_id or redirect_uri" });
-        return;
-    }
-
     const isValidResponseType = response_type === "code";
 
     if (!isValidResponseType) {

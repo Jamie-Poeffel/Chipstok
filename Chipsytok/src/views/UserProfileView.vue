@@ -18,12 +18,10 @@
                   <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Gefolgt</strong>
                 </div>
                 <div>
-                  <strong
-                    >{{
-                      formatNumber(useAuthStore().user.profile.followers)
+                  <strong>{{
+                    formatNumber(useAuthStore().user.profile.followers)
                     }}
-                    Follower*innen</strong
-                  >
+                    Follower*innen</strong>
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
@@ -45,25 +43,14 @@
     </div>
 
     <Transition name="fade">
-      <div
-        v-if="openEditProfile"
+      <div v-if="openEditProfile"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openEditProfile = false"
-      >
+        @click.self="openEditProfile = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Profil bearbeiten</h3>
           <input v-model="editUsername" placeholder="Username" type="text" class="input" />
-          <textarea
-            v-model="editBio"
-            placeholder="Bio"
-            rows="3"
-            class="input resize-none"
-          ></textarea>
-          <p
-            v-if="profileMessage"
-            :class="{ error: profileError, success: !profileError }"
-            class="mt-2 text-center"
-          >
+          <textarea v-model="editBio" placeholder="Bio" rows="3" class="input resize-none"></textarea>
+          <p v-if="profileMessage" :class="{ error: profileError, success: !profileError }" class="mt-2 text-center">
             {{ profileMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveProfile">Speichern</button>
@@ -74,15 +61,9 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
-        >Posts</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
-        >Saved</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
-        >Tagged</span
-      >
+      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
+      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'">Saved</span>
+      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'">Tagged</span>
     </div>
 
     <!-- Profile grid section -->
@@ -104,11 +85,8 @@
 
     <!-- Settings drawer -->
     <Transition name="fade">
-      <div
-        v-if="openSettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
-        @click.self="openSettings = false"
-      >
+      <div v-if="openSettings" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
+        @click.self="openSettings = false">
         <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
           <h3 class="text-xl font-semibold text-center mb-4">Settings & Privacy</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
@@ -125,8 +103,7 @@
           </ul>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openSettings = false"
-          >
+            @click="openSettings = false">
             Close
           </button>
         </div>
@@ -134,25 +111,14 @@
     </Transition>
 
     <Transition name="fade">
-      <div
-        v-if="openAccountSettings"
+      <div v-if="openAccountSettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="handleAccountSettingsClose"
-      >
+        @click.self="handleAccountSettingsClose">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
           <input v-model="accountEmail" placeholder="Neue E-Mail" type="email" class="input" />
-          <input
-            v-model="accountUsername"
-            placeholder="Neuer Username"
-            type="text"
-            class="input mt-2"
-          />
-          <p
-            v-if="accountMessage"
-            :class="{ error: accountError, success: !accountError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="accountUsername" placeholder="Neuer Username" type="text" class="input mt-2" />
+          <p v-if="accountMessage" :class="{ error: accountError, success: !accountError }" class="mt-2 text-center">
             {{ accountMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveAccountSettings">Speichern</button>
@@ -165,17 +131,14 @@
 
     <!-- 3. Privacy Policy Modal -->
     <Transition name="fade">
-      <div
-        v-if="openPrivacySettings"
+      <div v-if="openPrivacySettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openPrivacySettings = false"
-      >
+        @click.self="openPrivacySettings = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
           <textarea readonly rows="6" class="input resize-none">
 Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Weitere Details findet ihr in unserer kompletten Datenschutzrichtlinie.
-      </textarea
-          >
+      </textarea>
           <button class="cancel-btn w-full mt-6" @click="openPrivacySettings = false">
             Schließen
           </button>
@@ -185,31 +148,15 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
 
     <!-- Change Password Modal -->
     <Transition name="fade">
-      <div
-        v-if="openChangePassword"
+      <div v-if="openChangePassword"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openChangePassword = false"
-      >
+        @click.self="openChangePassword = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Change Password</h3>
-          <input
-            v-model="currentPassword"
-            placeholder="Current Password"
-            type="password"
-            class="input"
-          />
+          <input v-model="currentPassword" placeholder="Current Password" type="password" class="input" />
           <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
-          <input
-            v-model="confirmPassword"
-            placeholder="Confirm New Password"
-            type="password"
-            class="input"
-          />
-          <p
-            v-if="passwordMessage"
-            :class="{ error: passwordError, success: !passwordError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="confirmPassword" placeholder="Confirm New Password" type="password" class="input" />
+          <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }" class="mt-2 text-center">
             {{ passwordMessage }}
           </p>
           <button class="button w-full mt-4" @click="changePassword">Change</button>
@@ -220,11 +167,8 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
 
     <!-- Share profile modal -->
     <Transition name="fade">
-      <div
-        v-if="shareModal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="shareModal = false"
-      >
+      <div v-if="shareModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
           <div class="w-full flex justify-center items-center">
@@ -236,25 +180,14 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
 
     <!-- Account Settings Modal -->
     <Transition name="fade">
-      <div
-        v-if="openAccountSettings"
+      <div v-if="openAccountSettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="handleAccountSettingsClose"
-      >
+        @click.self="handleAccountSettingsClose">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
           <input v-model="accountEmail" placeholder="Change Email" type="email" class="input" />
-          <input
-            v-model="accountUsername"
-            placeholder="Change Username"
-            type="text"
-            class="input"
-          />
-          <p
-            v-if="accountMessage"
-            :class="{ error: accountError, success: !accountError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="accountUsername" placeholder="Change Username" type="text" class="input" />
+          <p v-if="accountMessage" :class="{ error: accountError, success: !accountError }" class="mt-2 text-center">
             {{ accountMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveAccountSettings">Save</button>
@@ -265,11 +198,9 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
 
     <!-- Privacy Settings Modal -->
     <Transition name="fade">
-      <div
-        v-if="openPrivacySettings"
+      <div v-if="openPrivacySettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openPrivacySettings = false"
-      >
+        @click.self="openPrivacySettings = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
           <p class="text-sm text-gray-600">
@@ -278,8 +209,7 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
           </p>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openPrivacySettings = false"
-          >
+            @click="openPrivacySettings = false">
             Close
           </button>
         </div>
@@ -289,11 +219,8 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
 
   <!-- NEU: Modal zum Bearbeiten von Bio, Username und Avatar -->
   <Transition name="fade">
-    <div
-      v-if="openEditProfile"
-      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-      @click.self="openEditProfile = false"
-    >
+    <div v-if="openEditProfile" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+      @click.self="openEditProfile = false">
       <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
         <h3 class="text-xl font-semibold text-center mb-4">Profil bearbeiten</h3>
 
@@ -310,11 +237,7 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
         <textarea v-model="editBio" placeholder="Bio" rows="3" class="input resize-none"></textarea>
 
         <!-- Fehlermeldung / Erfolgsmeldung -->
-        <p
-          v-if="profileMessage"
-          :class="{ error: profileError, success: !profileError }"
-          class="mt-2 text-center"
-        >
+        <p v-if="profileMessage" :class="{ error: profileError, success: !profileError }" class="mt-2 text-center">
           {{ profileMessage }}
         </p>
 
@@ -484,113 +407,6 @@ function saveProfile() {
   profileMessage.value = 'Profil aktualisiert!';
   profileError.value = false;
   // Modal nach kurzer Verzögerung schließen:
-  setTimeout(() => {
-    openEditProfile.value = false;
-    profileMessage.value = '';
-  }, 1500);
-}
-</script>
-
-<script setup>
-const openAccountSettings = ref(false);
-const openPrivacySettings = ref(false);
-const accountEmail = ref(''); // für neue E-Mail
-const accountUsername = ref(''); // für neuen Username
-const accountMessage = ref('');
-const accountError = ref(false);
-
-// ==== Methode zum Schließen (mit Abfrage) ====
-function handleAccountSettingsClose() {
-  if (accountEmail.value || accountUsername.value) {
-    if (confirm('Änderungen verwerfen?')) {
-      openAccountSettings.value = false;
-      accountEmail.value = '';
-      accountUsername.value = '';
-      accountMessage.value = '';
-      accountError.value = false;
-    }
-  } else {
-    openAccountSettings.value = false;
-  }
-}
-
-// ==== Methode zum Speichern der Account-Settings ====
-function saveAccountSettings() {
-  const store = useAuthStore();
-
-  if (!accountEmail.value.trim() && !accountUsername.value.trim()) {
-    accountMessage.value = 'Bitte mindestens ein Feld ausfüllen.';
-    accountError.value = true;
-    return;
-  }
-  // Beispiel: Im Store speichern (hier nur simuliert)
-  if (accountEmail.value.trim()) {
-    store.user.email = accountEmail.value.trim();
-  }
-  if (accountUsername.value.trim()) {
-    store.username = accountUsername.value.trim();
-  }
-
-  accountMessage.value = 'Account erfolgreich aktualisiert!';
-  accountError.value = false;
-  setTimeout(() => {
-    openAccountSettings.value = false;
-    accountEmail.value = '';
-    accountUsername.value = '';
-    accountMessage.value = '';
-    accountError.value = false;
-  }, 1500);
-}
-</script>
-
-<script setup>
-// ==== Neue Reactive-Variablen für Edit-Modal ====
-const store = useAuthStore();
-// Zeigt den aktuellen Avatar, aus dem Store oder Fallback
-const userAvatar = ref(
-  store.user.profile.avatar || 'https://randomuser.me/api/portraits/men/3.jpg',
-);
-
-// Variablen für das Edit-Modal
-const openEditProfile = ref(false);
-const editUsername = ref(store.username);
-const editBio = ref(store.user.profile.bio || '');
-const editAvatarUrl = ref(userAvatar.value);
-
-const profileMessage = ref('');
-const profileError = ref(false);
-
-// ==== Funktion: wenn Avatar-Datei ausgewählt wird ====
-function onAvatarChange(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    editAvatarUrl.value = e.target.result; // Base64-String für Vorschau
-  };
-  reader.readAsDataURL(file);
-}
-
-// ==== Funktion: Speichern der Änderungen ====
-function saveProfile() {
-  // Überprüfen, ob Username leer ist
-  if (!editUsername.value.trim()) {
-    profileMessage.value = 'Username darf nicht leer sein.';
-    profileError.value = true;
-    return;
-  }
-  // Username & Bio im Store updaten
-  store.username = editUsername.value.trim();
-  store.user.profile.bio = editBio.value.trim();
-
-  // Avatar im Store & local updaten
-  userAvatar.value = editAvatarUrl.value;
-  store.user.profile.avatar = editAvatarUrl.value;
-
-  profileMessage.value = 'Profil aktualisiert!';
-  profileError.value = false;
-
-  // Modal nach kurzer Pause schließen
   setTimeout(() => {
     openEditProfile.value = false;
     profileMessage.value = '';
