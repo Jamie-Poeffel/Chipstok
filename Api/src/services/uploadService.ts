@@ -11,7 +11,7 @@ ffmpeg.setFfmpegPath(ffmpegStatic as string);
 // Storage configuration
 const postStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '../public/posts/');
+        cb(null, 'public/posts/');
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
@@ -22,7 +22,7 @@ const postStorage = multer.diskStorage({
 // Profile picture storage
 const profilePictureStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '../public/posts/');
+        cb(null, 'public/posts/');
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
@@ -51,15 +51,30 @@ export const uploadMiddleware = (
     res: Response,
     next: NextFunction
 ): void => {
+    console.log("📥 Upload-Middleware aufgerufen");
+
     upload.fields([
         { name: 'photos', maxCount: 10 },
         { name: 'video', maxCount: 1 }
     ])(req, res, (err: any) => {
         if (err instanceof multer.MulterError) {
+            console.error("❌ Multer-Fehler beim Upload:", err.message);
             res.status(400).json({ error: err.message });
         } else if (err) {
+            console.error("❌ Allgemeiner Fehler beim Upload:", err.message);
             res.status(400).json({ error: err.message });
         } else {
+            console.log("✅ Dateien erfolgreich verarbeitet:");
+            if (req.files) {
+                if ('photos' in req.files) {
+                    console.log("🖼️ Hochgeladene Fotos:", (req.files['photos'] as Express.Multer.File[]).map(f => f.originalname));
+                }
+                if ('video' in req.files) {
+                    console.log("🎥 Hochgeladenes Video:", (req.files['video'] as Express.Multer.File[])[0]?.originalname);
+                }
+            } else {
+                console.log("⚠️ Keine Dateien hochgeladen.");
+            }
             next();
         }
     });

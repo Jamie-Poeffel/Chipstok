@@ -2,6 +2,7 @@ import { Request, Response, RequestHandler } from "express";
 import { User } from "../models/User";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
 import jwt from 'jsonwebtoken'
 import { config } from 'dotenv';
 
@@ -77,3 +78,86 @@ export const success: RequestHandler = async (req: Request, res: Response): Prom
     const token = jwt.sign({ id: user._id, username: user.username, email: user.email, firstname: user.firstname, lastname: user.lastname, profilePicture: user.profile.profilePicture }, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '15m' });
     res.json({ message: "success", username: user.username, user: user, token: token });
 }
+
+
+
+
+// Temporary in-memory store (you can replace with Redis or DB)
+const verificationCodes = new Map<string, string>();
+
+// Generate 6-digit code
+const generateCode = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Setup Nodemailer (use your real SMTP credentials here)
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+const sendEmail = async (email: string, code: string) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Your MFA Verification Code",
+        text: `Your verification code is: ${code}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+
+const verifyMfaCode = (email: string, code: string): boolean => {
+    return verificationCodes.get(email) === code;
+};
+
+const generateAuthToken = (user: any): string => {
+    return jwt.sign({ email: user.email }, process.env.JWT_SECRET || "secret", {
+        expiresIn: "1h",
+    });
+};
+
+export const MultiFactorAuth: RequestHandler = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { email, code } = req.body;
+
+        if (!email) {
+            res.status(400).json({ message: "Missing email" });
+            return;
+        }
+
+        if (!code) {
+            const generatedCode = generateCode();
+            verificationCodes.set(email, generatedCode);
+
+            await sendEmail(email, generatedCode);
+
+            res.status(200).json({ message: "Verification code sent to email" });
+            return;
+        }
+
+        // Code provided, verify
+        const isCodeValid = verifyMfaCode(email, code);
+
+        if (!isCodeValid) {
+            res.status(401).json({ message: "Invalid verification code" });
+            return;
+        }
+
+        verificationCodes.delete(email);
+
+        const user = { email };
+        const token = generateAuthToken(user);
+
+        res.status(200).json({ message: "MFA successful", token });
+    } catch (error) {
+        console.error("MFA error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
