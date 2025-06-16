@@ -62,14 +62,19 @@ const signup = async () => {
         credentials: 'include',
       });
 
-      if (res.ok) {
-        generatedCode.value = Math.floor(10000 + Math.random() * 90000).toString();
-        console.log('Generated code sent via SMS:', generatedCode.value);
-        showVerification.value = true;
-      } else {
-        const data = await res.json();
-        errors.value.username = data.message || 'Registration failed';
+      const {res: result} = await useFetch(
+          `/auth/2fa`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.value }),
+            credentials: 'include',
+          },
+        );
+      if (!result.ok) {
+        const errorData = await result.json();
       }
+        showVerification.value = true;
     } catch {
       errors.value.username = 'An error occurred. Please try again.';
     } finally {
@@ -78,8 +83,17 @@ const signup = async () => {
   }
 };
 
-const verifyCode = () => {
-  if (verificationCode.value === generatedCode.value) {
+const verifyCode = async () => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/2fa`,
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, code: verificationCode.value }),
+      credentials: 'include',
+    },
+  );
+  if (res.ok) {
     router.push('/login');
   } else {
     verificationFailed.value = true;
