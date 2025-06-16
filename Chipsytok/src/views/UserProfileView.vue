@@ -250,6 +250,10 @@ const activeTab = ref('posts');
 const openSettings = ref(false);
 const openChangePassword = ref(false);
 const shareModal = ref(false);
+const accountEmail = ref(''); // für neue E-Mail
+const accountUsername = ref(''); // für neuen Username
+const accountMessage = ref('');
+const accountError = ref(false);
 
 // Password change state
 const currentPassword = ref('');
@@ -344,10 +348,6 @@ function changePassword() {
   }, 1500);
 }
 
-const accountEmail = ref('');
-const accountUsername = ref('');
-const accountMessage = ref('');
-const accountError = ref(false);
 const openAccountSettings = ref(false);
 // Handle Account Settings Modal close
 const handleAccountSettingsClose = () => {
@@ -374,6 +374,9 @@ const saveAccountSettings = () => {
 
 const profileMessage = ref('');
 const profileError = ref(false);
+const editUsername = ref('');
+const openEditProfile = ref(false);
+const editBio = ref('');
 
 // ==== Methode zum Speichern ====
 function saveProfile() {
@@ -397,7 +400,6 @@ function saveProfile() {
 }
 
 const openPrivacySettings = ref(false);
-
 
 // ==== Methode zum Schließen (mit Abfrage) ====
 // ==== Neue Reactive-Variablen für Edit-Modal ====
