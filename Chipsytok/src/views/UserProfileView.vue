@@ -522,9 +522,6 @@ const editUsername = ref(store.username);
 const editBio = ref(store.user.profile.bio || '');
 const editAvatarUrl = ref(userAvatar.value);
 
-const profileMessage = ref('');
-const profileError = ref(false);
-
 // ==== Funktion: wenn Avatar-Datei ausgewählt wird ====
 function onAvatarChange(event) {
   const file = event.target.files[0];
