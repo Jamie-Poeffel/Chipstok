@@ -20,7 +20,7 @@
                 <div>
                   <strong>{{
                     formatNumber(useAuthStore().user.profile.followers)
-                    }}
+                  }}
                     Follower*innen</strong>
                 </div>
                 <div>
@@ -372,9 +372,6 @@ const saveAccountSettings = () => {
   }, 1500);
 };
 
-const openEditProfile = ref(false);
-const editUsername = ref(useAuthStore().username);
-const editBio = ref(useAuthStore().user.profile.bio || '');
 const profileMessage = ref('');
 const profileError = ref(false);
 
