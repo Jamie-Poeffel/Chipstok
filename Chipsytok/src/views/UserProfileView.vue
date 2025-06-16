@@ -171,13 +171,15 @@
         @click.self="openPrivacySettings = false"
       >
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
-          <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
-          <textarea readonly rows="6" class="input resize-none">
-Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Weitere Details findet ihr in unserer kompletten Datenschutzrichtlinie.
-      </textarea
+          <h3 class="text-xl font-semibold text-center mb-4">{{ t('privacyPolicy') }}</h3>
+          <p class="text-sm text-gray-600">
+            {{ t('privacyText') }}
+          </p>
+          <button
+            class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
+            @click="openPrivacySettings = false"
           >
-          <button class="cancel-btn w-full mt-6" @click="openPrivacySettings = false">
-            Schließen
+            {{ t('close') }}
           </button>
         </div>
       </div>
@@ -259,29 +261,6 @@ Eure Privatsphäre ist uns wichtig. Wir teilen eure Daten nicht mit Dritten. Wei
           </p>
           <button class="button w-full mt-4" @click="saveAccountSettings">Save</button>
           <button class="cancel-btn w-full mt-2" @click="handleAccountSettingsClose">Cancel</button>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- Privacy Settings Modal -->
-    <Transition name="fade">
-      <div
-        v-if="openPrivacySettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openPrivacySettings = false"
-      >
-        <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
-          <h3 class="text-xl font-semibold text-center mb-4">Privacy Policy</h3>
-          <p class="text-sm text-gray-600">
-            Your privacy is important to us. We do not share your personal information with third
-            parties. For more details, please review our full privacy policy.
-          </p>
-          <button
-            class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openPrivacySettings = false"
-          >
-            Close
-          </button>
         </div>
       </div>
     </Transition>
