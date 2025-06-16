@@ -85,9 +85,9 @@ export const success: RequestHandler = async (req: Request, res: Response): Prom
 // Temporary in-memory store (you can replace with Redis or DB)
 const verificationCodes = new Map<string, string>();
 
-// Generate 6-digit code
+// Generate 5-digit code
 const generateCode = (): string => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return Math.floor(10000 + Math.random() * 90000).toString();
 };
 
 // Setup Nodemailer (use your real SMTP credentials here)
@@ -97,7 +97,11 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
+
 
 const sendEmail = async (email: string, code: string) => {
     const mailOptions = {
@@ -154,6 +158,22 @@ export const MultiFactorAuth: RequestHandler = async (
 
         const user = { email };
         const token = generateAuthToken(user);
+
+        try {
+            const [updatedCount] = await User.update(
+                { emailVeryfied: true },
+                { where: { email } }
+            );
+
+            if (updatedCount === 0) {
+                res.status(404).json({ message: "Benutzer mit dieser E-Mail nicht gefunden" });
+            } else {
+                res.status(200).json({ message: "E-Mail erfolgreich verifiziert" });
+            }
+        } catch (error) {
+            console.error("Fehler beim Verifizieren der E-Mail:", error);
+            res.status(500).json({ message: "Interner Serverfehler", error });
+        }
 
         res.status(200).json({ message: "MFA successful", token });
     } catch (error) {
