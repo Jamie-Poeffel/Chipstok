@@ -17,7 +17,7 @@ const profileStorage = multer.diskStorage({
 // Konfiguration für Posts
 const postStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/posts/'); // Speicherort für Post-Dateien
+        cb(null, '/../public/posts/'); // Speicherort für Post-Dateien
     },
     filename: (req, file, cb) => {
         const extname = path.extname(file.originalname);
