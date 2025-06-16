@@ -229,6 +229,7 @@ onMounted(() => {
     <div
       v-if="showLanguageModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      @click.self="showLanguageModal = false"
     >
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
