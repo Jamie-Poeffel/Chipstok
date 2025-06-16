@@ -259,7 +259,6 @@ import QRCodeStyling from 'qr-code-styling';
 
 const { t } = useLanguage();
 
-
 // Tabs & modals
 const activeTab = ref('posts');
 const openSettings = ref(false);
@@ -438,7 +437,6 @@ const userAvatar = ref(
 
 const editAvatarUrl = ref(userAvatar.value);
 
-// ==== Funktion: wenn Avatar-Datei ausgewählt wird ====
 function onAvatarChange(event) {
   const file = event.target.files[0];
   if (!file) return;
