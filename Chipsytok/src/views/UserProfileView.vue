@@ -173,8 +173,23 @@
         @click.self="shareModal = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
-          <div class="w-full flex justify-center items-center">
+          <div class="w-full flex flex-col items-center gap-4">
+            <!-- QR Code -->
             <div ref="qrCodeContainer"></div>
+
+            <!-- Share-Link und Copy-Button -->
+            <div class="w-full">
+              <input
+                class="input w-full text-sm"
+                type="text"
+                :value="shareLink"
+                readonly
+              />
+              <button @click="copyLink" class="button w-full mt-2">
+                Link kopieren
+              </button>
+              <p v-if="copied" class="text-green-600 text-center text-sm mt-1">Link kopiert!</p>
+            </div>
           </div>
         </div>
       </div>
@@ -265,6 +280,17 @@ const passwordError = ref(false);
 // Infinite‑scroll post grid
 const BATCH_SIZE = 15;
 const posts = ref([]);
+
+// Share profile link
+const shareLink = ref('https://www.chipsytok.bbzwinf.ch/profile?username=' + useAuthStore().username);
+const copied = ref(false);
+
+function copyLink() {
+  navigator.clipboard.writeText(shareLink.value).then(() => {
+    copied.value = true;
+    setTimeout(() => (copied.value = false), 1500);
+  });
+}
 
 function addMorePosts() {
   posts.value.push(...Array.from({ length: BATCH_SIZE }));

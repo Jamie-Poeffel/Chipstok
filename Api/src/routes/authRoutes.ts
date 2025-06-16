@@ -6,6 +6,6 @@ const router = Router();
 
 router.post('/login', login);
 router.get('/auto', authMiddleware, success);
-router.get('/2fa', MultiFactorAuth)
+router.post('/2fa', MultiFactorAuth)
 
 export default router;
