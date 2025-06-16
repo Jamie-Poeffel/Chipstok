@@ -468,9 +468,6 @@ function saveProfile() {
     profileMessage.value = '';
   }, 1500);
 }
-</script>
-
-<script setup>
 const openAccountSettings = ref(false);
 const openPrivacySettings = ref(false);
 const accountEmail = ref(''); // für neue E-Mail
@@ -520,9 +517,6 @@ function saveAccountSettings() {
     accountError.value = false;
   }, 1500);
 }
-</script>
-
-<script setup>
 // ==== Neue Reactive-Variablen für Edit-Modal ====
 const store = useAuthStore();
 // Zeigt den aktuellen Avatar, aus dem Store oder Fallback
