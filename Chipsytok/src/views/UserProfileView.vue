@@ -244,7 +244,6 @@ import QRCodeStyling from 'qr-code-styling';
 
 const { t } = useLanguage();
 
-
 // Tabs & modals
 const activeTab = ref('posts');
 const openSettings = ref(false);
