@@ -410,8 +410,11 @@ const userAvatar = ref(
 );
 
 
+<<<<<<< HEAD
+=======
 const editAvatarUrl = ref(userAvatar.value);
 
+>>>>>>> b37c0661bb3b6482133f9c79fc232ff0d3b0e37d
 // ==== Funktion: wenn Avatar-Datei ausgewählt wird ====
 function onAvatarChange(event) {
   const file = event.target.files[0];
