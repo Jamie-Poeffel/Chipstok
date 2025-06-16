@@ -109,6 +109,7 @@ We extend our heartfelt gratitude to the following contributors who have dedicat
       <sub>Mockup Creator</sub>
     </td>
   </tr>
+  
 </table>
 
 ### 🎯 Key Contributions
@@ -130,6 +131,21 @@ We extend our heartfelt gratitude to the following contributors who have dedicat
     -   Enhanced **mockup designs** to support visualization and time management.
 
 <br>
+
+
+
+## 🤝 Collaboration
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Jamie-Poeffel/Chipstok/main/Chipsytok/ChipslyFans.jpg" alt="ChipslyFans Collab" width="128" style="border-radius: 10%;">
+</p>
+
+We proudly collaborated with **ChipslyFans** – an exciting parallel project that shares the same spirit of creativity and community.  
+Check out their amazing work here: [chipslyfans.bbzwinf.ch](https://chipslyfans.bbzwinf.ch/)
+
+
+<br>
+
 
 ---
 
