@@ -5,6 +5,7 @@ import { useFetch } from '@/composables/useFetch';
 import { Loader2, MailCheck } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
 import { Eye, EyeOff } from 'lucide-vue-next';
+import { generateCharString } from '@/helpers/oauth';
 
 const { setLanguage, languages, t, getEnglishName, selectedLanguage } = useLanguage();
 const hoveredLang = ref(getEnglishName(selectedLanguage.value || 'en'));
@@ -45,7 +46,7 @@ const login = async () => {
       });
 
       if (res.ok) {
-        router.push('/'); 
+        router.push('/');
       } else {
         errors.value.username = data.message || 'Invalid login credentials';
       }
@@ -147,15 +148,18 @@ const sendResetEmail = async () => {
       </div>
 
       <button type="button" class="button mt-2">
-        <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
-          <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png">
-          <p>
-            Chipslyfans
-          </p>
-        </div>
-        <div v-else class="flex justify-center items-center">
-          <Loader2 class="animate-spin w-4 h-4" />
-        </div>
+        <a
+          :href="`https://api.chipslyfans.bbzwinf.ch/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`">
+          <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
+            <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png">
+            <p>
+              Chipslyfans
+            </p>
+          </div>
+          <div v-else class="flex justify-center items-center">
+            <Loader2 class="animate-spin w-4 h-4" />
+          </div>
+        </a>
       </button>
 
       <!-- globe icon (language picker) -->

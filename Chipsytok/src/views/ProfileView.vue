@@ -7,11 +7,7 @@
         <div class="flex flex-col w-full">
           <div class="flex flex-row">
             <div class="avatar-wrapper">
-              <img
-                class="avatar"
-                src="https://randomuser.me/api/portraits/men/3.jpg"
-                alt="avatar"
-              />
+              <img class="avatar" src="https://randomuser.me/api/portraits/men/3.jpg" alt="avatar" />
             </div>
             <div class="user-meta">
               <p class="handle">@{{ user?.username }}</p>
@@ -33,23 +29,16 @@
             </div>
           </div>
           <div class="flex gap-2 mt-3 w-full">
-            <button
-              v-if="!isFollowing"
-              @click="followOrUnfollow"
-              class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
-            >
+            <button v-if="!isFollowing" @click="followOrUnfollow"
+              class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
               {{ t('follow') }}
             </button>
-            <button
-              v-else
-              @click="followOrUnfollow"
-              class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
-            >
+            <button v-else @click="followOrUnfollow"
+              class="flex-1 bg-[#ff2d55] hover:bg-[#ff1a44] text-white font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
               {{ t('unfollow') }}
             </button>
             <button
-              class="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95"
-            >
+              class="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded-lg px-6 py-2 transition-all duration-150 shadow-md active:scale-95">
               {{ t('message') }}
             </button>
           </div>
@@ -59,15 +48,9 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
-        >Posts</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
-        >Saved</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
-        >Tagged</span
-      >
+      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
+      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'">Saved</span>
+      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'">Tagged</span>
     </div>
 
     <!-- Profile grid section -->
@@ -93,8 +76,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
-import { t } from '../composables/useLanguage';
 const route = useRoute();
+
+import { useLanguage } from '@/composables/useLanguage';
+const { t } = useLanguage()
 
 const user = ref(null);
 const isFollowing = ref(false);

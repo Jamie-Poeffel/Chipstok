@@ -179,9 +179,9 @@ const likesCountMap = reactive(new Map());
                         loading="lazy" />
                 </template>
                 <template v-else-if="img.type === 'video'">
-                    <video :src="img.url" :alt="'Video posted by ' + img.username" class="w-full h-full object-cover"
-                        autoplay muted playsinline loading="lazy">
-                    </video>
+                    <video :src="img.url" :aria-label="'Video posted by ' + img.username"
+                        class="w-full h-full object-cover" autoplay muted playsinline preload="auto"
+                        crossorigin="anonymous"></video>
                 </template>
 
                 <div class="absolute bottom-10 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">

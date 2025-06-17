@@ -11,11 +11,28 @@ import { config } from 'dotenv';
 config();
 
 const app = express();
+
+const allowedOrigins = [
+    'https://chipsytok.bbzwinf.ch',
+    'https://chipslyfans.bbzwinf.ch',
+    'https://www.chipsytok.bbzwinf.ch',
+    'https://www.chipslyfans.bbzwinf.ch'
+];
+
 const corsOptions = {
-    origin: true,
-    credentials: true
+    origin: function (origin: any, callback: any) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Nicht erlaubter Origin: ' + origin));
+        }
+    },
+    credentials: true,
+    exposedHeaders: ['Content-Range', 'Accept-Ranges', 'Content-Length']
 };
+
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
