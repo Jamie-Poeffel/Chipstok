@@ -147,6 +147,20 @@ const sendResetEmail = async () => {
         <a href="/signup" class="text-blue-500 font-bold">{{ t('signup') }}</a>
       </div>
 
+<<<<<<< HEAD
+      <button
+        type="button"
+        class="button mt-2"
+        @click="window.open('https://chipslyfans.bbzwinf.ch/', '_blank')"
+      >
+        <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
+          <img class="w-4 h-4" src="../../ChipslyFans.jpg" />
+          <p>Chipslyfans</p>
+        </div>
+        <div v-else class="flex justify-center items-center">
+          <Loader2 class="animate-spin w-4 h-4" />
+        </div>
+=======
       <button type="button" class="button mt-2">
         <a
           :href="`https://api.chipslyfans.bbzwinf.ch/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`">
@@ -160,6 +174,7 @@ const sendResetEmail = async () => {
             <Loader2 class="animate-spin w-4 h-4" />
           </div>
         </a>
+>>>>>>> cd0021b794d3145cb8dcc9de4a351da8fac7c52b
       </button>
 
       <!-- globe icon (language picker) -->
