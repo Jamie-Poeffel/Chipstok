@@ -194,7 +194,8 @@ const sendResetEmail = async () => {
 
     <!-- forgot‑password request modal -->
     <div v-if="showForgotRequestModal"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      @click.self="showForgotRequestModal = false">
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('resetPassword') }}</h2>
         <input v-model="forgotEmail" type="email" :placeholder="t('Your Email')" class="input mb-3" />
