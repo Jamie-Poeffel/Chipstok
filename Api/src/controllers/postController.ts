@@ -179,35 +179,54 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         const url = post?.URL;
 
         if (!url) {
-            res.status(404).json({ message: "Video not found" });
+            res.status(404).json({ message: "Video not found in DB" });
             return;
         }
 
         const filePath = path.resolve(__dirname, '..', 'public', 'posts', url);
+
+        if (!fs.existsSync(filePath)) {
+            res.status(404).json({ message: "Video file not found on server" });
+            return;
+        }
+
         const stat = await fsPromises.stat(filePath);
         const fileSize = stat.size;
 
-        res.setHeader("Access-Control-Allow-Origin", `${process.env.FRONTEND_URL}`);
-        res.setHeader("Cache-Control", "public, max-age=600");
+        if (fileSize === 0) {
+            res.status(204).json({ message: "Video file is empty" });
+            return;
+        }
 
+        res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL ?? "*");
+        res.setHeader("Cache-Control", "public, max-age=600");
 
         const range = req.headers.range;
         if (!range) {
-            res.status(416).json({ message: "Range header required" });
+            res.status(400).json({ message: "Missing Range header. Use 'Range: bytes=0-'" });
             return;
         }
 
         const CHUNK_SIZE = 10 ** 6; // 1MB
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE, fileSize - 1);
 
-        if (start >= fileSize || end >= fileSize) {
-            res.status(416).json({ message: "Requested range not satisfiable" });
+        if (isNaN(start) || start < 0 || start >= fileSize) {
+            res.status(416).json({ message: "Invalid start range" });
+            return;
+        }
+
+        const requestedEnd = parts[1] ? parseInt(parts[1], 10) : undefined;
+        let end = requestedEnd && !isNaN(requestedEnd) ? requestedEnd : start + CHUNK_SIZE - 1;
+        end = Math.min(end, fileSize - 1);
+
+        if (end < start) {
+            res.status(416).json({ message: "Invalid end range" });
             return;
         }
 
         const contentLength = end - start + 1;
+
         const headers = {
             "Content-Range": `bytes ${start}-${end}/${fileSize}`,
             "Accept-Ranges": "bytes",
@@ -220,7 +239,7 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         const stream = fs.createReadStream(filePath, { start, end });
         stream.pipe(res);
 
-        stream.on("error", (err: any) => {
+        stream.on("error", (err) => {
             console.error("Stream error:", err);
             res.status(500).end();
         });
