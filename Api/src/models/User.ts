@@ -1,5 +1,6 @@
 ﻿import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull } from "sequelize-typescript";
 import { Comment } from "./Comment";
+import { Col } from "sequelize/types/utils";
 
 @Table({ tableName: "users", timestamps: true })
 export class User extends Model {
@@ -60,6 +61,13 @@ export class User extends Model {
         defaultValue: []
     })
     likedPosts!: string[];
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+        defaultValue: 'chipsytok'
+    })
+    login_site!: string;
 
     @Column({
         type: DataType.JSON,

@@ -1,3 +1,8 @@
+import { User } from "../models/User";
+import jwt from 'jsonwebtoken'
+import { config } from "dotenv";
+config()
+
 export function generateCharString(date: Date, length: number = 64): string {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charsetLength = charset.length;
@@ -14,4 +19,12 @@ export function generateCharString(date: Date, length: number = 64): string {
     }
 
     return result;
+}
+
+export function generateToken(user: User) {
+    jwt.sign(JSON.stringify({
+        userId: user.id,
+        username: user.username,
+        email: user.email
+    }), process.env.JWT_SECRET || "your_jwt_secret")
 }
