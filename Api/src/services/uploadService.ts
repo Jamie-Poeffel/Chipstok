@@ -11,8 +11,8 @@ ffmpeg.setFfmpegPath(ffmpegStatic as string);
 // Storage configuration
 const postStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // cb(null, './../dist/public/posts/');
-        cb(null, "./src/public/posts")
+        cb(null, './../dist/public/posts/');
+        // cb(null, "./src/public/posts")
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
@@ -23,8 +23,8 @@ const postStorage = multer.diskStorage({
 // Profile picture storage
 const profilePictureStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // cb(null, './../dist/public/profile/');
-        cb(null, "./src/public/profile")
+        cb(null, './../dist/public/profile/');
+        // cb(null, "./src/public/profile")
 
     },
     filename: (req, file, cb) => {
