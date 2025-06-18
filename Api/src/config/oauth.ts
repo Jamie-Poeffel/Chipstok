@@ -4,6 +4,6 @@ interface AuthConfig {
 
 export const OAuthConfigs: AuthConfig[] = [
     {
-        redirectUrl: "http://localhost:3000/auth/oauth/callback",
+        redirectUrl: "https://api.chipslyfans.bbzwinf.ch/auth/oauth/callback",
     }
 ];

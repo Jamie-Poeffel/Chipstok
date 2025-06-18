@@ -20,7 +20,7 @@
                 <div>
                   <strong>{{
                     formatNumber(useAuthStore().user.profile.followers)
-                  }}
+                    }}
                     Follower*innen</strong>
                 </div>
                 <div>
@@ -179,16 +179,12 @@
 
             <!-- Share-Link und Copy-Button -->
             <div class="w-full">
-              <input
-                class="input w-full text-sm"
-                type="text"
-                :value="shareLink"
-                readonly
-              />
+              <input class="input w-full text-sm" type="text" :value="shareLink" readonly />
               <button @click="copyLink" class="button w-full mt-2">
                 Link kopieren
               </button>
               <p v-if="copied" class="text-green-600 text-center text-sm mt-1">Link kopiert!</p>
+              <button @click="more" class="button w-full mt-2">more</button>
             </div>
           </div>
         </div>
@@ -249,7 +245,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watchEffect, onMounted } from 'vue';
 import { getThumbnails } from '../helpers/getThumbnails.js';
 import { useRouter } from 'vue-router';
 import { useLanguage } from '@/composables/useLanguage.js';
@@ -277,7 +273,6 @@ const passwordMessage = ref('');
 const passwordError = ref(false);
 
 // Infinite‑scroll post grid
-const BATCH_SIZE = 15;
 const posts = ref([]);
 
 // Share profile link
@@ -291,24 +286,29 @@ function copyLink() {
   });
 }
 
-function addMorePosts() {
-  posts.value.push(...Array.from({ length: BATCH_SIZE }));
-}
+async function more() {
+  const shareData = {
+    title: `${useAuthStore().username}`,
+    text: `This is a Chipstok account`,
+    url: `${shareLink.value}`
+  };
 
-function handleScroll() {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-    addMorePosts();
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      console.log('Shared successfully');
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  } else {
+    alert('Sharing is not supported on this device.');
   }
 }
 
+
+
 onMounted(async () => {
-  window.addEventListener('scroll', handleScroll, { passive: true });
-
   posts.value = await getThumbnails();
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll);
 });
 
 // Imported videos placeholder

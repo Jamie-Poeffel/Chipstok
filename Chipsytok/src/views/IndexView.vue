@@ -1,33 +1,60 @@
 <script setup>
 import { ref, onMounted, onUnmounted, reactive } from 'vue';
-import { Plus, Heart, MessageCircle, Send, RefreshCcw } from 'lucide-vue-next';
+import { Plus, Heart, MessageCircle, Send } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useFetch } from '@/composables/useFetch';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 async function img() {
-    const { data } = await useFetch('/posts?limit=4', { credentials: 'include' });
     const list = [];
-    let dt = data
-    let ddata = data.sortedPosts;
 
-    if (data.message !== "no posts posted") {
-        ddata.forEach(async (e) => {
+    const postId = route.query.id;
+    if (postId && postId !== "") {
+        const { data } = await useFetch(`/posts/${postId}`, { credentials: 'include' });
+
+        if (data && data.post._id) {
             list.push({
-                _id: `${e._id}`,
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
-                type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-                username: `${dt.username}`,
+                _id: data.post._id,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${data.post._id}`,
+                type: data.post.URL?.endsWith('.mp4') ? 'video' : 'image',
+                username: data.username,
                 profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
-                caption: `${e.caption || 'Check out this awesome content! 🚀'}`,
-                likes: `${e.likeCount}`,
-                comments: `${e.commentCount}`,
+                caption: data.post.caption || 'Check out this awesome content! 🚀',
+                likes: data.post.likeCount,
+                comments: data.post.commentCount,
             });
 
-            likesCountMap.set(e._id, e.likeCount)
-            const { data } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' })
-            isLikedMap.set(e._id, data.isLiked);
-        });
+            likesCountMap.set(data._id, data.likeCount);
+
+            const { data: likeData } = await useFetch(`/posts/${data._id}/isLiked`, { credentials: 'include' });
+            isLikedMap.set(data._id, likeData?.isLiked ?? false);
+        }
     }
+
+    const { data } = await useFetch('/posts?limit=4', { credentials: 'include' });
+
+    if (data && data.message !== "no posts posted" && Array.isArray(data.sortedPosts)) {
+        await Promise.all(data.sortedPosts.map(async (e) => {
+            list.push({
+                _id: e._id,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
+                type: e.URL?.endsWith('.mp4') ? 'video' : 'image',
+                username: data.username,
+                profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
+                caption: e.caption || 'Check out this awesome content! 🚀',
+                likes: e.likeCount,
+                comments: e.commentCount,
+            });
+
+            likesCountMap.set(e._id, e.likeCount);
+
+            const { data: likeData } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' });
+            isLikedMap.set(e._id, likeData?.isLiked ?? false);
+        }));
+    }
+
     return list;
 }
 const imgs = ref([]);
@@ -148,6 +175,31 @@ const toggleLike = async (postID) => {
 
 const isLikedMap = reactive(new Map())
 const likesCountMap = reactive(new Map());
+
+
+async function shareVideoFile(videoId) {
+    const shareData = {
+        title: 'Shared Video',
+        text: 'Here is the video!',
+        url: `https://chipsytok.bbzwinf.ch/?id=${videoId}`
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+            console.log('Shared successfully');
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
+    } else {
+        alert('Sharing is not supported on this device.');
+    }
+}
+
+
+
+
+
 </script>
 
 <template>
@@ -180,8 +232,7 @@ const likesCountMap = reactive(new Map());
                 </template>
                 <template v-else-if="img.type === 'video'">
                     <video :src="img.url" :aria-label="'Video posted by ' + img.username"
-                        class="w-full h-full object-cover" autoplay muted playsinline preload="auto"
-                        crossorigin="anonymous"></video>
+                        class="w-full h-full object-cover" autoplay muted playsinline preload="auto"></video>
                 </template>
 
                 <div class="absolute bottom-10 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
@@ -211,13 +262,10 @@ const likesCountMap = reactive(new Map());
                             class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
                             <MessageCircle /><span class="text-xs font-medium">{{ img.comments }}</span>
                         </button>
-                        <button aria-label="Share post"
+                        <button @click="shareVideoFile(img._id, `Video_von_${img.username}.mp4`)"
+                            aria-label="Share post"
                             class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
                             <Send />
-                        </button>
-                        <button aria-label="Repost"
-                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
-                            <RefreshCcw /><span class="text-xs font-medium">{{ img.shares }}</span>
                         </button>
                     </div>
                 </div>

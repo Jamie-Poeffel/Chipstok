@@ -186,7 +186,7 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         const filePath = path.resolve(__dirname, '..', 'public', 'posts', url);
 
         if (!fs.existsSync(filePath)) {
-            res.status(404).json({ message: "Video file not found on server" });
+            res.status(404).json({ message: "Video file not found on server", filePath });
             return;
         }
 
@@ -201,9 +201,17 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
         res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL ?? "*");
         res.setHeader("Cache-Control", "public, max-age=600");
 
+        // Wenn kein Range-Header vorhanden ist: Ganze Datei senden
+
+
         const range = req.headers.range;
         if (!range) {
-            res.status(400).json({ message: "Missing Range header. Use 'Range: bytes=0-'" });
+            res.writeHead(200, {
+                'Content-Length': fileSize,
+                'Content-Type': 'video/mp4',
+                'Accept-Ranges': 'bytes', // wichtig, auch wenn keine Range kommt
+            });
+            fs.createReadStream(filePath).pipe(res);
             return;
         }
 
@@ -304,3 +312,47 @@ export const getThumbnail: RequestHandler = async (req: Request, res: Response):
         res.status(500).json({ message: 'Internal Server Error', error: (err as Error).message });
     }
 };
+
+export const getPostFile: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+
+    try {
+        const post = await Post.findByPk(id);
+
+        if (!post || !post.URL) {
+            res.status(404).json({ message: 'Post not found or URL missing' });
+            return;
+        }
+
+        const videoPath = path.join(__dirname, '..', 'public', 'posts', post.URL);
+        const stat = fs.statSync(videoPath);
+
+        res.setHeader('Content-Type', 'video/mp4');
+        res.setHeader('Content-Length', stat.size.toString());
+        res.setHeader('Content-Disposition', 'attachment; filename="sample.mp4"');
+
+        const stream = fs.createReadStream(videoPath);
+        stream.pipe(res);
+
+    } catch (e: any) {
+        console.error(e)
+    }
+}
+
+export const getPost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;
+
+    try {
+        const post = await Post.findByPk(id);
+        const user = await User.findByPk(post?.userid)
+        if (post) {
+            res.status(200).json({ post, username: user?.username });
+            return
+        } else {
+            res.status(404).json(null);
+            return
+        }
+    } catch (e: any) {
+        console.error(e.message);
+    }
+}
