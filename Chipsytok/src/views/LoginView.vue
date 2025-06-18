@@ -11,7 +11,7 @@ const { setLanguage, languages, t, getEnglishName, selectedLanguage } = useLangu
 const hoveredLang = ref(getEnglishName(selectedLanguage.value || 'en'));
 
 const router = useRouter();
-const username = ref(''); // email or phone number entered by the user
+const username = ref('');
 const password = ref('');
 const showPassword = ref(false);
 
@@ -23,8 +23,8 @@ const errors = ref({ username: '', password: '' });
 const forgotError = ref('');
 
 const showLanguageModal = ref(false);
-const showForgotRequestModal = ref(false); // asks for e‑mail
-const showForgotSuccessToast = ref(false); // final confirmation pop‑up
+const showForgotRequestModal = ref(false);
+const showForgotSuccessToast = ref(false);
 
 /**
  * Log the user in as before
@@ -101,25 +101,40 @@ const sendResetEmail = async () => {
 <template>
   <!-- outer container -->
   <div
-    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden">
+    class="flex justify-center items-center h-full bg-gradient-to-b from-indigo-300 via-blue-400 to-[#0080D1] relative overflow-hidden"
+  >
     <!-- login card -->
-    <div class="w-96 p-8 pb-2 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10">
+    <div
+      class="w-96 p-8 pb-2 bg-white border border-gray-300 rounded-xl shadow-lg text-center relative z-10"
+    >
       <h1 class="text-3xl font-extrabold mb-6 text-gray-800">{{ t('title') }}</h1>
 
       <form @submit.prevent="login" class="space-y-4">
         <!-- username -->
         <div>
-          <input v-model="username" type="text" :placeholder="t('placeholderPhone')" class="input" />
+          <input
+            v-model="username"
+            type="text"
+            :placeholder="t('placeholderPhone')"
+            class="input"
+          />
           <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
         </div>
 
         <!-- password -->
         <div class="relative">
-          <input :type="showPassword ? 'text' : 'password'" v-model="password" :placeholder="t('password')"
-            class="input pr-10" />
-          <button type="button" @click="showPassword = !showPassword"
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            v-model="password"
+            :placeholder="t('password')"
+            class="input pr-10"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
             class="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
-            aria-label="Toggle password visibility">
+            aria-label="Toggle password visibility"
+          >
             <component :is="showPassword ? EyeOff : Eye" class="w-5 h-5" />
           </button>
           <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
@@ -149,7 +164,8 @@ const sendResetEmail = async () => {
 
       <button type="button" class="button mt-2">
         <a
-          :href="`https://api.chipslyfans.bbzwinf.ch/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`">
+          :href="`https://api.chipslyfans.bbzwinf.ch/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`"
+        >
           <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
             <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png" />
             <p>Chipslyfans</p>
@@ -163,23 +179,34 @@ const sendResetEmail = async () => {
       </button>
 
       <!-- globe icon (language picker) -->
-      <button @click="showLanguageModal = true" aria-label="Choose language"
-        class="mt-4 mx-auto block text-gray-500 hover:text-gray-700"></button>
+      <button
+        @click="showLanguageModal = true"
+        aria-label="Choose language"
+        class="mt-4 mx-auto block text-gray-500 hover:text-gray-700"
+      ></button>
     </div>
 
     <!-- language modal -->
-    <div v-if="showLanguageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div
+      v-if="showLanguageModal"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    >
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('chooseLanguage') }}</h2>
         <div class="flex flex-col items-center">
           <!-- Language buttons (row) -->
           <div class="flex gap-3">
-            <button v-for="(_, code) in languages" :key="code" @click="
-              setLanguage(code);
-            showLanguageModal = false;
-            " @mouseover="hoveredLang = getEnglishName(code)"
+            <button
+              v-for="(_, code) in languages"
+              :key="code"
+              @click="
+                setLanguage(code);
+                showLanguageModal = false;
+              "
+              @mouseover="hoveredLang = getEnglishName(code)"
               @mouseleave="hoveredLang = getEnglishName(selectedLanguage.value)"
-              class="w-10 h-10 bg-blue-500 text-white rounded font-semibold uppercase hover:bg-blue-600">
+              class="w-10 h-10 bg-blue-500 text-white rounded font-semibold uppercase hover:bg-blue-600"
+            >
               {{ code }}
             </button>
           </div>
@@ -193,19 +220,32 @@ const sendResetEmail = async () => {
     </div>
 
     <!-- forgot‑password request modal -->
-    <div v-if="showForgotRequestModal"
+    <div
+      v-if="showForgotRequestModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      @click.self="showForgotRequestModal = false">
+      @click.self="showForgotRequestModal = false"
+    >
       <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
         <h2 class="text-lg font-bold mb-4">{{ t('resetPassword') }}</h2>
-        <input v-model="forgotEmail" type="email" :placeholder="t('Your Email')" class="input mb-3" />
+        <input
+          v-model="forgotEmail"
+          type="email"
+          :placeholder="t('Your Email')"
+          class="input mb-3"
+        />
         <p v-if="forgotError" class="text-red-500 text-sm mb-3">{{ forgotError }}</p>
 
         <div class="flex justify-center gap-2 mt-2">
-          <button @click="showForgotRequestModal = false" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+          <button
+            @click="showForgotRequestModal = false"
+            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          >
             {{ t('Cancel') }}
           </button>
-          <button @click="sendResetEmail" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <button
+            @click="sendResetEmail"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
             {{ t('Send') }}
           </button>
         </div>
@@ -218,15 +258,18 @@ const sendResetEmail = async () => {
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
 
       <div
-        class="relative bg-white border border-green-500 rounded-xl shadow-lg p-6 w-[90%] max-w-md text-center flex flex-col items-center">
+        class="relative bg-white border border-green-500 rounded-xl shadow-lg p-6 w-[90%] max-w-md text-center flex flex-col items-center"
+      >
         <MailCheck class="w-10 h-10 text-green-500 mb-4" />
         <h2 class="text-lg font-bold mb-2">{{ t("Don't get scared") }}</h2>
         <p class="text-gray-700 mb-4">
           {{ t('You will soon be connected again') }} <br />
           <span class="font-semibold break-words">{{ forgotEmail }}</span>
         </p>
-        <button @click="showForgotSuccessToast = false"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        <button
+          @click="showForgotSuccessToast = false"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
           {{ t('Ok') }}
         </button>
       </div>

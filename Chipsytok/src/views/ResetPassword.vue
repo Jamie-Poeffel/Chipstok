@@ -5,7 +5,6 @@
     <div class="w-96 p-8 bg-white rounded-xl shadow-lg text-center">
       <h2 class="text-2xl font-bold mb-6 text-gray-800">Reset your Password</h2>
 
-      <!-- Step 1: Enter email -->
       <div v-if="step === 1">
         <input
           v-model="email"
@@ -23,7 +22,6 @@
         <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
       </div>
 
-      <!-- Step 2: Enter new password -->
       <div v-if="step === 2">
         <input
           v-model="newPassword"
@@ -71,7 +69,6 @@ onMounted(() => {
   }
 });
 
-// Step 1: Send reset email
 const sendResetEmail = async () => {
   message.value = '';
   errorMessage.value = '';
@@ -99,7 +96,6 @@ const sendResetEmail = async () => {
   }
 };
 
-// Step 2: Change password
 const changePassword = async () => {
   message.value = '';
   errorMessage.value = '';
