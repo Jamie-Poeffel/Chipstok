@@ -31,6 +31,9 @@ export class Comment extends Model<Comment> {
     @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
     likeCount!: number;
 
+    @Column({ type: DataType.JSON, allowNull: false, defaultValue: [] })
+    likesBy!: string[];
+
     @BelongsTo(() => Post)
     post!: Post;
 

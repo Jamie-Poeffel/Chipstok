@@ -7,7 +7,6 @@ import fs from "fs";
 import path from "path";
 
 
-
 export const getPosts: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = (req as any).user as unknown as User;
@@ -88,7 +87,6 @@ export const getPosts: RequestHandler = async (req: Request, res: Response): Pro
     }
 };
 
-
 export const likePost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
 
@@ -133,6 +131,7 @@ export const isLiked: RequestHandler = async (req: Request, res: Response): Prom
 
     res.status(200).json({ isLiked: user.likedPosts.includes(id) })
 }
+
 export const unlikePost: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
 
@@ -175,7 +174,6 @@ export const unlikePost: RequestHandler = async (req: Request, res: Response): P
         res.status(500).json({ message: "Fehler beim Unliken", error: (e as Error).message });
     }
 };
-
 
 export const getStream: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
@@ -270,7 +268,6 @@ export const getStream: RequestHandler = async (req: Request, res: Response): Pr
     }
 };
 
-// Example controller
 export const getLikeStatus: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const postId = req.params.id;
     const userId = (req as any).user?.id;
@@ -286,8 +283,6 @@ export const getLikeStatus: RequestHandler = async (req: Request, res: Response)
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
-
 
 export const getThumbnail: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;

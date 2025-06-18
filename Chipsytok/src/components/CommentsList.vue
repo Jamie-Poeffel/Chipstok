@@ -1,68 +1,61 @@
 <template>
     <transition name="slide-up">
         <div v-if="isOpen" ref="panelRef"
-            class="fixed bottom-0 left-0 right-0 h-[85vh] bg-gray-900 bg-opacity-95 backdrop-blur-xl rounded-t-2xl z-50 flex flex-col touch-none"
+            class="fixed bottom-[44px] left-0 right-0 h-[80dvh] bg-white bg-opacity-20 backdrop-blur-xl rounded-t-2xl z-50 flex flex-col touch-none"
             :style="{ transform: `translateY(${dragOffset}px)` }" @touchstart="startDrag" @mousedown="startDrag"
             @touchmove="handleDrag" @mousemove="handleDrag" @touchend="endDrag" @mouseup="endDrag"
             @mouseleave="endDrag">
             <!-- Drag handle -->
             <div class="w-9 h-1 bg-gray-500 rounded-full mx-auto my-2 cursor-grab active:cursor-grabbing" />
 
-            <!-- Header -->
-            <div class="flex justify-between items-center p-4 border-b border-gray-800">
-                <h3 class="text-white font-bold">
-                    Comments <span class="text-gray-400 text-sm ml-1">{{ totalComments }}</span>
-                </h3>
-                <button @click="closePanel" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times" />
-                </button>
-            </div>
 
             <!-- Comments list -->
             <div ref="scrollContainer" class="flex-1 overflow-y-auto p-4" @scroll="handleScroll">
-                <div v-for="comment in comments" :key="comment.id" class="flex gap-3 py-4 border-b border-gray-800">
+                <div v-for="comment in comments" :key="comment.id" class="flex gap-3 py-4 border-b border-gray-400">
                     <!-- Avatar -->
                     <div
                         class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-orange-400 flex items-center justify-center text-white font-bold">
-                        {{ comment.user.name.charAt(0) }}
+                        {{ comment.user.username.charAt(0) }}
                     </div>
 
                     <!-- Content -->
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-white font-semibold text-sm">{{ comment.user.name }}</span>
-                            <span class="text-gray-400 text-xs">{{ formatTime(comment.createdAt) }}</span>
+                            <span class="text-gray-800 font-semibold text-sm">{{ comment.user.username }}</span>
+                            <span class="text-gray-500 text-xs">{{ formatTime(comment.createdAt) }}</span>
                         </div>
-                        <p class="text-white text-sm mb-2">{{ comment.text }}</p>
+                        <p class="text-gray-800 text-sm mb-2">{{ comment.text }}</p>
                         <div class="flex gap-4">
                             <button @click="toggleLike(comment)"
-                                class="flex items-center gap-1 text-gray-400 hover:text-white text-xs"
-                                :class="{ 'text-red-500': comment.isLiked }">
-                                <i class="fas fa-heart" :class="{ 'animate-pulse': comment.likeAnimation }" />
-                                <span>{{ comment.likes }}</span>
+                                class="flex items-center gap-1 text-gray-400 hover:text-gray-800 text-xs">
+                                <Heart class="fas fa-heart" :fill="likes.get(comment.id) ? 'red' : 'white'" :class="{
+                                    'animate-pulse': comment.likeAnimation,
+                                    'text-red-500': likes.get(comment.id)
+                                }" />
+                                <span>{{ comment.likeCount }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Loading indicator -->
-                <div v-if="loading" class="text-center py-4 text-gray-400 text-sm">
+                <div v-if="loading" class="text-center py-4 text-gray-500 text-sm">
                     <i class="fas fa-spinner fa-spin mr-2" /> Loading...
                 </div>
 
                 <!-- End of comments -->
-                <div v-if="!hasMore && !loading" class="text-center py-4 text-gray-400 text-sm">
+                <div v-if="!hasMore && !loading" class="text-center py-4 text-gray-500 text-sm">
                     No more comments
                 </div>
             </div>
 
             <!-- Comment input -->
-            <div class="flex gap-3 p-4 border-t border-gray-800">
+            <div class="flex gap-3 p-4 border-t border-gray-200">
                 <input v-model="newComment" placeholder="Add a comment..."
-                    class="flex-1 bg-gray-800 text-white rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    class="flex-1 bg-gray-200 text-black rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff2d55]"
                     @keyup.enter="postComment" />
                 <button @click="postComment" :disabled="!newComment.trim()"
-                    class="bg-pink-500 text-white rounded-full px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-600 transition">
+                    class="bg-[#ff2d55] text-white rounded-full px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#ff2d55] transition">
                     Post
                 </button>
             </div>
@@ -71,7 +64,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { Heart } from 'lucide-vue-next'
+import { reactive, ref, watch } from 'vue'
 
 const props = defineProps({
     videoId: {
@@ -97,6 +91,7 @@ const hasMore = ref(true)
 const offset = ref(0)
 const scrollContainer = ref(null)
 const panelRef = ref(null)
+const likes = reactive(new Map())
 
 // Drag state
 const isDragging = ref(false)
@@ -104,8 +99,19 @@ const startY = ref(0)
 const dragOffset = ref(0)
 const panelHeight = ref(0)
 
-// Computed
-const totalComments = computed(() => comments.value.length)
+async function fetchLikedStatus(commentId) {
+    try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/comment/${commentId}/hasliked`, {
+            credentials: 'include',
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        return { liked: data, id: commentId };
+    } catch {
+        return { liked: false, id: commentId };
+    }
+}
+
 
 // API Functions (same as before)
 const fetchComments = async () => {
@@ -114,7 +120,7 @@ const fetchComments = async () => {
     loading.value = true
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/comment/${props.videoId}?offset=${offset.value}&limit=${LIMIT}`)
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/comment/${props.videoId}?offset=${offset.value}&limit=${LIMIT}`, { credentials: 'include' })
         const data = await response.json()
 
         if (data.length === 0) {
@@ -128,6 +134,15 @@ const fetchComments = async () => {
             comments.value = [...comments.value, ...data]
             offset.value += data.length
         }
+
+        const likeStatusResults = await Promise.all(data.map(comment => fetchLikedStatus(comment.id)));
+
+        for (const { id, liked } of likeStatusResults) {
+            likes.set(id, liked);
+        }
+
+
+
     } catch (error) {
         console.error('Error fetching comments:', error)
     } finally {
@@ -139,11 +154,12 @@ const postComment = async () => {
     if (!newComment.value.trim()) return
 
     try {
-        const response = await fetch(`/posts/comment/${props.videoId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/comment/${props.videoId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({
                 text: newComment.value
             })
@@ -162,38 +178,40 @@ const postComment = async () => {
 
 const toggleLike = async (comment) => {
     try {
+        const wasLiked = likes.get(comment.id).value;
+
         // Optimistic UI update
-        const wasLiked = comment.isLiked
-        comment.isLiked = !wasLiked
-        comment.likes += wasLiked ? -1 : 1
-        comment.likeAnimation = true
+        likes.set(comment.id, !wasLiked);
+        comment.likes += wasLiked ? -1 : 1;
+        comment.likeAnimation = true;
 
-        const response = await fetch(`/comments/${comment.id}/like`, {
-            method: 'POST'
-        })
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/posts/comment/${comment.id}/likeorunlike`, {
+            method: 'POST',
+            credentials: 'include'
+        });
 
-        const updated = await response.json()
+        const updated = await response.json();
 
-        // Update local state with actual values
-        const index = comments.value.findIndex(c => c.id === comment.id)
-        if (index !== -1) {
-            comments.value[index] = {
-                ...updated,
-                likeAnimation: false
-            }
+        // Update comment count and animation status
+        comment.likes = updated.likeCount ?? comment.likes;
+        comment.likeAnimation = false;
+
+        // Sync map state just in case backend disagrees
+        if (typeof updated.userHasLiked === 'boolean') {
+            likes.set(comment.id, updated.userHasLiked);
         }
 
-        setTimeout(() => {
-            comment.likeAnimation = false
-        }, 1000)
     } catch (error) {
-        console.error('Error toggling like:', error)
-        // Revert optimistic update on error
-        comment.isLiked = !comment.isLiked
-        comment.likes += comment.isLiked ? 1 : -1
-        comment.likeAnimation = false
+        console.error('Error toggling like:', error);
+
+        // Rollback optimistic update on failure
+        const reverted = likes.get(comment.id).value;
+        likes.set(comment.id, !reverted);
+        comment.likes += reverted ? -1 : 1;
+        comment.likeAnimation = false;
     }
-}
+};
+
 
 // Helpers
 const formatTime = (timestamp) => {

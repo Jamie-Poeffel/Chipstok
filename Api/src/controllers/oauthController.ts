@@ -49,7 +49,6 @@ export const Authorize: RequestHandler = async (req: Request, res: Response): Pr
     res.redirect(`${process.env.FRONTEND_URL}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=${state}`);
 }
 
-
 export const callback: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const code = req.query.code;
     const user = jwt.decode(code as string) as { id: string, username: string, email: string, firstname: string, lastname: string, profilepicture: string };

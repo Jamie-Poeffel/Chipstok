@@ -71,58 +71,12 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
     }
 };
 
-
 export const success: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const user = (req as any).user
 
     const token = jwt.sign({ id: user._id, username: user.username, email: user.email, firstname: user.firstname, lastname: user.lastname, profilePicture: user.profile.profilePicture }, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '15m' });
     res.json({ message: "success", username: user.username, user: user, token: token });
 }
-
-
-
-
-// Temporary in-memory store (you can replace with Redis or DB)
-const verificationCodes = new Map<string, string>();
-
-// Generate 5-digit code
-const generateCode = (): string => {
-    return Math.floor(10000 + Math.random() * 90000).toString();
-};
-
-// Setup Nodemailer (use your real SMTP credentials here)
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-        rejectUnauthorized: false,
-    },
-});
-
-
-const sendEmail = async (email: string, code: string) => {
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Your MFA Verification Code",
-        text: `Your verification code is: ${code}`,
-    };
-
-    await transporter.sendMail(mailOptions);
-};
-
-const verifyMfaCode = (email: string, code: string): boolean => {
-    return verificationCodes.get(email) === code;
-};
-
-const generateAuthToken = (user: any): string => {
-    return jwt.sign({ email: user.email }, process.env.JWT_SECRET || "secret", {
-        expiresIn: "1h",
-    });
-};
 
 export const MultiFactorAuth: RequestHandler = async (
     req: Request,
@@ -182,3 +136,43 @@ export const MultiFactorAuth: RequestHandler = async (
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+const verificationCodes = new Map<string, string>();
+
+const generateCode = (): string => {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+};
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
+});
+
+const sendEmail = async (email: string, code: string) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Your MFA Verification Code",
+        text: `Your verification code is: ${code}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+
+const verifyMfaCode = (email: string, code: string): boolean => {
+    return verificationCodes.get(email) === code;
+};
+
+const generateAuthToken = (user: any): string => {
+    return jwt.sign({ email: user.email }, process.env.JWT_SECRET || "secret", {
+        expiresIn: "1h",
+    });
+};
+
+

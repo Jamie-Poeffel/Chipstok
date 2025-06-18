@@ -13,6 +13,6 @@ router.get('/:id/isLiked', authMiddleware, isLiked)
 router.get('/stream/:id', getStream);
 router.get('/thumbnail/:id', getThumbnail);
 router.get('/get/:id', authMiddleware, getPostFile);
-router.use('/comments', Comments);
+router.use('/comment', Comments);
 
 export default router;
