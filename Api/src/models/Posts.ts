@@ -29,6 +29,9 @@ export class Post extends Model {
     @Column({ type: DataType.JSON, allowNull: false })
     Hashtags!: string[];
 
+    @Column({ type: DataType.STRING, allowNull: false })
+    caption!: string;
+
     // Hook to update likeCount for the User when a new Post is created
     @AfterCreate
     static async updateUserLikeCountAfterPostCreate(post: Post) {
