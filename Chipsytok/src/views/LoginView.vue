@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFetch } from '@/composables/useFetch';
-import { Loader2, MailCheck, PiggyBankIcon } from 'lucide-vue-next';
+import { Loader2, MailCheck } from 'lucide-vue-next';
 import { useLanguage } from '@/composables/useLanguage';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { generateCharString } from '@/helpers/oauth';
@@ -149,12 +149,12 @@ const sendResetEmail = async () => {
 
       <button type="button" class="button mt-2">
         <a
-          :href="`https://api.chipslyfans.bbzwinf.ch/auth/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`">
+          :href="`https://api.chipslyfans.bbzwinf.ch/oauth/authorize?client_id=${generateCharString(new Date())}&redirect_uri=https://api.chipsytok.bbzwinf.ch/oauth/callback&response_type=code`">
           <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
+            <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png" />
+            <p>Chipslyfans</p>
             <PiggyBankIcon class="w-6 h-6" />
-            <p>
-              Chipslyfans
-            </p>
+            <p>Chipslyfans</p>
           </div>
           <div v-else class="flex justify-center items-center">
             <Loader2 class="animate-spin w-4 h-4" />
