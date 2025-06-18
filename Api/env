@@ -1,0 +1,15 @@
+# DB Mariadb mysql
+DB_NAME=
+DB_USER=
+DB_PASS=
+DB_HOST=
+
+# Google Email addresse und App password
+EMAIL_USER=
+EMAIL_PASS=
+
+JWT_SECRET="23ä4,13grpk9q5.235.1g419502f1/4513&1234"
+JWT_REFRESH="jdaofjwea32409qv-ewkqasdö<ejirwonwl,-we.f,s"
+
+BASE_URL="http://localhost:8080"
+FRONTEND_URL="http://localhost:80"
