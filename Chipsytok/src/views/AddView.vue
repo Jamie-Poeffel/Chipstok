@@ -1,15 +1,32 @@
-you see this and understand it? answer with three words
-
 <template>
   <div class="overlay">
     <div class="add-page">
       <div v-if="tempImage" class="preview-container">
         <!-- Image/Video Display -->
         <div class="media-container">
-          <video v-if="isVideo" :src="tempImage" ref="video" controls class="preview-media"
-            :currentTime="startTime"></video>
-          <img v-else :src="tempImage" alt="Selected content" class="preview-media" :style="imageStyle" />
+          <video
+            v-if="isVideo"
+            :src="tempImage"
+            ref="video"
+            controls
+            class="preview-media"
+            :currentTime="startTime"
+          ></video>
+          <img
+            v-else
+            :src="tempImage"
+            alt="Selected content"
+            class="preview-media"
+            :style="imageStyle"
+          />
         </div>
+
+        <!-- Caption Input -->
+        <textarea
+          v-model="caption"
+          placeholder="Write a caption..."
+          class="caption-input"
+        ></textarea>
 
         <!-- Buttons Container -->
         <div class="button-container">
@@ -29,6 +46,7 @@ import { useFetch } from '@/composables/useFetch';
 
 const tempImage = ref(null);
 const startTime = ref(0);
+const caption = ref(''); // <- NEW
 const router = useRouter();
 
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
@@ -41,6 +59,7 @@ const post = async () => {
   const filename = isVideo.value ? 'video.mp4' : 'image.jpg';
 
   form.append('video', blob, filename);
+  form.append('caption', caption.value); // <- NEW
 
   const { res, data, error } = await useFetch(`/upload/post`, {
     method: 'POST',
@@ -55,7 +74,6 @@ const post = async () => {
 
   console.log('Upload successful:', data);
   await clearIndexedDB();
-
   router.push('/');
 };
 
@@ -92,7 +110,6 @@ const imageStyle = computed(() => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  /* Grayish background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -134,6 +151,16 @@ const imageStyle = computed(() => {
   width: 100%;
 }
 
+.caption-input {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-size: 14px;
+}
+
 button {
   padding: 10px 20px;
   border: none;
@@ -158,16 +185,13 @@ button:active {
   justify-content: center;
   width: 100%;
   margin-top: 20px;
-  /* Space between the image/video and buttons */
 }
 
 .cancel-button {
   background-color: #ff2d55;
-  /* Red color for Cancel */
 }
 
 .post-button {
   background-color: #ff2d55;
-  /* Red color for Post */
 }
 </style>
