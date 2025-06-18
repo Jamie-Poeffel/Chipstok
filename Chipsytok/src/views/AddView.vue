@@ -3,7 +3,6 @@
     <div class="add-page">
       <div v-if="tempImage" class="preview-container">
         <div class="media-side-by-side">
-          <!-- Image/Video -->
           <div class="media-container">
             <video
               v-if="isVideo"
@@ -22,7 +21,6 @@
             />
           </div>
 
-          <!-- Text Inputs -->
           <div class="text-inputs">
             <textarea
               v-model="caption"
@@ -32,16 +30,25 @@
             ></textarea>
 
             <input
-              v-model="hashtags"
+              v-model="hashtagInput"
+              @keydown.enter.prevent="addHashtag"
               type="text"
-              placeholder="#hashtags (max 15, separated by space)"
+              placeholder="Add hashtag and press Enter"
               class="hashtag-input"
             />
+
+            <div class="hashtag-list">
+              <span class="tag" v-for="(tag, index) in hashtags" :key="index">
+                {{ tag }}
+                <button @click="removeHashtag(index)">×</button>
+              </span>
+              <p class="hashtag-count">{{ hashtags.length }}/15 hashtags</p>
+            </div>
+
             <p class="char-counter">{{ caption.length }}/200 characters</p>
           </div>
         </div>
 
-        <!-- Buttons -->
         <div class="button-container">
           <button @click="cancel" class="cancel-button">Cancel</button>
           <button @click="post" class="post-button">Post</button>
@@ -60,24 +67,31 @@ import { useFetch } from '@/composables/useFetch';
 const tempImage = ref(null);
 const startTime = ref(0);
 const caption = ref('');
-const hashtags = ref('');
+const hashtags = ref([]);
+const hashtagInput = ref('');
 const router = useRouter();
 
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
 
+const addHashtag = () => {
+  let tag = hashtagInput.value.trim();
+
+  if (!tag) return;
+  if (!tag.startsWith('#')) tag = '#' + tag;
+  if (hashtags.value.includes(tag)) return;
+  if (hashtags.value.length >= 15) return;
+
+  hashtags.value.push(tag);
+  hashtagInput.value = '';
+};
+
+const removeHashtag = (index) => {
+  hashtags.value.splice(index, 1);
+};
+
 const post = async () => {
   if (!caption.value.trim()) {
     console.error('Caption cannot be empty.');
-    return;
-  }
-
-  const hashtagArray = hashtags.value
-    .trim()
-    .split(/\s+/)
-    .filter((h) => h.startsWith('#'));
-
-  if (hashtagArray.length > 15) {
-    console.error('Maximum 15 hashtags allowed.');
     return;
   }
 
@@ -89,7 +103,7 @@ const post = async () => {
 
   form.append('video', blob, filename);
   form.append('caption', caption.value);
-  form.append('hashtags', hashtagArray.join(' '));
+  form.append('hashtags', hashtags.value.join(' '));
 
   const { res, data, error } = await useFetch(`/upload/post`, {
     method: 'POST',
@@ -199,6 +213,37 @@ const imageStyle = computed(() => {
   font-size: 14px;
   resize: none;
   box-sizing: border-box;
+}
+
+.hashtag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tag {
+  background-color: #eee;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hashtag-count {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
 }
 
 .char-counter {
