@@ -13,6 +13,7 @@ config();
 const app = express();
 
 const allowedOrigins = [
+    'http://localhost',
     'https://chipsytok.bbzwinf.ch',
     'https://chipslyfans.bbzwinf.ch',
     'https://www.chipsytok.bbzwinf.ch',

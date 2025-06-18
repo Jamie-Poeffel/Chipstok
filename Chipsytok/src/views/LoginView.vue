@@ -168,6 +168,8 @@ const sendResetEmail = async () => {
           <div v-if="!loading" class="flex flex-row justify-center items-center gap-3">
             <img class="w-4 h-4" src="https://chipslyfans.bbzwinf.ch/ChipslyFans-logo.png" />
             <p>Chipslyfans</p>
+            <PiggyBankIcon class="w-6 h-6" />
+            <p>Chipslyfans</p>
           </div>
           <div v-else class="flex justify-center items-center">
             <Loader2 class="animate-spin w-4 h-4" />
