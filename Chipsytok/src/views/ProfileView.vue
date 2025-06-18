@@ -46,29 +46,16 @@
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'">Posts</span>
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'">Saved</span>
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'">Tagged</span>
-    </div>
 
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
       <!-- Posts grid (infinite scroll) -->
       <div v-if="activeTab === 'posts'" class="posts-grid">
-        <div v-for="(post, index) in user?.postedVideos" :key="index" class="post-thumb">
+        <div v-for="(post, index) in user?.postedVideos" @click="$router.push(`/?id=${post._id}`)"  :key="index" class="post-thumb">
           <img :src="post.url" alt="alt text" />
         </div>
       </div>
 
-      <!-- Placeholders for Saved & Tagged -->
-      <div v-if="activeTab === 'saved'" class="posts-grid">
-        <div v-for="n in 6" :key="n" class="post-thumb bg-gray-200" />
-      </div>
-      <div v-if="activeTab === 'tagged'" class="posts-grid">
-        <div v-for="n in 6" :key="n" class="post-thumb bg-gray-200" />
-      </div>
     </section>
   </div>
 </template>
