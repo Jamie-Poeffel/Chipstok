@@ -2,41 +2,46 @@
   <div class="overlay">
     <div class="add-page">
       <div v-if="tempImage" class="preview-container">
-        <!-- Image/Video Display -->
-        <div class="media-container">
-          <video
-            v-if="isVideo"
-            :src="tempImage"
-            ref="video"
-            controls
-            class="preview-media"
-            :currentTime="startTime"
-          ></video>
-          <img
-            v-else
-            :src="tempImage"
-            alt="Selected content"
-            class="preview-media"
-            :style="imageStyle"
-          />
+        <div class="media-side-by-side">
+          <!-- Image/Video -->
+          <div class="media-container">
+            <video
+              v-if="isVideo"
+              :src="tempImage"
+              ref="video"
+              controls
+              class="preview-media"
+              :currentTime="startTime"
+            ></video>
+            <img
+              v-else
+              :src="tempImage"
+              alt="Selected content"
+              class="preview-media"
+              :style="imageStyle"
+            />
+          </div>
+
+          <!-- Text Inputs -->
+          <div class="text-inputs">
+            <textarea
+              v-model="caption"
+              maxlength="200"
+              placeholder="Write a caption (max 200 characters)"
+              class="caption-input"
+            ></textarea>
+
+            <input
+              v-model="hashtags"
+              type="text"
+              placeholder="#hashtags (max 15, separated by space)"
+              class="hashtag-input"
+            />
+            <p class="char-counter">{{ caption.length }}/200 characters</p>
+          </div>
         </div>
 
-        <!-- Caption Input -->
-        <textarea
-          v-model="caption"
-          placeholder="Write a caption..."
-          class="caption-input"
-        ></textarea>
-
-        <!-- Hashtag Input -->
-        <input
-          v-model="hashtags"
-          type="text"
-          placeholder="#hashtags (separated by spaces)"
-          class="hashtag-input"
-        />
-
-        <!-- Buttons Container -->
+        <!-- Buttons -->
         <div class="button-container">
           <button @click="cancel" class="cancel-button">Cancel</button>
           <button @click="post" class="post-button">Post</button>
@@ -61,12 +66,22 @@ const router = useRouter();
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
 
 const post = async () => {
-  const form = new FormData();
-
   if (!caption.value.trim()) {
     console.error('Caption cannot be empty.');
     return;
   }
+
+  const hashtagArray = hashtags.value
+    .trim()
+    .split(/\s+/)
+    .filter((h) => h.startsWith('#'));
+
+  if (hashtagArray.length > 15) {
+    console.error('Maximum 15 hashtags allowed.');
+    return;
+  }
+
+  const form = new FormData();
 
   let mimeType = isVideo.value ? 'video/mp4' : 'image/jpeg';
   const blob = base64ToBlob(tempImage.value, mimeType);
@@ -74,7 +89,7 @@ const post = async () => {
 
   form.append('video', blob, filename);
   form.append('caption', caption.value);
-  form.append('hashtags', hashtags.value);
+  form.append('hashtags', hashtagArray.join(' '));
 
   const { res, data, error } = await useFetch(`/upload/post`, {
     method: 'POST',
@@ -110,9 +125,9 @@ const cancel = async () => {
 const imageStyle = computed(() => {
   return {
     objectPosition: `${startTime.value}% 0`,
-    objectFit: 'contain',
+    objectFit: 'cover',
     width: '100%',
-    maxHeight: '60vh',
+    height: '100%',
   };
 });
 </script>
@@ -132,49 +147,71 @@ const imageStyle = computed(() => {
 }
 
 .add-page {
-  position: relative;
-  background-color: transparent;
-  padding: 20px;
+  background-color: white;
   border-radius: 8px;
-  max-width: 80%;
-  max-height: 80%;
-  overflow: hidden;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
 }
 
 .preview-container {
-  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+.media-side-by-side {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  max-height: 60vh;
+}
+
+.media-container {
+  flex: 2;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.media-container {
+.preview-media {
   width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
-.preview-media {
-  max-width: 100%;
-  max-height: 60vh;
-  object-fit: contain;
+.text-inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .caption-input,
 .hashtag-input {
   width: 100%;
-  margin-top: 12px;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
+  resize: none;
   box-sizing: border-box;
 }
 
-.hashtag-input {
-  margin-top: 8px;
+.char-counter {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+}
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 button {
@@ -195,19 +232,22 @@ button:active {
   transform: scale(0.98);
 }
 
-.button-container {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  width: 100%;
-  margin-top: 20px;
-}
-
 .cancel-button {
   background-color: #ff2d55;
 }
 
 .post-button {
   background-color: #ff2d55;
+}
+
+@media (max-width: 768px) {
+  .media-side-by-side {
+    flex-direction: column;
+    max-height: none;
+  }
+
+  .text-inputs {
+    width: 100%;
+  }
 }
 </style>
