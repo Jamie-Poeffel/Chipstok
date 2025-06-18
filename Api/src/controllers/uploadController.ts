@@ -34,7 +34,7 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
         result.files.video = videoFile.filename;
     }
     try {
-        const { Hashtags } = req.body;
+        const { Hashtags, caption } = req.body;
         const user = (req as any).user;
 
         if (!user || !user._id) {
@@ -50,7 +50,8 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
                 commentCount: 0,
                 userid: user._id,
                 URL: req.files.video?.[0]?.filename || null,
-                Hashtags: Hashtags || []
+                Hashtags: Hashtags || [],
+                caption: caption || "This is the default caption"
             });
         } else {
             newPost = await Post.create({
@@ -58,7 +59,8 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
                 commentCount: 0,
                 userid: user._id,
                 photos: result.files.photos.map((file: Express.Multer.File) => file.filename),
-                Hashtags: Hashtags || []
+                Hashtags: Hashtags || [],
+                caption: caption || "This is the default caption"
             });
 
         }
