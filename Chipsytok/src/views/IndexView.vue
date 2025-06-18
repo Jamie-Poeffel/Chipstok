@@ -4,6 +4,9 @@ import { Plus, Heart, MessageCircle, Send } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useFetch } from '@/composables/useFetch';
 import { useRoute } from 'vue-router';
+import CommentsList from '@/components/CommentsList.vue'
+
+const showComments = ref(false)
 
 const route = useRoute();
 
@@ -181,6 +184,11 @@ const toggleLike = async (postID) => {
 const isLikedMap = reactive(new Map())
 const likesCountMap = reactive(new Map());
 const isFollowingMap = reactive(new Map());
+const id = ref(null)
+async function showCommentsfunc(ids) {
+    id.value = ids
+    showComments.value = true
+}
 
 
 async function shareVideoFile(videoId) {
@@ -208,10 +216,6 @@ function fett(username) {
         method: 'POST',
     })
 }
-
-
-
-
 
 </script>
 
@@ -281,7 +285,8 @@ function fett(username) {
                             <span class="text-xs font-medium">{{ likesCountMap.get(img._id) }}</span>
                         </button>
                         <button aria-label="Comment on post"
-                            class="flex flex-col items-center gap-1 text-gray-100 text-2xl hover:cursor-pointer active:scale-90">
+                            class="flex flex-col items-center gap-1 text-gray-100 text-2xl hover:cursor-pointer active:scale-90"
+                            @click="showCommentsfunc(img._id)">
                             <MessageCircle /><span class="text-xs font-medium">{{ img.comments }}</span>
                         </button>
                         <button @click="shareVideoFile(img._id, `Video_von_${img.username}.mp4`)"
@@ -293,6 +298,7 @@ function fett(username) {
                 </div>
             </div>
         </div>
+        <CommentsList @close="showComments = false" :isOpen="showComments" :videoId="id" />
     </div>
 
     <!-- Loader Element: Fixed position while loading -->

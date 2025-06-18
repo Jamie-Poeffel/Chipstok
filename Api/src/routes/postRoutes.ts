@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getPosts, likePost, getStream, getThumbnail, unlikePost, isLiked, getPostFile, getPost } from "../controllers/postController";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import Comments from "./commentRoutes";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.get('/:id/isLiked', authMiddleware, isLiked)
 router.get('/stream/:id', getStream);
 router.get('/thumbnail/:id', getThumbnail);
 router.get('/get/:id', authMiddleware, getPostFile);
+router.use('/comments', Comments);
 
 export default router;
