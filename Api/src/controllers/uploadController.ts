@@ -36,6 +36,7 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
     try {
         const { Hashtags, caption } = req.body;
         const user = (req as any).user;
+        const hashtags = JSON.parse(Hashtags);
 
         if (!user || !user._id) {
             res.status(404).json({ message: "Benutzer nicht gefunden" });
@@ -50,7 +51,7 @@ export const PostUpload = async (req: Request, res: Response): Promise<void> => 
                 commentCount: 0,
                 userid: user._id,
                 URL: req.files.video?.[0]?.filename || null,
-                Hashtags: Hashtags || [],
+                Hashtags: hashtags || [],
                 caption: caption || "This is the default caption"
             });
         } else {

@@ -38,20 +38,23 @@ async function img() {
     if (data && data.message !== "no posts posted" && Array.isArray(data.sortedPosts)) {
         await Promise.all(data.sortedPosts.map(async (e) => {
             list.push({
-                _id: e._id,
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
-                type: e.URL?.endsWith('.mp4') ? 'video' : 'image',
-                username: data.username,
+                _id: e.post._id,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e.post._id}`,
+                type: e.post.URL?.endsWith('.mp4') ? 'video' : 'image',
+                username: e.username,
                 profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
-                caption: e.caption || 'Check out this awesome content! 🚀',
-                likes: e.likeCount,
-                comments: e.commentCount,
+                caption: e.post.caption || 'Check out this awesome content! 🚀',
+                likes: e.post.likeCount,
+                Hashtags: e.post.Hashtags,
+                comments: e.post.commentCount,
             });
 
-            likesCountMap.set(e._id, e.likeCount);
+            likesCountMap.set(e.post._id, e.post.likeCount);
 
-            const { data: likeData } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' });
-            isLikedMap.set(e._id, likeData?.isLiked ?? false);
+            const { data: likeData } = await useFetch(`/posts/${e.post._id}/isLiked`, { credentials: 'include' });
+            isLikedMap.set(e.post._id, likeData?.isLiked ?? false);
+            const { data: d } = await useFetch(`/users/${e.username}/isFollowing`, { credentials: 'include' })
+            isFollowingMap.set(e.post._id, d);
         }));
     }
 
@@ -90,25 +93,27 @@ let observer = null;
 // Function to load two new videos (simulate network delay)
 const loadMore = async () => {
     const { data } = await useFetch('/posts?limit=2', { credentials: 'include' });
-    let dt = data
     let ddata = data.sortedPosts;
 
     if (data.message !== "no posts posted") {
         ddata.forEach(async (e) => {
             imgs.value.push({
-                _id: `${e._id}`,
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e._id}`,
-                type: `${(e.URL).split('.')[(e.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
-                username: `${dt.username}`,
+                _id: `${e.post._id}`,
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/posts/stream/${e.post._id}`,
+                type: `${(e.post.URL).split('.')[(e.post.URL).split('.').length - 1] === "mp4" ? "video" : "image"}`,
+                username: `${e.username}`,
                 profilePicture: `https://randomuser.me/portraits/men/${(124 % 100) + 1}.jpg`,
                 caption: 'Check out this awesome content! 🚀',
-                likes: `${e.likeCount}`,
-                comments: `${e.commentCount}`,
+                likes: `${e.post.likeCount}`,
+                Hashtags: `${e.post.Hashtags}`,
+                comments: `${e.post.commentCount}`,
             });
 
-            likesCountMap.set(e._id, e.likeCount)
-            const { data } = await useFetch(`/posts/${e._id}/isLiked`, { credentials: 'include' })
-            isLikedMap.set(e._id, data.isLiked);
+            likesCountMap.set(e.post._id, e.post.likeCount)
+            const { data } = await useFetch(`/posts/${e.post._id}/isLiked`, { credentials: 'include' })
+            const { data: d } = await useFetch(`/users/${e.username}/isFollowing`, { credentials: 'include' })
+            isLikedMap.set(e.post._id, data.isLiked);
+            isFollowingMap.set(e.post._id, d);
         });
     }
 };
@@ -175,6 +180,7 @@ const toggleLike = async (postID) => {
 
 const isLikedMap = reactive(new Map())
 const likesCountMap = reactive(new Map());
+const isFollowingMap = reactive(new Map());
 
 
 async function shareVideoFile(videoId) {
@@ -194,6 +200,13 @@ async function shareVideoFile(videoId) {
     } else {
         alert('Sharing is not supported on this device.');
     }
+}
+
+function fett(username) {
+    fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/users/${username}/follow`, {
+        credentials: 'include',
+        method: 'POST',
+    })
 }
 
 
@@ -237,34 +250,43 @@ async function shareVideoFile(videoId) {
 
                 <div class="absolute bottom-10 left-3 text-white max-w-[75%] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
                     <p class="font-semibold text-base mb-1">@{{ img.username }}</p>
-                    <p class="text-sm leading-tight">{{ img.caption }}</p>
+                    <p class="text-sm leading-tight">
+                        {{ img.caption }}
+                    </p>
+                    <div class="flex flex-row gap-1.5">
+                        <div v-for="im in img.Hashtags" :key="im">
+                            {{ im }}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="absolute right-3 bottom-10 flex flex-col items-center justify-center gap-5">
                     <div class="mb-2 flex flex-col gap-5 justify-center items-center">
                         <div class="flex flex-col justify-center items-center">
-                            <img :src="img.profilePicture" :alt="'Profile of ' + img.username"
+                            <img @click="$router.push(`/profile?username=${img.username}`)" :src="img.profilePicture"
+                                :alt="'Profile of ' + img.username"
                                 class="w-12 h-12 rounded-full object-cover hover:cursor-pointer active:scale-90"
                                 loading="lazy" />
-                            <button aria-label="Follow user"
+                            <button v-if="!isFollowingMap.get(img._id)" @click="fett(img.username)"
+                                aria-label="Follow user"
                                 class="flex flex-col items-center w-4 h-4 -translate-y-1 text-white text-2xl bg-[#ff2d55]/90 rounded-full hover:cursor-pointer active:scale-90">
                                 <Plus />
                             </button>
                         </div>
                         <button aria-label="Like post"
-                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90"
+                            class="flex flex-col items-center gap-1 text-gray-100 text-2xl hover:cursor-pointer active:scale-90"
                             @click="toggleLike(img._id)">
                             <Heart :fill="isLikedMap.get(img._id) ? 'red' : 'transparent'"
                                 :class="isLikedMap.get(img._id) ? 'text-[#ff0000]' : 'text-white'" />
                             <span class="text-xs font-medium">{{ likesCountMap.get(img._id) }}</span>
                         </button>
                         <button aria-label="Comment on post"
-                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
+                            class="flex flex-col items-center gap-1 text-gray-100 text-2xl hover:cursor-pointer active:scale-90">
                             <MessageCircle /><span class="text-xs font-medium">{{ img.comments }}</span>
                         </button>
                         <button @click="shareVideoFile(img._id, `Video_von_${img.username}.mp4`)"
                             aria-label="Share post"
-                            class="flex flex-col items-center gap-1 text-white text-2xl hover:cursor-pointer active:scale-90">
+                            class="flex flex-col items-center gap-1 text-gray-100 text-2xl hover:cursor-pointer active:scale-90">
                             <Send />
                         </button>
                     </div>

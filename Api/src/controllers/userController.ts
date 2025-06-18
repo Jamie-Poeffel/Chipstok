@@ -21,6 +21,10 @@ export const isUserFollowing: RequestHandler = async (req: Request, res: Respons
         .then((user) => {
             if (user) {
                 const isFollowing = user?.followers?.includes(loggedInUser._id) ? true : false;
+                if (user?._id === loggedInUser._id) {
+                    res.status(200).json(true);
+                    return;
+                }
                 res.status(200).json(isFollowing);
             } else {
                 res.status(404).json({ error: "User not found" });

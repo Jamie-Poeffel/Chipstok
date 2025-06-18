@@ -58,10 +58,18 @@ export const getPosts: RequestHandler = async (req: Request, res: Response): Pro
         }
 
         // Final slice to ensure limit
-        const finalPosts = filledPosts.slice(0, limit);
+        const finPosts = filledPosts.slice(0, limit);
+        const finalPosts: any[] = []
+
+        finPosts.forEach(async (p) => {
+            const u = await User.findByPk(p.userid);
+            finalPosts.push({ post: p, username: u?.username });
+        })
+
+
 
         // Update viewed video list
-        const newPostIds = finalPosts.map(post => post._id);
+        const newPostIds = finalPosts.map(post => post.post._id);
         viewedVideos.push(...newPostIds);
         if (viewedVideos.length > 200) {
             viewedVideos = viewedVideos.slice(-200);
@@ -72,9 +80,7 @@ export const getPosts: RequestHandler = async (req: Request, res: Response): Pro
             { where: { _id: user._id } }
         );
 
-        const username = user.username || "Random User";
-
-        res.status(200).json({ sortedPosts: finalPosts, username });
+        res.status(200).json({ sortedPosts: finalPosts });
 
     } catch (error) {
         console.error("Error fetching posts:", error);

@@ -18,12 +18,10 @@
                   <strong>{{ formatNumber(useAuthStore().user.profile.following) }} Gefolgt</strong>
                 </div>
                 <div>
-                  <strong
-                    >{{
-                      formatNumber(useAuthStore().user.profile.followers)
-                    }}
-                    Follower*innen</strong
-                  >
+                  <strong>{{
+                    formatNumber(useAuthStore().user.profile.followers)
+                  }}
+                    Follower*innen</strong>
                 </div>
                 <div>
                   <strong>{{ formatNumber(useAuthStore().user.profile.likeCount) }} Likes</strong>
@@ -45,25 +43,14 @@
     </div>
 
     <Transition name="fade">
-      <div
-        v-if="openEditProfile"
+      <div v-if="openEditProfile"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openEditProfile = false"
-      >
+        @click.self="openEditProfile = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Profil bearbeiten</h3>
           <input v-model="editUsername" placeholder="Username" type="text" class="input" />
-          <textarea
-            v-model="editBio"
-            placeholder="Bio"
-            rows="3"
-            class="input resize-none"
-          ></textarea>
-          <p
-            v-if="profileMessage"
-            :class="{ error: profileError, success: !profileError }"
-            class="mt-2 text-center"
-          >
+          <textarea v-model="editBio" placeholder="Bio" rows="3" class="input resize-none"></textarea>
+          <p v-if="profileMessage" :class="{ error: profileError, success: !profileError }" class="mt-2 text-center">
             {{ profileMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveProfile">Speichern</button>
@@ -72,23 +59,10 @@
       </div>
     </Transition>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <span class="tab" :class="{ active: activeTab === 'posts' }" @click="activeTab = 'posts'"
-        >Posts</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'saved' }" @click="activeTab = 'saved'"
-        >Saved</span
-      >
-      <span class="tab" :class="{ active: activeTab === 'tagged' }" @click="activeTab = 'tagged'"
-        >Tagged</span
-      >
-    </div>
-
     <!-- Profile grid section -->
     <section class="profile-grid-section w-full">
       <div v-if="activeTab === 'posts'" class="posts-grid">
-        <div v-for="(post, index) in posts" :key="index" class="post-thumb">
+        <div v-for="(post, index) in posts" @click="$router.push(`/?id=${post._id}`)" :key="index" class="post-thumb">
           <img :src="post.url" alt="alt text" />
         </div>
       </div>
@@ -104,11 +78,8 @@
 
     <!-- Settings drawer -->
     <Transition name="fade">
-      <div
-        v-if="openSettings"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
-        @click.self="openSettings = false"
-      >
+      <div v-if="openSettings" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-40"
+        @click.self="openSettings = false">
         <div class="bg-white w-80 max-w-[90%] p-6 overflow-y-auto shadow-xl rounded-2xl">
           <h3 class="text-xl font-semibold text-center mb-4">Settings & Privacy</h3>
           <ul class="settings-list space-y-3 text-center text-gray-800">
@@ -125,8 +96,7 @@
           </ul>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openSettings = false"
-          >
+            @click="openSettings = false">
             Close
           </button>
         </div>
@@ -134,25 +104,14 @@
     </Transition>
 
     <Transition name="fade">
-      <div
-        v-if="openAccountSettings"
+      <div v-if="openAccountSettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="handleAccountSettingsClose"
-      >
+        @click.self="handleAccountSettingsClose">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
           <input v-model="accountEmail" placeholder="Neue E-Mail" type="email" class="input" />
-          <input
-            v-model="accountUsername"
-            placeholder="Neuer Username"
-            type="text"
-            class="input mt-2"
-          />
-          <p
-            v-if="accountMessage"
-            :class="{ error: accountError, success: !accountError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="accountUsername" placeholder="Neuer Username" type="text" class="input mt-2" />
+          <p v-if="accountMessage" :class="{ error: accountError, success: !accountError }" class="mt-2 text-center">
             {{ accountMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveAccountSettings">Speichern</button>
@@ -165,11 +124,9 @@
 
     <!-- 3. Privacy Policy Modal -->
     <Transition name="fade">
-      <div
-        v-if="openPrivacySettings"
+      <div v-if="openPrivacySettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openPrivacySettings = false"
-      >
+        @click.self="openPrivacySettings = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">{{ t('privacyPolicy') }}</h3>
           <p class="text-sm text-gray-600">
@@ -177,8 +134,7 @@
           </p>
           <button
             class="w-full mt-6 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition-transform hover:scale-105"
-            @click="openPrivacySettings = false"
-          >
+            @click="openPrivacySettings = false">
             {{ t('close') }}
           </button>
         </div>
@@ -187,31 +143,15 @@
 
     <!-- Change Password Modal -->
     <Transition name="fade">
-      <div
-        v-if="openChangePassword"
+      <div v-if="openChangePassword"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="openChangePassword = false"
-      >
+        @click.self="openChangePassword = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Change Password</h3>
-          <input
-            v-model="currentPassword"
-            placeholder="Current Password"
-            type="password"
-            class="input"
-          />
+          <input v-model="currentPassword" placeholder="Current Password" type="password" class="input" />
           <input v-model="newPassword" placeholder="New Password" type="password" class="input" />
-          <input
-            v-model="confirmPassword"
-            placeholder="Confirm New Password"
-            type="password"
-            class="input"
-          />
-          <p
-            v-if="passwordMessage"
-            :class="{ error: passwordError, success: !passwordError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="confirmPassword" placeholder="Confirm New Password" type="password" class="input" />
+          <p v-if="passwordMessage" :class="{ error: passwordError, success: !passwordError }" class="mt-2 text-center">
             {{ passwordMessage }}
           </p>
           <button class="button w-full mt-4" @click="changePassword">Change</button>
@@ -222,11 +162,8 @@
 
     <!-- Share profile modal -->
     <Transition name="fade">
-      <div
-        v-if="shareModal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="shareModal = false"
-      >
+      <div v-if="shareModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        @click.self="shareModal = false">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Share Profile</h3>
           <div class="w-full flex flex-col items-center gap-4">
@@ -247,25 +184,14 @@
 
     <!-- Account Settings Modal -->
     <Transition name="fade">
-      <div
-        v-if="openAccountSettings"
+      <div v-if="openAccountSettings"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        @click.self="handleAccountSettingsClose"
-      >
+        @click.self="handleAccountSettingsClose">
         <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
           <h3 class="text-xl font-semibold text-center mb-4">Account Settings</h3>
           <input v-model="accountEmail" placeholder="Change Email" type="email" class="input" />
-          <input
-            v-model="accountUsername"
-            placeholder="Change Username"
-            type="text"
-            class="input"
-          />
-          <p
-            v-if="accountMessage"
-            :class="{ error: accountError, success: !accountError }"
-            class="mt-2 text-center"
-          >
+          <input v-model="accountUsername" placeholder="Change Username" type="text" class="input" />
+          <p v-if="accountMessage" :class="{ error: accountError, success: !accountError }" class="mt-2 text-center">
             {{ accountMessage }}
           </p>
           <button class="button w-full mt-4" @click="saveAccountSettings">Save</button>
@@ -277,11 +203,8 @@
 
   <!-- NEU: Modal zum Bearbeiten von Bio, Username und Avatar -->
   <Transition name="fade">
-    <div
-      v-if="openEditProfile"
-      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-      @click.self="openEditProfile = false"
-    >
+    <div v-if="openEditProfile" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+      @click.self="openEditProfile = false">
       <div class="bg-white rounded-2xl shadow-xl w-80 max-w-[90%] p-6">
         <h3 class="text-xl font-semibold text-center mb-4">Profil bearbeiten</h3>
 
@@ -298,11 +221,7 @@
         <textarea v-model="editBio" placeholder="Bio" rows="3" class="input resize-none"></textarea>
 
         <!-- Fehlermeldung / Erfolgsmeldung -->
-        <p
-          v-if="profileMessage"
-          :class="{ error: profileError, success: !profileError }"
-          class="mt-2 text-center"
-        >
+        <p v-if="profileMessage" :class="{ error: profileError, success: !profileError }" class="mt-2 text-center">
           {{ profileMessage }}
         </p>
 
@@ -381,6 +300,7 @@ async function more() {
 
 onMounted(async () => {
   posts.value = await getThumbnails();
+
 });
 
 // Imported videos placeholder
