@@ -168,14 +168,15 @@ export const MultiFactorAuth: RequestHandler = async (
             if (updatedCount === 0) {
                 res.status(404).json({ message: "Benutzer mit dieser E-Mail nicht gefunden" });
             } else {
-                res.status(200).json({ message: "E-Mail erfolgreich verifiziert" });
+                res.status(200).json({
+                    message: "MFA successful, E-Mail erfolgreich verifiziert",
+                    token,
+                });
             }
         } catch (error) {
             console.error("Fehler beim Verifizieren der E-Mail:", error);
             res.status(500).json({ message: "Interner Serverfehler", error });
         }
-
-        res.status(200).json({ message: "MFA successful", token });
     } catch (error) {
         console.error("MFA error:", error);
         res.status(500).json({ message: "Internal server error" });
