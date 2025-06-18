@@ -28,6 +28,14 @@
           class="caption-input"
         ></textarea>
 
+        <!-- Hashtag Input -->
+        <input
+          v-model="hashtags"
+          type="text"
+          placeholder="#hashtags (separated by spaces)"
+          class="hashtag-input"
+        />
+
         <!-- Buttons Container -->
         <div class="button-container">
           <button @click="cancel" class="cancel-button">Cancel</button>
@@ -46,7 +54,8 @@ import { useFetch } from '@/composables/useFetch';
 
 const tempImage = ref(null);
 const startTime = ref(0);
-const caption = ref(''); // <- NEW
+const caption = ref('');
+const hashtags = ref('');
 const router = useRouter();
 
 const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|ogg);base64,/i));
@@ -54,12 +63,18 @@ const isVideo = computed(() => tempImage.value?.match(/^data:video\/(mp4|webm|og
 const post = async () => {
   const form = new FormData();
 
+  if (!caption.value.trim()) {
+    console.error('Caption cannot be empty.');
+    return;
+  }
+
   let mimeType = isVideo.value ? 'video/mp4' : 'image/jpeg';
   const blob = base64ToBlob(tempImage.value, mimeType);
   const filename = isVideo.value ? 'video.mp4' : 'image.jpg';
 
   form.append('video', blob, filename);
-  form.append('caption', caption.value); // <- NEW
+  form.append('caption', caption.value);
+  form.append('hashtags', hashtags.value);
 
   const { res, data, error } = await useFetch(`/upload/post`, {
     method: 'POST',
@@ -147,18 +162,19 @@ const imageStyle = computed(() => {
   object-fit: contain;
 }
 
-.input-range {
-  width: 100%;
-}
-
-.caption-input {
+.caption-input,
+.hashtag-input {
   width: 100%;
   margin-top: 12px;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  resize: none;
   font-size: 14px;
+  box-sizing: border-box;
+}
+
+.hashtag-input {
+  margin-top: 8px;
 }
 
 button {
